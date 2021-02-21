@@ -65,8 +65,7 @@ service.interceptors.response.use(res => {
       ).then(() => {
         store.dispatch('LogOut').then(() => {
           // location.href = '/index';
-          console.log(process.env.VUE_APP_AUTH_CENTER_URL)
-          window.location.href = `${process.env.VUE_APP_AUTH_CENTER_URL}/login?redirectURL=${window.location.href}`;
+          window.location.href = `${process.env.VUE_APP_AUTH_CENTER_URL}/refresh?redirectURL=${window.location.href}`;
         })
       })
     } else if (code === 500) {
