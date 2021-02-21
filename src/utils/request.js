@@ -31,7 +31,7 @@ service.interceptors.request.use(config => {
         if (typeof value === 'object') {
           for (const key of Object.keys(value)) {
             let params = propName + '[' + key + ']';
-            var subPart = encodeURIComponent(params) + "=";
+            const subPart = encodeURIComponent(params) + "=";
             url += subPart + encodeURIComponent(value[key]) + "&";
           }
         } else {
@@ -55,6 +55,7 @@ service.interceptors.response.use(res => {
     const code = res.data.code || 200;
     // 获取错误信息
     const msg = errorCode[code] || res.data.msg || errorCode['default']
+    // 401 未认证或者访问令牌过期，未认证则要通过刷新令牌获取新的认证信息
     if (code === 401) {
       MessageBox.confirm('登录状态已过期，您可以继续留在该页面，或者重新登录', '系统提示', {
           confirmButtonText: '重新登录',
@@ -63,7 +64,9 @@ service.interceptors.response.use(res => {
         }
       ).then(() => {
         store.dispatch('LogOut').then(() => {
-          location.href = '/index';
+          // location.href = '/index';
+          console.log(process.env.VUE_APP_AUTH_CENTER_URL)
+          window.location.href = `${process.env.VUE_APP_AUTH_CENTER_URL}/login?redirectURL=${window.location.href}`;
         })
       })
     } else if (code === 500) {
