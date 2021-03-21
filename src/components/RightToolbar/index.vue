@@ -2,13 +2,13 @@
   <div class="top-right-btn">
     <el-row>
       <el-tooltip class="item" effect="dark" :content="showSearch ? '隐藏搜索' : '显示搜索'" placement="top">
-        <el-button size="mini" circle icon="el-icon-search" @click="toggleSearch()" />
+        <el-button size="mini" circle icon="el-icon-search" @click="toggleSearch()"/>
       </el-tooltip>
       <el-tooltip class="item" effect="dark" content="刷新" placement="top">
-        <el-button size="mini" circle icon="el-icon-refresh" @click="refresh()" />
+        <el-button size="mini" circle icon="el-icon-refresh" @click="refresh()"/>
       </el-tooltip>
       <el-tooltip class="item" effect="dark" content="显隐列" placement="top" v-if="columns">
-        <el-button size="mini" circle icon="el-icon-menu" @click="showColumn()" />
+        <el-button size="mini" circle icon="el-icon-menu" @click="showColumn()"/>
       </el-tooltip>
     </el-row>
     <el-dialog :title="title" :visible.sync="open" append-to-body>
@@ -43,11 +43,10 @@ export default {
       type: Array,
     },
   },
-
   methods: {
     // 搜索
     toggleSearch() {
-      this.$emit("update:showSearch", !this.showSearch);
+        this.$emit("update:showSearch", !this.showSearch);
     },
     // 刷新
     refresh() {
@@ -74,6 +73,7 @@ export default {
   display: block;
   margin-left: 0px;
 }
+
 ::v-deep .el-transfer__button:first-child {
   margin-bottom: 10px;
 }

@@ -216,7 +216,7 @@ export default {
     }
   },
   mounted() {
-    const el = this.$refs.dragTable.$el.querySelectorAll(".el-table__body-wrapper > table > tbody")[0];
+    const el = this.$refs.dragTable.$el.querySelectorAll(".el-table__body-wrapper > Table > tbody")[0];
     const sortable = Sortable.create(el, {
       handle: ".allowDrag",
       onEnd: evt => {
