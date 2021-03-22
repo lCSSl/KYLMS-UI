@@ -3,56 +3,53 @@
     <el-card :body-style="{padding:'15px'}">
       <div slot="header" class="clearfix hidden-sm-and-down">
         <el-button style="float: right;" type="text">
-          <span @click="()=>toggleSearchForm(1)" v-if="toggleSearchFormValue===0">
+          <span v-if="toggleSearchFormValue===0" @click="()=>toggleSearchForm(1)">
             展开
           </span>
-          <span @click="()=>toggleSearchForm(2)" v-else-if="toggleSearchFormValue===1">
+          <span v-else-if="toggleSearchFormValue===1" @click="()=>toggleSearchForm(2)">
             更多
           </span>
-          <span @click="()=>toggleSearchForm(0)" v-if="toggleSearchFormValue!==0">
+          <span v-if="toggleSearchFormValue!==0" @click="()=>toggleSearchForm(0)">
             收起
           </span>
         </el-button>
       </div>
-      <el-form :model="queryParams" ref="queryForm" v-show="showSearch" inline label-position="left"
+      <el-form v-show="showSearch" ref="queryForm" :model="queryParams" inline label-position="left"
                label-width="100px">
         <el-row>
           <ICol>
             <el-form-item label="创建时间">
               <el-date-picker
                 v-model="daterangeCreateTime"
-                size="small"
-                style="width: 240px"
-                value-format="yyyy-MM-dd hh:mm:ss"
-                type="datetimerange"
-                range-separator="-"
-                start-placeholder="开始日期"
                 end-placeholder="结束日期"
-              ></el-date-picker>
-            </el-form-item>
-          </ICol>
-          <ICol>
-            <el-form-item label="到达站" prop="destination">
-<!--              <el-input-->
-<!--                v-model="queryParams.destination"-->
-<!--                placeholder="请输入到达站"-->
-<!--                clearable-->
-<!--                size="small"-->
-<!--                @keyup.enter.native="handleQuery"-->
-<!--              />-->
-              <regionSelect v-model="regionSelectValue" :level="2"
-                            @on-change="updateRegionSelectValue"/>
+                range-separator="-"
+                size="small"
+                start-placeholder="开始日期"
+                style="width: 240px"
+                type="datetimerange"
+                value-format="yyyy-MM-dd hh:mm:ss"
+              >
+
+              </el-date-picker>
             </el-form-item>
           </ICol>
           <ICol>
             <el-form-item label="始发站" prop="departure">
-              <el-input
-                v-model="queryParams.departure"
-                placeholder="请输入始发站"
-                clearable
-                size="small"
-                @keyup.enter.native="handleQuery"
-              />
+              <regionSelect v-model="departureRegionSelectValue" :level="1"
+                            @on-change="updateDepartureRegionSelectValue"/>
+            </el-form-item>
+          </ICol>
+          <ICol>
+            <el-form-item label="到达站" prop="destination">
+              <!--              <el-input-->
+              <!--                v-model="queryParams.destination"-->
+              <!--                placeholder="请输入到达站"-->
+              <!--                clearable-->
+              <!--                size="small"-->
+              <!--                @keyup.enter.native="handleQuery"-->
+              <!--              />-->
+              <regionSelect v-model="destinationRegionSelectValue" :level="1"
+                            @on-change="updateDestinationRegionSelectValue"/>
             </el-form-item>
           </ICol>
 
@@ -60,8 +57,8 @@
             <el-form-item label="运单号" prop="waybillCode">
               <el-input
                 v-model="queryParams.waybillCode"
-                placeholder="请输入运单号"
                 clearable
+                placeholder="请输入运单号"
                 size="small"
                 @keyup.enter.native="handleQuery"
               />
@@ -71,8 +68,8 @@
             <el-form-item label="开单事业部" prop="deptId">
               <el-input
                 v-model="queryParams.deptId"
-                placeholder="请输入开单事业部"
                 clearable
+                placeholder="请输入开单事业部"
                 size="small"
                 @keyup.enter.native="handleQuery"
               />
@@ -82,8 +79,8 @@
             <el-form-item label="开单人ID" prop="drawerId">
               <el-input
                 v-model="queryParams.drawerId"
-                placeholder="请输入开单人ID"
                 clearable
+                placeholder="请输入开单人ID"
                 size="small"
                 @keyup.enter.native="handleQuery"
               />
@@ -91,7 +88,7 @@
           </ICol>
           <ICol>
             <el-form-item label="运单状态" prop="waybillStatus">
-              <el-select v-model="queryParams.waybillStatus" placeholder="请选择运单状态" clearable size="small">
+              <el-select v-model="queryParams.waybillStatus" clearable placeholder="请选择运单状态" size="small">
                 <el-option
                   v-for="dict in waybillStatusOptions"
                   :key="dict.dictValue"
@@ -117,7 +114,7 @@
               <el-form-item label="交接方式" prop="handoverMode">
                 <el-select
                   v-model="queryParams.handoverMode"
-                  placeholder="请输入交接方式" clearable size="small"
+                  clearable placeholder="请输入交接方式" size="small"
                 >
                   <el-option
                     v-for="dict in handoverModeOptions"
@@ -132,7 +129,7 @@
               <el-form-item label="运输方式" prop="transportMode">
                 <el-select
                   v-model="queryParams.transportMode"
-                  placeholder="请输入付款方式" clearable size="small"
+                  clearable placeholder="请输入付款方式" size="small"
                 >
                   <el-option
                     v-for="dict in transportModeOptions"
@@ -147,7 +144,7 @@
               <el-form-item label="付款方式" prop="payMethod">
                 <el-select
                   v-model="queryParams.payMethod"
-                  placeholder="请输入付款方式" clearable size="small"
+                  clearable placeholder="请输入付款方式" size="small"
                 >
                   <el-option
                     v-for="dict in payMethodOptions"
@@ -160,7 +157,7 @@
             </ICol>
             <ICol>
               <el-form-item label="回单状态" prop="receiptStatus">
-                <el-select v-model="queryParams.receiptStatus" placeholder="请选择回单状态" clearable size="small">
+                <el-select v-model="queryParams.receiptStatus" clearable placeholder="请选择回单状态" size="small">
                   <el-option
                     v-for="dict in receiptStatusOptions"
                     :key="dict.dictValue"
@@ -172,7 +169,7 @@
             </ICol>
             <ICol>
               <el-form-item label="回扣已返" prop="rebateReturned">
-                <el-select v-model="queryParams.rebateReturned" placeholder="请选择回扣已返" clearable size="small">
+                <el-select v-model="queryParams.rebateReturned" clearable placeholder="请选择回扣已返" size="small">
                   <el-option
                     v-for="dict in rebateReturnedOptions"
                     :key="dict.dictValue"
@@ -188,8 +185,8 @@
               <el-form-item label="中转地" prop="transitPlace">
                 <el-input
                   v-model="queryParams.transitPlace"
-                  placeholder="请输入中转地"
                   clearable
+                  placeholder="请输入中转地"
                   size="small"
                   @keyup.enter.native="handleQuery"
                 />
@@ -199,8 +196,8 @@
               <el-form-item label="客户ID" prop="csrId">
                 <el-input
                   v-model="queryParams.csrId"
-                  placeholder="请输入客户ID"
                   clearable
+                  placeholder="请输入客户ID"
                   size="small"
                   @keyup.enter.native="handleQuery"
                 />
@@ -210,8 +207,8 @@
               <el-form-item label="客户编号" prop="csrCode">
                 <el-input
                   v-model="queryParams.csrCode"
-                  placeholder="请输入客户编号"
                   clearable
+                  placeholder="请输入客户编号"
                   size="small"
                   @keyup.enter.native="handleQuery"
                 />
@@ -221,8 +218,8 @@
               <el-form-item label="客户单号" prop="csrOrderNumber">
                 <el-input
                   v-model="queryParams.csrOrderNumber"
-                  placeholder="请输入客户单号"
                   clearable
+                  placeholder="请输入客户单号"
                   size="small"
                   @keyup.enter.native="handleQuery"
                 />
@@ -232,8 +229,8 @@
               <el-form-item label="发货人手机" prop="consignorMobile">
                 <el-input
                   v-model="queryParams.consignorMobile"
-                  placeholder="请输入发货人手机"
                   clearable
+                  placeholder="请输入发货人手机"
                   size="small"
                   @keyup.enter.native="handleQuery"
                 />
@@ -243,8 +240,8 @@
               <el-form-item label="发货人座机" prop="consignorTelephone">
                 <el-input
                   v-model="queryParams.consignorTelephone"
-                  placeholder="请输入发货人座机"
                   clearable
+                  placeholder="请输入发货人座机"
                   size="small"
                   @keyup.enter.native="handleQuery"
                 />
@@ -254,8 +251,8 @@
               <el-form-item label="发货联系人" prop="consignorName">
                 <el-input
                   v-model="queryParams.consignorName"
-                  placeholder="请输入发货联系人"
                   clearable
+                  placeholder="请输入发货联系人"
                   size="small"
                   @keyup.enter.native="handleQuery"
                 />
@@ -265,8 +262,8 @@
               <el-form-item label="发货公司名称" prop="deliverCoName">
                 <el-input
                   v-model="queryParams.deliverCoName"
-                  placeholder="请输入发货公司名称"
                   clearable
+                  placeholder="请输入发货公司名称"
                   size="small"
                   @keyup.enter.native="handleQuery"
                 />
@@ -276,8 +273,8 @@
               <el-form-item label="收货人手机" prop="consigneeMobile">
                 <el-input
                   v-model="queryParams.consigneeMobile"
-                  placeholder="请输入收货人手机"
                   clearable
+                  placeholder="请输入收货人手机"
                   size="small"
                   @keyup.enter.native="handleQuery"
                 />
@@ -287,8 +284,8 @@
               <el-form-item label="收货人座机" prop="consigneeTelephone">
                 <el-input
                   v-model="queryParams.consigneeTelephone"
-                  placeholder="请输入收货人座机"
                   clearable
+                  placeholder="请输入收货人座机"
                   size="small"
                   @keyup.enter.native="handleQuery"
                 />
@@ -298,8 +295,8 @@
               <el-form-item label="收货联系人" prop="consigneeName">
                 <el-input
                   v-model="queryParams.consigneeName"
-                  placeholder="请输入收货联系人"
                   clearable
+                  placeholder="请输入收货联系人"
                   size="small"
                   @keyup.enter.native="handleQuery"
                 />
@@ -309,8 +306,8 @@
               <el-form-item label="收货公司名称" prop="receivingCoName">
                 <el-input
                   v-model="queryParams.receivingCoName"
-                  placeholder="请输入收货公司名称"
                   clearable
+                  placeholder="请输入收货公司名称"
                   size="small"
                   @keyup.enter.native="handleQuery"
                 />
@@ -320,8 +317,8 @@
               <el-form-item label="收货省" prop="receivingProvince">
                 <el-input
                   v-model="queryParams.receivingProvince"
-                  placeholder="请输入收货省"
                   clearable
+                  placeholder="请输入收货省"
                   size="small"
                   @keyup.enter.native="handleQuery"
                 />
@@ -331,8 +328,8 @@
               <el-form-item label="收货市" prop="receivingCity">
                 <el-input
                   v-model="queryParams.receivingCity"
-                  placeholder="请输入收货市"
                   clearable
+                  placeholder="请输入收货市"
                   size="small"
                   @keyup.enter.native="handleQuery"
                 />
@@ -342,8 +339,8 @@
               <el-form-item label="收货区" prop="receivingDistrict">
                 <el-input
                   v-model="queryParams.receivingDistrict"
-                  placeholder="请输入收货区"
                   clearable
+                  placeholder="请输入收货区"
                   size="small"
                   @keyup.enter.native="handleQuery"
                 />
@@ -353,8 +350,8 @@
               <el-form-item label="收货街道" prop="receivingStreet">
                 <el-input
                   v-model="queryParams.receivingStreet"
-                  placeholder="请输入收货街道"
                   clearable
+                  placeholder="请输入收货街道"
                   size="small"
                   @keyup.enter.native="handleQuery"
                 />
@@ -364,8 +361,8 @@
               <el-form-item label="收货详细地址" prop="receivingAddress">
                 <el-input
                   v-model="queryParams.receivingAddress"
-                  placeholder="请输入收货详细地址"
                   clearable
+                  placeholder="请输入收货详细地址"
                   size="small"
                   @keyup.enter.native="handleQuery"
                 />
@@ -375,8 +372,8 @@
               <el-form-item label="配载站点" prop="stowageId">
                 <el-input
                   v-model="queryParams.stowageId"
-                  placeholder="请输入配载站点"
                   clearable
+                  placeholder="请输入配载站点"
                   size="small"
                   @keyup.enter.native="handleQuery"
                 />
@@ -386,8 +383,8 @@
               <el-form-item label="目的网点" prop="destinationNode">
                 <el-input
                   v-model="queryParams.destinationNode"
-                  placeholder="请输入目的网点"
                   clearable
+                  placeholder="请输入目的网点"
                   size="small"
                   @keyup.enter.native="handleQuery"
                 />
@@ -395,7 +392,7 @@
             </ICol>
             <ICol>
               <el-form-item label="是否开发票" prop="writeInvoice">
-                <el-select v-model="queryParams.writeInvoice" placeholder="请选择是否开发票" clearable size="small">
+                <el-select v-model="queryParams.writeInvoice" clearable placeholder="请选择是否开发票" size="small">
                   <el-option
                     v-for="dict in writeInvoiceOptions"
                     :key="dict.dictValue"
@@ -409,8 +406,8 @@
               <el-form-item label="基本运费" prop="basicFreight">
                 <el-input
                   v-model="queryParams.basicFreight"
-                  placeholder="请输入基本运费"
                   clearable
+                  placeholder="请输入基本运费"
                   size="small"
                   @keyup.enter.native="handleQuery"
                 />
@@ -420,8 +417,8 @@
               <el-form-item label="实收运费" prop="realFreight">
                 <el-input
                   v-model="queryParams.realFreight"
-                  placeholder="请输入实收运费"
                   clearable
+                  placeholder="请输入实收运费"
                   size="small"
                   @keyup.enter.native="handleQuery"
                 />
@@ -431,8 +428,8 @@
               <el-form-item label="总运费" prop="totalFreight">
                 <el-input
                   v-model="queryParams.totalFreight"
-                  placeholder="请输入总运费"
                   clearable
+                  placeholder="请输入总运费"
                   size="small"
                   @keyup.enter.native="handleQuery"
                 />
@@ -442,8 +439,8 @@
               <el-form-item label="送货车号" prop="deliveryVehicleId">
                 <el-input
                   v-model="queryParams.deliveryVehicleId"
-                  placeholder="请输入送货车号"
                   clearable
+                  placeholder="请输入送货车号"
                   size="small"
                   @keyup.enter.native="handleQuery"
                 />
@@ -453,8 +450,8 @@
               <el-form-item label="送货车号" prop="deliveryVehicleCode">
                 <el-input
                   v-model="queryParams.deliveryVehicleCode"
-                  placeholder="请输入送货车号"
                   clearable
+                  placeholder="请输入送货车号"
                   size="small"
                   @keyup.enter.native="handleQuery"
                 />
@@ -464,8 +461,8 @@
               <el-form-item label="送货司机" prop="deliveryDriverId">
                 <el-input
                   v-model="queryParams.deliveryDriverId"
-                  placeholder="请输入送货司机"
                   clearable
+                  placeholder="请输入送货司机"
                   size="small"
                   @keyup.enter.native="handleQuery"
                 />
@@ -475,8 +472,8 @@
               <el-form-item label="送货司机" prop="deliveryDriverName">
                 <el-input
                   v-model="queryParams.deliveryDriverName"
-                  placeholder="请输入送货司机"
                   clearable
+                  placeholder="请输入送货司机"
                   size="small"
                   @keyup.enter.native="handleQuery"
                 />
@@ -484,11 +481,11 @@
             </ICol>
             <ICol>
               <el-form-item label="送货时间" prop="deliveryTime">
-                <el-date-picker clearable size="small"
-                                v-model="queryParams.deliveryTime"
+                <el-date-picker v-model="queryParams.deliveryTime" clearable
+                                placeholder="选择送货时间"
+                                size="small"
                                 type="date"
-                                value-format="yyyy-MM-dd"
-                                placeholder="选择送货时间">
+                                value-format="yyyy-MM-dd">
                 </el-date-picker>
               </el-form-item>
             </ICol>
@@ -496,8 +493,8 @@
               <el-form-item label="设备来源" prop="equipmentSource">
                 <el-input
                   v-model="queryParams.equipmentSource"
-                  placeholder="请输入设备来源"
                   clearable
+                  placeholder="请输入设备来源"
                   size="small"
                   @keyup.enter.native="handleQuery"
                 />
@@ -507,8 +504,8 @@
               <el-form-item label="开单来源" prop="creationSource">
                 <el-input
                   v-model="queryParams.creationSource"
-                  placeholder="请输入开单来源"
                   clearable
+                  placeholder="请输入开单来源"
                   size="small"
                   @keyup.enter.native="handleQuery"
                 />
@@ -517,7 +514,7 @@
 
             <ICol>
               <el-form-item label="状态" prop="status">
-                <el-select v-model="queryParams.status" placeholder="请选择状态" clearable size="small">
+                <el-select v-model="queryParams.status" clearable placeholder="请选择状态" size="small">
                   <el-option
                     v-for="dict in statusOptions"
                     :key="dict.dictValue"
@@ -530,7 +527,7 @@
           </template>
           <ICol>
             <el-form-item>
-              <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+              <el-button icon="el-icon-search" size="mini" type="primary" @click="handleQuery">搜索</el-button>
               <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
             </el-form-item>
           </ICol>
@@ -541,47 +538,47 @@
       <el-row :gutter="10" class="mb8">
         <el-col :span="1.5">
           <el-button
-            type="primary"
-            plain
+            v-hasPermi="['wms:waybill:add']"
             icon="el-icon-plus"
+            plain
             size="mini"
-            @click="handleAdd"
-            v-hasPermi="['wms:waybill:add']">
+            type="primary"
+            @click="handleAdd">
             新增
           </el-button>
         </el-col>
         <el-col :span="1.5">
           <el-button
-            type="success"
-            plain
-            icon="el-icon-edit"
-            size="mini"
+            v-hasPermi="['wms:waybill:edit']"
             :disabled="single"
-            @click="handleUpdate"
-            v-hasPermi="['wms:waybill:edit']">
+            icon="el-icon-edit"
+            plain
+            size="mini"
+            type="success"
+            @click="handleUpdate">
             修改
           </el-button>
         </el-col>
         <el-col :span="1.5">
           <el-button
-            type="danger"
-            plain
-            icon="el-icon-delete"
-            size="mini"
+            v-hasPermi="['wms:waybill:remove']"
             :disabled="multiple"
-            @click="handleDelete"
-            v-hasPermi="['wms:waybill:remove']">
+            icon="el-icon-delete"
+            plain
+            size="mini"
+            type="danger"
+            @click="handleDelete">
             删除
           </el-button>
         </el-col>
         <el-col :span="1.5">
           <el-button
-            type="warning"
-            plain
+            v-hasPermi="['wms:waybill:export']"
             icon="el-icon-download"
+            plain
             size="mini"
-            @click="handleExport"
-            v-hasPermi="['wms:waybill:export']">
+            type="warning"
+            @click="handleExport">
             导出
           </el-button>
         </el-col>
@@ -590,216 +587,217 @@
     </el-card>
     <el-card :body-style="{padding:'15px'}">
       <el-table v-loading="loading" :data="waybillList" @selection-change="handleSelectionChange">
-        <el-table-column fixed type="selection" width="55" align="center"/>
-        <el-table-column fixed label="序号" align="center" prop="waybillId">
+        <el-table-column align="center" fixed type="selection" width="55"/>
+        <el-table-column align="center" fixed label="序号" prop="waybillId">
           <template slot-scope="{row}">
             {{row.waybillId}}
           </template>
         </el-table-column>
-        <el-table-column label="运单号" align="center" prop="waybillCode">
+        <el-table-column align="center" label="运单号" prop="waybillCode">
           <template slot-scope="{row}">
-            {{row.waybillCode}}
+            <Ellipsis :text="row.waybillCode"/>
           </template>
         </el-table-column>
-        <el-table-column label="到达站" align="center" prop="destination">
+        <el-table-column align="center" label="到达站" prop="destination">
           <template slot-scope="{row}">
             {{row.destination}}
           </template>
         </el-table-column>
-        <el-table-column label="始发站" align="center" prop="departure">
+        <el-table-column align="center" label="始发站" prop="departure">
           <template slot-scope="{row}">
             {{row.departure}}
           </template>
         </el-table-column>
-        <el-table-column label="中转地" align="center" prop="transitPlace">
+        <el-table-column align="center" label="中转地" prop="transitPlace">
           <template slot-scope="{row}">
             {{row.transitPlace}}
           </template>
         </el-table-column>
-        <el-table-column label="客户ID" align="center" prop="csrId">
+        <el-table-column align="center" label="客户ID" prop="csrId">
           <template slot-scope="{row}">
             {{row.csrId}}
           </template>
         </el-table-column>
-        <el-table-column label="客户编号" align="center" prop="csrCode">
+        <el-table-column align="center" label="客户编号" prop="csrCode">
           <template slot-scope="{row}">
             {{row.csrCode}}
           </template>
         </el-table-column>
-        <el-table-column label="客户单号" align="center" prop="csrOrderNumber">
+        <el-table-column align="center" label="客户单号" prop="csrOrderNumber">
           <template slot-scope="{row}">
             {{row.csrOrderNumber}}
           </template>
         </el-table-column>
-        <el-table-column label="发货人手机" align="center" prop="consignorMobile">
+        <el-table-column align="center" label="发货人手机" prop="consignorMobile">
           <template slot-scope="{row}">
             {{row.consignorMobile}}
           </template>
         </el-table-column>
-        <el-table-column label="发货人座机" align="center" prop="consignorTelephone">
+        <el-table-column align="center" label="发货人座机" prop="consignorTelephone">
           <template slot-scope="{row}">
             {{row.consignorTelephone}}
           </template>
         </el-table-column>
-        <el-table-column label="发货联系人" align="center" prop="consignorName">
+        <el-table-column align="center" label="发货联系人" prop="consignorName">
           <template slot-scope="{row}">
             {{row.consignorName}}
           </template>
         </el-table-column>
-        <el-table-column label="发货公司名称" align="center" prop="deliverCoName">
+        <el-table-column align="center" label="发货公司名称" prop="deliverCoName">
           <template slot-scope="{row}">
             {{row.deliverCoName}}
           </template>
         </el-table-column>
-        <el-table-column label="收货人手机" align="center" prop="consigneeMobile">
+        <el-table-column align="center" label="收货人手机" prop="consigneeMobile">
           <template slot-scope="{row}">
             {{row.consigneeMobile}}
           </template>
         </el-table-column>
-        <el-table-column label="收货人座机" align="center" prop="consigneeTelephone">
+        <el-table-column align="center" label="收货人座机" prop="consigneeTelephone">
           <template slot-scope="{row}">
             {{row.consigneeTelephone}}
           </template>
         </el-table-column>
-        <el-table-column label="收货联系人" align="center" prop="consigneeName">
+        <el-table-column align="center" label="收货联系人" prop="consigneeName">
           <template slot-scope="{row}">
             {{row.consigneeName}}
           </template>
         </el-table-column>
-        <el-table-column label="收货公司名称" align="center" prop="receivingCoName">
+        <el-table-column align="center" label="收货公司名称" prop="receivingCoName">
           <template slot-scope="{row}">
             {{row.receivingCoName}}
           </template>
         </el-table-column>
-        <el-table-column label="收货省" align="center" prop="receivingProvince">
+        <el-table-column align="center" label="收货省" prop="receivingProvince">
           <template slot-scope="{row}">
             {{row.receivingProvince}}
           </template>
         </el-table-column>
-        <el-table-column label="收货市" align="center" prop="receivingCity">
+        <el-table-column align="center" label="收货市" prop="receivingCity">
           <template slot-scope="{row}">
             {{row.receivingCity}}
           </template>
         </el-table-column>
-        <el-table-column label="收货区" align="center" prop="receivingDistrict">
+        <el-table-column align="center" label="收货区" prop="receivingDistrict">
           <template slot-scope="{row}">
             {{row.receivingDistrict}}
           </template>
         </el-table-column>
-        <el-table-column label="收货街道" align="center" prop="receivingStreet">
+        <el-table-column align="center" label="收货街道" prop="receivingStreet">
           <template slot-scope="{row}">
             {{row.receivingStreet}}
           </template>
         </el-table-column>
-        <el-table-column label="收货详细地址" align="center" prop="receivingAddress">
+        <el-table-column align="center" label="收货详细地址" prop="receivingAddress">
           <template slot-scope="{row}">
             {{row.receivingAddress}}
           </template>
         </el-table-column>
-        <el-table-column label="开单事业部" align="center" prop="deptId">
+        <el-table-column align="center" label="开单事业部" prop="deptId">
           <template slot-scope="{row}">
             {{row.deptId}}
           </template>
         </el-table-column>
-        <el-table-column label="配载站点" align="center" prop="stowageId">
+        <el-table-column align="center" label="配载站点" prop="stowageId">
           <template slot-scope="{row}">
             {{row.stowageId}}
           </template>
         </el-table-column>
-        <el-table-column label="目的网点" align="center" prop="destinationNode">
+        <el-table-column align="center" label="目的网点" prop="destinationNode">
           <template slot-scope="{row}">
             {{row.destinationNode}}
           </template>
         </el-table-column>
-        <el-table-column label="交接方式" align="center" prop="handoverMode" :formatter="handoverModeFormat"/>
-        <el-table-column label="运输方式" align="center" prop="transportMode" :formatter="transportModeFormat"/>
-        <el-table-column label="付款方式" align="center" prop="payMethod" :formatter="payMethodFormat"/>
-        <el-table-column label="回单状态" align="center" prop="receiptStatus" :formatter="receiptStatusFormat"/>
-        <el-table-column label="回扣已返" align="center" prop="rebateReturned" :formatter="rebateReturnedFormat"/>
-        <el-table-column label="是否开发票" align="center" prop="writeInvoice" :formatter="writeInvoiceFormat"/>
-        <el-table-column label="基本运费" align="center" prop="basicFreight">
+        <el-table-column :formatter="handoverModeFormat" align="center" label="交接方式" prop="handoverMode"/>
+        <el-table-column :formatter="transportModeFormat" align="center" label="运输方式" prop="transportMode"/>
+        <el-table-column :formatter="payMethodFormat" align="center" label="付款方式" prop="payMethod"/>
+        <el-table-column :formatter="receiptStatusFormat" align="center" label="回单状态" prop="receiptStatus"/>
+        <el-table-column :formatter="rebateReturnedFormat" align="center" label="回扣已返" prop="rebateReturned"/>
+        <el-table-column :formatter="writeInvoiceFormat" align="center" label="是否开发票" prop="writeInvoice"/>
+        <el-table-column align="center" label="基本运费" prop="basicFreight">
           <template slot-scope="{row}">
             {{row.basicFreight}}
           </template>
         </el-table-column>
-        <el-table-column label="实收运费" align="center" prop="realFreight">
+        <el-table-column align="center" label="实收运费" prop="realFreight">
           <template slot-scope="{row}">
             {{row.realFreight}}
           </template>
         </el-table-column>
-        <el-table-column label="总运费" align="center" prop="totalFreight">
+        <el-table-column align="center" label="总运费" prop="totalFreight">
           <template slot-scope="{row}">
             {{row.totalFreight}}
           </template>
         </el-table-column>
-        <el-table-column label="送货车号" align="center" prop="deliveryVehicleId">
+        <el-table-column align="center" label="送货车号" prop="deliveryVehicleId">
           <template slot-scope="{row}">
             {{row.deliveryVehicleId}}
           </template>
         </el-table-column>
-        <el-table-column label="送货车号" align="center" prop="deliveryVehicleCode">
+        <el-table-column align="center" label="送货车号" prop="deliveryVehicleCode">
           <template slot-scope="{row}">
             {{row.deliveryVehicleCode}}
           </template>
         </el-table-column>
-        <el-table-column label="送货司机" align="center" prop="deliveryDriverId">
+        <el-table-column align="center" label="送货司机" prop="deliveryDriverId">
           <template slot-scope="{row}">
             {{row.deliveryDriverId}}
           </template>
         </el-table-column>
-        <el-table-column label="送货司机" align="center" prop="deliveryDriverName">
+        <el-table-column align="center" label="送货司机" prop="deliveryDriverName">
           <template slot-scope="{row}">
             {{row.deliveryDriverName}}
           </template>
         </el-table-column>
-        <el-table-column label="送货时间" align="center" prop="deliveryTime" width="180">
+        <el-table-column align="center" label="送货时间" prop="deliveryTime" width="180">
           <template slot-scope="scope">
             <span>{{ parseTime(scope.row.deliveryTime, '{y}-{m}-{d}') }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="开单人ID" align="center" prop="drawerId">
+        <el-table-column align="center" label="开单人ID" prop="drawerId">
           <template slot-scope="{row}">
             {{row.drawerId}}
           </template>
         </el-table-column>
-        <el-table-column label="开单人" align="center" prop="drawerName">
+        <el-table-column align="center" label="开单人" prop="drawerName">
           <template slot-scope="{row}">
             {{row.drawerName}}
           </template>
         </el-table-column>
-        <el-table-column label="设备来源" align="center" prop="equipmentSource">
+        <el-table-column align="center" label="设备来源" prop="equipmentSource">
           <template slot-scope="{row}">
             {{row.equipmentSource}}
           </template>
         </el-table-column>
-        <el-table-column label="开单来源" align="center" prop="creationSource">
+        <el-table-column align="center" label="开单来源" prop="creationSource">
           <template slot-scope="{row}">
             {{row.creationSource}}
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="运单状态" align="center" prop="waybillStatus" :formatter="waybillStatusFormat"/>
-        <el-table-column label="状态" align="center" prop="status" :formatter="statusFormat"/>
-        <el-table-column fixed="right" label="开单备注" align="center" prop="remark">
+        <el-table-column :formatter="waybillStatusFormat" align="center" fixed="right" label="运单状态"
+                         prop="waybillStatus"/>
+        <el-table-column :formatter="statusFormat" align="center" label="状态" prop="status"/>
+        <el-table-column align="center" fixed="right" label="开单备注" prop="remark">
           <template slot-scope="{row}">
             {{row.remark}}
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="操作" align="center" class-name="small-padding fixed-width">
+        <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" width="200">
           <template slot-scope="scope">
             <el-button
+              v-hasPermi="['wms:waybill:edit']"
+              icon="el-icon-edit"
               size="mini"
               type="text"
-              icon="el-icon-edit"
               @click="handleUpdate(scope.row)"
-              v-hasPermi="['wms:waybill:edit']"
             >修改
             </el-button>
             <el-button
+              v-hasPermi="['wms:waybill:remove']"
+              icon="el-icon-delete"
               size="mini"
               type="text"
-              icon="el-icon-delete"
               @click="handleDelete(scope.row)"
-              v-hasPermi="['wms:waybill:remove']"
             >删除
             </el-button>
           </template>
@@ -807,14 +805,14 @@
       </el-table>
       <pagination
         v-show="total>0"
-        :total="total"
-        :page.sync="queryParams.pageNum"
         :limit.sync="queryParams.pageSize"
+        :page.sync="queryParams.pageNum"
+        :total="total"
         @pagination="getList"
       />
     </el-card>
     <!-- 添加或修改运单信息主对话框 -->
-    <el-dialog :title="title" fullscreen :visible.sync="open" append-to-body>
+    <el-dialog :title="title" :visible.sync="open" append-to-body fullscreen>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-row :gutter="24">
           <ICol>
@@ -829,7 +827,7 @@
           </ICol>
           <ICol>
             <el-form-item label="始发站" prop="departure">
-<!--              <el-input v-model="form.departure" placeholder="请输入始发站"/>-->
+              <!--              <el-input v-model="form.departure" placeholder="请输入始发站"/>-->
             </el-form-item>
           </ICol>
           <ICol>
@@ -936,7 +934,7 @@
             <el-form-item label="交接方式" prop="handoverMode">
               <el-select
                 v-model="form.handoverMode"
-                placeholder="请输入交接方式" clearable size="small"
+                clearable placeholder="请输入交接方式" size="small"
               >
                 <el-option
                   v-for="dict in handoverModeOptions"
@@ -951,7 +949,7 @@
             <el-form-item label="运输方式" prop="transportMode">
               <el-select
                 v-model="form.transportMode"
-                placeholder="请输入付款方式" clearable size="small"
+                clearable placeholder="请输入付款方式" size="small"
               >
                 <el-option
                   v-for="dict in transportModeOptions"
@@ -966,7 +964,7 @@
             <el-form-item label="付款方式" prop="payMethod">
               <el-select
                 v-model="form.payMethod"
-                placeholder="请输入付款方式" clearable size="small"
+                clearable placeholder="请输入付款方式" size="small"
               >
                 <el-option
                   v-for="dict in payMethodOptions"
@@ -1093,14 +1091,16 @@
 </template>
 
 <script>
-import {listWaybill, getWaybill, delWaybill, addWaybill, updateWaybill} from "@/api/wms/waybill";
+import {addWaybill, delWaybill, getWaybill, listWaybill, updateWaybill} from "@/api/wms/waybill";
 import 'element-ui/lib/theme-chalk/display.css';
 import ICol from "@/components/ICol";
 import RegionSelect from "@/components/regionSelect/index";
+import Ellipsis from "@/components/Ellipsis/index";
 
 export default {
   name: "Waybill",
   components: {
+    Ellipsis,
     RegionSelect,
     ICol,
   },
@@ -1201,7 +1201,8 @@ export default {
       },
       // 表单参数
       form: {},
-      regionSelectValue:{},
+      destinationRegionSelectValue: {},
+      departureRegionSelectValue: {},
       // 表单校验
       rules: {
         destination: [
@@ -1256,6 +1257,9 @@ export default {
         this.queryParams.params["beginCreateTime"] = this.daterangeCreateTime[0];
         this.queryParams.params["endCreateTime"] = this.daterangeCreateTime[1];
       }
+      console.log('a', this.departureRegionSelectValue);
+      console.log('b', this.destinationRegionSelectValue);
+      console.log('c', this.queryParams);
       listWaybill(this.queryParams).then(response => {
         this.waybillList = response.rows;
         this.total = response.total;
@@ -1292,7 +1296,6 @@ export default {
     },
     toggleSearchForm(toggle) {
       if (toggle >= 0) {
-        console.log(toggle)
         this.toggleSearchFormValue = toggle;
       }
     },
@@ -1434,8 +1437,16 @@ export default {
         ...this.queryParams
       }, `wms_waybill.xlsx`)
     },
-    updateRegionSelectValue (data, label, status) {
-      this.regionSelectValue = data
+    updateDepartureRegionSelectValue(data, label, status) {
+      this.departureRegionSelectValue = data
+      if (status) {
+        // this.rowData.provinceCity = label.split('-').join('');
+      } else {
+        // this.rowData.provinceCity = '';
+      }
+    },
+    updateDestinationRegionSelectValue(data, label, status) {
+      this.destinationRegionSelectValue = data
       if (status) {
         // this.rowData.provinceCity = label.split('-').join('');
       } else {

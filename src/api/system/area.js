@@ -17,6 +17,14 @@ export function getArea(id) {
   })
 }
 
+// 查询行政区详细
+export function findTree(code) {
+  return request({
+    url: '/system/area/findTree/' + code,
+    method: 'get'
+  })
+}
+
 // 新增行政区
 export function addArea(data) {
   return request({

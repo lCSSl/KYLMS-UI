@@ -24,6 +24,13 @@ export function getDept(deptId) {
     method: 'get'
   })
 }
+// 查询部门详细
+export function getDeptNameByDeptId(deptId) {
+  return request({
+    url: '/system/dept/getName/' + deptId,
+    method: 'get'
+  })
+}
 
 // 查询部门下拉树结构
 export function treeselect() {

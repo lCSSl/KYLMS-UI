@@ -464,7 +464,7 @@ export default {
   },
   created() {
     this.getList();
-    this.getTreeselect();
+    this.getTreeSelect();
     this.getDicts("sys_normal_disable").then(response => {
       this.statusOptions = response.data;
     });
@@ -487,7 +487,7 @@ export default {
       );
     },
     /** 查询部门下拉树结构 */
-    getTreeselect() {
+    getTreeSelect() {
       treeselect().then(response => {
         this.deptOptions = response.data;
       });
@@ -560,7 +560,7 @@ export default {
     /** 新增按钮操作 */
     handleAdd() {
       this.reset();
-      this.getTreeselect();
+      this.getTreeSelect();
       getUser().then(response => {
         this.postOptions = response.posts;
         this.roleOptions = response.roles;
@@ -572,7 +572,7 @@ export default {
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
-      this.getTreeselect();
+      this.getTreeSelect();
       const userId = row.userId || this.ids;
       getUser(userId).then(response => {
         this.form = response.data;

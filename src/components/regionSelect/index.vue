@@ -1,82 +1,101 @@
 <template>
   <el-row :gutter="10">
+    <ICol v-if="+regionLevel>=0" :grid="grid">
+      <el-select v-model="provinceCode" :disabled="disabled" :size="size" placeholder="省" transfer
+                 @change="(code)=>{setCode(code,0);setCityList(code);}">
+        <el-option v-for="(item,index) in provinceList" :key="index" :label="item.name" :value="item.code"/>
+      </el-select>
+    </ICol>
     <ICol v-if="+regionLevel>=1" :grid="grid">
-      <el-select size="small" v-model="provinceCode" :disabled="disabled" placeholder="省" transfer
-              @on-change="(code)=>{setCode(code,0);setCityList(code);}">
-        <Option v-for="(item,index) in provinceList" :key="index" :value="item.code">{{item.name}}</Option>
+      <el-select v-model="cityCode" :disabled="disabled" :size="size" placeholder="市" transfer
+                 @change="(code)=>{setCode(code,1);setDistrictList(code)}">
+        <el-option v-for="(item,index) in cityList" :key="index" :label="item.name" :value="item.code"/>
       </el-select>
     </ICol>
     <ICol v-if="+regionLevel>=2" :grid="grid">
-      <el-select size="small" v-model="cityCode" :disabled="disabled" placeholder="市" transfer
-              @on-change="(code)=>{setCode(code,1);setDistrictList(code)}">
-        <Option v-for="(item,index) in cityList" :key="index" :value="item.code">{{item.name}}</Option>
+      <el-select v-model="districtCode" :disabled="disabled" :size="size" placeholder="区" transfer
+                 @change="(code)=>{setCode(code,2);setStreetList(code)}">
+        <el-option v-for="(item,index) in districtList" :key="index" :label="item.name" :value="item.code"/>
       </el-select>
     </ICol>
     <ICol v-if="+regionLevel>=3" :grid="grid">
-      <el-select size="small" v-model="districtCode" :disabled="disabled" placeholder="区" transfer
-              @on-change="(code)=>{setCode(code,2);}">
-        <Option v-for="(item,index) in districtList" :key="index" :value="item.code">{{item.name}}</Option>
+      <el-select v-model="streetCode" :disabled="disabled" :size="size" placeholder="街道" transfer
+                 @change="(code)=>{setCode(code,3);}">
+        <el-option v-for="(item,index) in streetList" :key="index" :label="item.name" :value="item.code"/>
       </el-select>
     </ICol>
   </el-row>
 </template>
 
 <script>
-import { listArea } from '@/api/system/area';
+import {findTree, listArea} from '@/api/system/area';
 import ICol from '@/components/ICol'
+import {isNotEmpty} from "@/utils/utils";
+
 export default {
   name: 'region-select',
-  components:{
+  components: {
     ICol
   },
   props: {
     value: {
       type: Object,
-      default: {}
+      default: () => {
+      }
     },
-    level: {
-      type: Number, String,
-      default: 3
-    },
+    level: {type: Number, String},
     /* eslint-disable */
     disabledSelect: {
       type: Boolean,
       default: false
+    },
+    oneShot: {
+      type: Boolean,
+      default: false
+    },
+    size: {
+      type: String,
+      default: 'small'
     }
   },
-  data () {
+  data() {
     return {
       regionLevel: '',
       currentValue: {},
       provinceList: [],
       cityList: [],
       districtList: [],
-      provinceCode: -1,
-      cityCode: -1,
-      districtCode: -1,
+      streetList: [],
+      provinceCode: '',
+      cityCode: '',
+      districtCode: '',
+      streetCode: '',
       status: false,
       disabled: false,
-      provinceCityDistrict: ''
+      provinceCityDistrictStreet: ''
     }
   },
   computed: {
-    grid () {
+    grid() {
       switch (+this.regionLevel) {
+        case 0:
+          return {xl: 24, lg: 24, md: 24, sm: 24, xs: 24};
+          break;
         case 1:
-          return { xl: 24, lg: 24, md: 24, sm: 24, xs: 24 };
+          return {xl: 12, lg: 12, md: 12, sm: 24, xs: 24};
           break;
         case 2:
-          return { xl: 12, lg: 12, md: 12, sm: 24, xs: 24 };
+          return {xl: 8, lg: 8, md: 12, sm: 24, xs: 24};
           break;
         case 3:
-          return { xl: 8, lg: 8, md: 12, sm: 24, xs: 24 };
+          return {xl: 6, lg: 6, md: 6, sm: 12, xs: 24};
           break;
       }
     }
   },
   watch: {
     value: {
-      handler (val) {
+      handler(val) {
         if (val !== this.currentValue) {
           this.currentValue = val;
           this.renderData(this.currentValue);
@@ -85,7 +104,7 @@ export default {
       immediate: true
     },
     disabledSelect: {
-      handler (val) {
+      handler(val) {
         if (val !== this.disabled) {
           this.disabled = val;
         }
@@ -93,7 +112,7 @@ export default {
       immediate: true
     },
     level: {
-      handler (val) {
+      handler(val) {
         if (val !== this.regionLevel) {
           this.regionLevel = val;
         }
@@ -102,31 +121,37 @@ export default {
     },
   },
   methods: {
-    init () {
-      if (this.currentValue.code) {
-        this.renderData(this.currentValue)
+    init() {
+      if (this.oneShot) {
+        findTree(this.currentValue.code).then(res => {
+          this.currentValue = res.data;
+          this.main(this.currentValue);
+        });
       } else {
-        listArea({
-          code: 0
-        }).then((res => {
-          this.provinceList = res
-        }));
+        this.main(this.currentValue);
       }
     },
-    renderData (data) {
-      const { code, child, level, parentCode } = data;
-      listArea({ code: parentCode >= 0 ? parentCode : 0 }).then(res => {
+    renderData(data) {
+      const {code, child, level, parentCode} = data;
+      if (this.checkLevel(level)) {
+        return;
+      }
+      listArea({parentCode: parentCode >= 0 ? parentCode : 0}).then(res => {
         switch (level) {
           case 0:
-            this.provinceList = res;
+            this.provinceList = res.rows;
             this.setCode(code, level)
             break;
           case 1:
-            this.cityList = res;
+            this.cityList = res.rows;
             this.setCode(code, level)
             break;
           case 2:
-            this.districtList = res;
+            this.districtList = res.rows;
+            this.setCode(code, level)
+            break;
+          case 3:
+            this.streetList = res.rows;
             this.setCode(code, level)
             break;
           default:
@@ -137,18 +162,18 @@ export default {
         }
       });
     },
-    checkLevel (level) {
+    checkLevel(level) {
       return level > this.regionLevel;
     },
-    setCode (code, level) {
+    setCode(code, level) {
       const _code = +code;
       const _level = +level;
       switch (_level) {
         case 0:
-          if (this.checkLevel(1)) {
+          if (this.checkLevel(0)) {
             return;
           }
-          this.currentValue = { _code, _level }
+          this.currentValue = {_code, _level}
           this.currentValue.provinceCode = _code;
           this.provinceCode = _code;
           this.cityList = [];
@@ -157,81 +182,132 @@ export default {
           this.districtCode = '';
           break;
         case 1:
-          if (this.checkLevel(2)) {
+          if (this.checkLevel(1)) {
             return;
           }
-          this.currentValue.child = { _code, _level };
+          this.currentValue.child = {_code, _level};
           this.currentValue.cityCode = _code;
           this.cityCode = _code;
           this.districtList = [];
           this.districtCode = '';
           break;
         case 2:
+          if (this.checkLevel(2)) {
+            return;
+          }
+          this.currentValue.child.child = {_code, _level};
+          this.currentValue.districtCode = _code;
+          this.districtCode = _code;
+          break;
+        case 3:
           if (this.checkLevel(3)) {
             return;
           }
-          this.currentValue.child.child = { _code, _level };
-          this.currentValue.districtCode = _code;
-          this.districtCode = _code;
+          this.currentValue.child.child.child = {_code, _level};
+          this.currentValue.streetCode = _code;
+          this.streetCode = _code;
           break;
         default:
           break;
       }
       const regionLevel = this.regionLevel;
       switch (+regionLevel) {
-        case 1:
+        case 0:
           this.provinceCode ? this.status = true : this.status = false;
           break;
-        case 2:
+        case 1:
           this.cityCode ? this.status = true : this.status = false;
           break;
-        case 3:
+        case 2:
           this.districtCode ? this.status = true : this.status = false;
           break;
+        case 3:
+          this.streetCode ? this.status = true : this.status = false;
+          break;
       }
+      const province = this.provinceList.find(({code}) => code === this.provinceCode);
+      const city = this.cityList.find(({code}) => code === this.cityCode);
+      const district = this.districtList.find(({code}) => code === this.districtCode);
+      const street = this.streetList.find(({code}) => code === this.streetCode);
 
-      const province = this.provinceList.find(({ code }) => code === this.provinceCode);
-      const city = this.cityList.find(({ code }) => code === this.cityCode);
-      const district = this.districtList.find(({ code }) => code === this.districtCode);
-
-      this.provinceCityDistrict = `${province && province.name ? province.name : ''}${city && city.name ? '-'+city.name : ''}${district && district.name ? '-'+district.name : ''}`;
-
-      this.$emit('on-change', this.currentValue, this.provinceCityDistrict, this.status);
+      this.provinceCityDistrictStreet =
+        `${province && province.name ? province.name : ''}`
+        + `${city && city.name ? '-' + city.name : ''}`
+        + `${district && district.name ? '-' + district.name : ''}`
+        + `${street && street.name ? '-' + street.name : ''}`;
+      this.$emit('on-change', this.currentValue, this.provinceCityDistrictStreet, this.status);
     },
-    setProvinceList (code) {
-      if (!code) {
+    setProvinceList(parentCode = 0) {
+      if (!parentCode) {
         return
       }
-      listArea({
-        code: 0
-      }).then((res => {
-        this.provinceList = res
-      }));
-    },
-    setCityList (code) {
-      if (!code) {
+      if (this.checkLevel(0)) {
+        return;
       }
       listArea({
-        code: code
+        parentCode
       }).then((res => {
-        this.cityList = res
+        this.provinceList = res.rows
       }));
     },
-    setDistrictList (code) {
-      if (!code) {
+    setCityList(parentCode) {
+      if (!parentCode) {
+      }
+      if (this.checkLevel(1)) {
+        return;
+      }
+      listArea({
+        parentCode: parentCode
+      }).then((res => {
+        this.cityList = res.rows
+      }));
+    },
+    setDistrictList(parentCode) {
+      if (!parentCode) {
         return
       }
+      if (this.checkLevel(2)) {
+        return;
+      }
       listArea({
-        code: code
+        parentCode: parentCode
       }).then((res => {
-        this.districtList = res
+        this.districtList = res.rows
       }));
     },
+    setStreetList(parentCode) {
+      if (!parentCode) {
+        return
+      }
+      if (this.checkLevel(3)) {
+        return;
+      }
+      listArea({
+        parentCode: parentCode
+      }).then((res => {
+        this.streetList = res.rows
+      }));
+    },
+    main(val) {
+      if (val.code) {
+        this.renderData(val)
+      } else {
+        listArea({
+          parentCode: 0
+        }).then((res => {
+          this.provinceList = res.rows
+        }));
+      }
+    }
   },
-  mounted () {
+  mounted() {
+    if (!isNotEmpty(this.level)) {
+      console.log('props level can not be empty');
+      return;
+    }
     this.init();
   },
-  beforeDestroy () {
+  beforeDestroy() {
 
   }
 }
