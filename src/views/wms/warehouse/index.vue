@@ -40,13 +40,12 @@
           </ICol>
           <ICol>
             <el-form-item label="站点主管" prop="warehouseInCharge">
-              <el-input
-                v-model="queryParams.warehouseInCharge"
-                clearable
-                placeholder="请输入站点主管"
-                size="small"
-                @keyup.enter.native="handleQuery"
-              />
+              <el-select v-model="queryParams.warehouseInCharge" placeholder="请选择站点主管" size="small"
+                         @keyup.enter.native="handleQuery">
+                <el-option v-for="(item,index) in queryParams.warehouseInChargeOptions" :key="index"
+                           :label="item.nickName"
+                           :value="item.userId"/>
+              </el-select>
             </el-form-item>
           </ICol>
           <ICol>
@@ -265,7 +264,7 @@
             {{row.warehouseCode}}
           </template>
         </el-table-column>
-        <el-table-column align="center" show-overflow-tooltip label="站点名" prop="warehouseName">
+        <el-table-column align="center" label="站点名" prop="warehouseName" show-overflow-tooltip>
           <template slot-scope="{row}">
             {{row.warehouseName}}
           </template>
@@ -291,13 +290,13 @@
             {{row.warehouseAreaY}}
           </template>
         </el-table-column>
-        <el-table-column align="center" show-overflow-tooltip label="站点详细地址" prop="warehouseAddress" width="100">
+        <el-table-column align="center" label="站点详细地址" prop="warehouseAddress" show-overflow-tooltip width="100">
           <template slot-scope="{row}">
             {{row.warehouseAddress}}
           </template>
         </el-table-column>
-        <el-table-column align="center" show-overflow-tooltip label="省市区街道" width="100"
-                         prop="provinceCityDistrictStreet">
+        <el-table-column align="center" label="省市区街道" prop="provinceCityDistrictStreet" show-overflow-tooltip
+                         width="100">
           <template slot-scope="{row}">
             {{row.provinceCityDistrictStreet}}
           </template>
@@ -333,7 +332,7 @@
             {{row.remark}}
           </template>
         </el-table-column>
-        <el-table-column label="操作" align="center" fixed="right" width="200" class-name="small-padding fixed-width">
+        <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" width="200">
           <template slot-scope="scope">
             <el-button
               v-hasPermi="['wms:warehouse:edit']"
@@ -425,7 +424,7 @@
         <el-row :gutter="24">
           <ICol>
             <el-form-item label="行政区" prop="provinceCityDistrictStreet">
-              <regionSelect v-model="form.regionSelectValue" :one-shot="isOneShot" :level="3"
+              <regionSelect v-model="form.regionSelectValue" :level="3"
                             @on-change="updateRegionSelectValue"/>
             </el-form-item>
           </ICol>
@@ -493,13 +492,12 @@
 <script>
 import {addWarehouse, delWarehouse, getWarehouse, listWarehouse, updateWarehouse} from "@/api/wms/warehouse";
 import ICol from "@/components/ICol";
-import {getDeptNameByDeptId, treeselect} from "@/api/system/dept";
+import {treeselect} from "@/api/system/dept";
 import TreeSelect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import RegionSelect from "@/components/regionSelect/index";
 import {listUser} from "@/api/system/user";
 import Ellipsis from "@/components/Ellipsis/index";
-import {isNotEmpty} from "@/utils/utils";
 
 export default {
   name: "Warehouse",
@@ -554,6 +552,7 @@ export default {
         warehouseCode: null,
         warehouseName: null,
         warehouseInCharge: null,
+        warehouseInChargeOptions: [],
         warehouseType: null,
         warehouseArea: null,
         warehouseAreaX: null,
@@ -571,7 +570,6 @@ export default {
       },
       // 表单参数
       form: {},
-      isOneShot: false,
       regionSelectGrid: {
         gutter: 10,
         xs: {span: 24, offset: 0},
@@ -702,11 +700,27 @@ export default {
       const warehouseId = row.warehouseId || this.ids
       getWarehouse(warehouseId).then(response => {
         const data = this.form = response.data;
-        console.log(data)
-        // this.form.regionSelectValue = {
-        //   streetCode: data.streetCode
-        // }
-        // this.isOneShot=true;
+        this.getUserInTheDepartment(data.deptId, 0);
+        this.form.regionSelectValue = {
+          level: 0,
+          code: data.provinceCode,
+          parentCode: 0,
+          child: {
+            level: 1,
+            code: data.cityCode,
+            parentCode: data.provinceCode,
+            child: {
+              level: 2,
+              code: data.districtCode,
+              parentCode: data.cityCode,
+              child: {
+                level: 3,
+                code: data.streetCode,
+                parentCode: data.districtCode,
+              },
+            },
+          },
+        };
         this.open = true;
         this.title = "修改站点(仓库)信息";
       });
@@ -716,16 +730,11 @@ export default {
       this.$refs["form"].validate(valid => {
         if (valid) {
           const form = this.form;
-          const {
-            provinceCode,
-            cityCode,
-            districtCode,
-            streetCode
-          } = form.regionSelectValue;
-          form.provinceCode=provinceCode
-          form.cityCode=cityCode
-          form.districtCode=districtCode
-          form.streetCode=streetCode
+          const {provinceCode, cityCode, districtCode, streetCode} = form.regionSelectValue;
+          form.provinceCode = provinceCode
+          form.cityCode = cityCode
+          form.districtCode = districtCode
+          form.streetCode = streetCode
           if (form.warehouseId != null) {
             updateWarehouse(form).then(response => {
               this.msgSuccess("修改成功");
@@ -739,7 +748,6 @@ export default {
               this.getList();
             });
           }
-          console.log('go')
         }
       });
     },
