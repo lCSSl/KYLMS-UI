@@ -9,6 +9,13 @@ export function listWarehouse(query) {
     params: query
   })
 }
+// 查询仓库主管列表
+export function getWarehouseInChargeList() {
+  return request({
+    url: 'wms/warehouse/getInChargeList',
+    method: 'get',
+  })
+}
 
 // 查询站点(仓库)信息详细
 export function getWarehouse(warehouseId) {

@@ -39,18 +39,19 @@
             </el-form-item>
           </ICol>
           <ICol>
+            <el-form-item label="归属部门" prop="deptId">
+              <TreeSelect v-model="queryParams.deptId" :options="deptOptions" :show-count="true"
+                          placeholder="请选择归属部门" @select="handleQueryParamsDeptIdClick"/>
+            </el-form-item>
+          </ICol>
+          <ICol>
             <el-form-item label="站点主管" prop="warehouseInCharge">
-              <el-select v-model="queryParams.warehouseInCharge" placeholder="请选择站点主管" size="small"
+              <el-select v-model="queryParams.warehouseInCharge" :disabled="!this.queryParams.warehouseInChargeOptions.length > 0" placeholder="请选择站点主管" size="small"
                          @keyup.enter.native="handleQuery">
                 <el-option v-for="(item,index) in queryParams.warehouseInChargeOptions" :key="index"
                            :label="item.nickName"
                            :value="item.userId"/>
               </el-select>
-            </el-form-item>
-          </ICol>
-          <ICol>
-            <el-form-item label="归属部门" prop="deptId">
-              <TreeSelect v-model="queryParams.deptId" :options="deptOptions" :show-count="true" placeholder="请选择归属部门"/>
             </el-form-item>
           </ICol>
 
@@ -379,7 +380,7 @@
           <ICol>
             <el-form-item label="归属部门" prop="deptId">
               <TreeSelect v-model="form.deptId" :options="deptOptions" :show-count="true"
-                          placeholder="请选择归属部门" @select="handleDeptIdClick"/>
+                          placeholder="请选择归属部门" @select="handleFormDeptIdClick"/>
             </el-form-item>
           </ICol>
           <ICol>
@@ -490,7 +491,14 @@
 </template>
 
 <script>
-import {addWarehouse, delWarehouse, getWarehouse, listWarehouse, updateWarehouse} from "@/api/wms/warehouse";
+import {
+  addWarehouse,
+  delWarehouse,
+  getWarehouse,
+  getWarehouseInChargeList,
+  listWarehouse,
+  updateWarehouse
+} from "@/api/wms/warehouse";
 import ICol from "@/components/ICol";
 import {treeselect} from "@/api/system/dept";
 import TreeSelect from "@riophae/vue-treeselect";
@@ -610,6 +618,7 @@ export default {
   created() {
     this.getList();
     this.getTreeSelect();
+    // this.getUserInChargeWarehouse();
     this.getDicts("wms_warehouse_type").then(response => {
       this.warehouseTypeOptions = response.data;
     });
@@ -751,18 +760,34 @@ export default {
         }
       });
     },
-    handleDeptIdClick({id, orderNum}) {
-      this.form.warehouseInCharge = '';
-      this.getUserInTheDepartment(id, orderNum);
+    handleQueryParamsDeptIdClick({id, orderNum}) {
+      this.queryParams.warehouseInCharge = '';
+      this.getUserInTheDepartment(id, orderNum, 0);
     },
-    getUserInTheDepartment(deptId, orderNum) {
+    handleFormDeptIdClick({id, orderNum}) {
+      this.form.warehouseInCharge = '';
+      this.getUserInTheDepartment(id, orderNum, 1);
+    },
+    getUserInTheDepartment(deptId, orderNum, type) {
       if (deptId && +orderNum >= 0)
         listUser({deptId}).then(res => {
-          this.warehouseInChargeOptions = res.rows;
-        })
+          switch (+type) {
+            case 0:
+              this.queryParams.warehouseInChargeOptions = res.rows;
+              break;
+            case 1:
+              this.warehouseInChargeOptions = res.rows;
+              break;
+          }
+        });
       else {
         return;
       }
+    },
+    getUserInChargeWarehouse() {
+      getWarehouseInChargeList().then(res => {
+        this.queryParams.warehouseInChargeOptions = res.data;
+      })
     },
     /** 删除按钮操作 */
     handleDelete(row) {
