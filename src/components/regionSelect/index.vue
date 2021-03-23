@@ -98,7 +98,12 @@ export default {
       handler(val) {
         if (val !== this.currentValue) {
           this.currentValue = val;
-          this.renderData(this.currentValue);
+          if (this.currentValue) {
+            this.main(this.currentValue);
+          } else {
+            console.log('go watch')
+            this.main();
+          }
         }
       },
       immediate: true
@@ -122,13 +127,18 @@ export default {
   },
   methods: {
     init() {
-      if (this.oneShot) {
-        findTree(this.currentValue.code).then(res => {
-          this.currentValue = res.data;
+      if (this.currentValue) {
+        if (this.oneShot) {
+          findTree(this.currentValue.code).then(res => {
+            this.currentValue = res.data;
+            this.main(this.currentValue);
+          });
+        } else {
           this.main(this.currentValue);
-        });
+        }
       } else {
-        this.main(this.currentValue);
+        console.log('go init')
+        this.main();
       }
     },
     renderData(data) {
@@ -180,6 +190,8 @@ export default {
           this.cityCode = '';
           this.districtList = [];
           this.districtCode = '';
+          this.streetList = [];
+          this.streetCode = '';
           break;
         case 1:
           if (this.checkLevel(1)) {
@@ -190,6 +202,8 @@ export default {
           this.cityCode = _code;
           this.districtList = [];
           this.districtCode = '';
+          this.streetList = [];
+          this.streetCode = '';
           break;
         case 2:
           if (this.checkLevel(2)) {
@@ -198,6 +212,8 @@ export default {
           this.currentValue.child.child = {_code, _level};
           this.currentValue.districtCode = _code;
           this.districtCode = _code;
+          this.streetList = [];
+          this.streetCode = '';
           break;
         case 3:
           if (this.checkLevel(3)) {
@@ -289,7 +305,7 @@ export default {
       }));
     },
     main(val) {
-      if (val.code) {
+      if (val&&val.code) {
         this.renderData(val)
       } else {
         listArea({

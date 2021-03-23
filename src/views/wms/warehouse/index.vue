@@ -253,18 +253,19 @@
     </el-card>
     <el-card :body-style="{padding:'15px'}">
       <el-table v-loading="loading" :data="warehouseList" @selection-change="handleSelectionChange">
-        <el-table-column align="center" type="selection" width="55"/>
-        <el-table-column align="center" label="站点ID" prop="warehouseId">
-          <template slot-scope="{row}">
-            {{row.warehouseId}}
-          </template>
-        </el-table-column>
+        <el-table-column align="center" fixed type="selection" width="55"/>
+        <el-table-column align="center" fixed label="序号" type="index" width="60"/>
+        <!--        <el-table-column align="center"  label="站点ID" prop="warehouseId">-->
+        <!--          <template slot-scope="{row}">-->
+        <!--            {{row.warehouseId}}-->
+        <!--          </template>-->
+        <!--        </el-table-column>-->
         <el-table-column align="center" label="站点编码" prop="warehouseCode">
           <template slot-scope="{row}">
             {{row.warehouseCode}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="站点名" prop="warehouseName">
+        <el-table-column align="center" show-overflow-tooltip label="站点名" prop="warehouseName">
           <template slot-scope="{row}">
             {{row.warehouseName}}
           </template>
@@ -290,36 +291,37 @@
             {{row.warehouseAreaY}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="站点详细地址" prop="warehouseAddress" width="100">
+        <el-table-column align="center" show-overflow-tooltip label="站点详细地址" prop="warehouseAddress" width="100">
           <template slot-scope="{row}">
-            <Ellipsis :text="row.warehouseAddress"/>
+            {{row.warehouseAddress}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="省市区街道" width="100" prop="provinceCityDistrictStreet">
+        <el-table-column align="center" show-overflow-tooltip label="省市区街道" width="100"
+                         prop="provinceCityDistrictStreet">
           <template slot-scope="{row}">
-            <Ellipsis :text="row.provinceCityDistrictStreet"/>
+            {{row.provinceCityDistrictStreet}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="省代码" prop="provinceCode">
-          <template slot-scope="{row}">
-            {{row.provinceCode}}
-          </template>
-        </el-table-column>
-        <el-table-column align="center" label="市代码" prop="cityCode">
-          <template slot-scope="{row}">
-            {{row.cityCode}}
-          </template>
-        </el-table-column>
-        <el-table-column align="center" label="区代码" prop="districtCode">
-          <template slot-scope="{row}">
-            {{row.districtCode}}
-          </template>
-        </el-table-column>
-        <el-table-column align="center" label="街道代码" prop="streetCode">
-          <template slot-scope="{row}">
-            {{row.streetCode}}
-          </template>
-        </el-table-column>
+        <!--        <el-table-column align="center" label="省代码" prop="provinceCode">-->
+        <!--          <template slot-scope="{row}">-->
+        <!--            {{row.provinceCode}}-->
+        <!--          </template>-->
+        <!--        </el-table-column>-->
+        <!--        <el-table-column align="center" label="市代码" prop="cityCode">-->
+        <!--          <template slot-scope="{row}">-->
+        <!--            {{row.cityCode}}-->
+        <!--          </template>-->
+        <!--        </el-table-column>-->
+        <!--        <el-table-column align="center" label="区代码" prop="districtCode">-->
+        <!--          <template slot-scope="{row}">-->
+        <!--            {{row.districtCode}}-->
+        <!--          </template>-->
+        <!--        </el-table-column>-->
+        <!--        <el-table-column align="center" label="街道代码" prop="streetCode">-->
+        <!--          <template slot-scope="{row}">-->
+        <!--            {{row.streetCode}}-->
+        <!--          </template>-->
+        <!--        </el-table-column>-->
         <el-table-column align="center" label="部门" prop="deptName">
           <template slot-scope="{row}">
             {{row.deptName}}
@@ -331,7 +333,7 @@
             {{row.remark}}
           </template>
         </el-table-column>
-        <el-table-column align="center" class-name="small-padding fixed-width" label="操作" width="200">
+        <el-table-column label="操作" align="center" fixed="right" width="200" class-name="small-padding fixed-width">
           <template slot-scope="scope">
             <el-button
               v-hasPermi="['wms:warehouse:edit']"
@@ -423,7 +425,7 @@
         <el-row :gutter="24">
           <ICol>
             <el-form-item label="行政区" prop="provinceCityDistrictStreet">
-              <regionSelect v-model="form.regionSelectValue" :level="3"
+              <regionSelect v-model="form.regionSelectValue" :one-shot="isOneShot" :level="3"
                             @on-change="updateRegionSelectValue"/>
             </el-form-item>
           </ICol>
@@ -569,6 +571,7 @@ export default {
       },
       // 表单参数
       form: {},
+      isOneShot: false,
       regionSelectGrid: {
         gutter: 10,
         xs: {span: 24, offset: 0},
@@ -698,7 +701,12 @@ export default {
       this.getTreeSelect();
       const warehouseId = row.warehouseId || this.ids
       getWarehouse(warehouseId).then(response => {
-        this.form = response.data;
+        const data = this.form = response.data;
+        console.log(data)
+        // this.form.regionSelectValue = {
+        //   streetCode: data.streetCode
+        // }
+        // this.isOneShot=true;
         this.open = true;
         this.title = "修改站点(仓库)信息";
       });
@@ -707,14 +715,25 @@ export default {
     submitForm() {
       this.$refs["form"].validate(valid => {
         if (valid) {
-          if (this.form.warehouseId != null) {
-            updateWarehouse(this.form).then(response => {
+          const form = this.form;
+          const {
+            provinceCode,
+            cityCode,
+            districtCode,
+            streetCode
+          } = form.regionSelectValue;
+          form.provinceCode=provinceCode
+          form.cityCode=cityCode
+          form.districtCode=districtCode
+          form.streetCode=streetCode
+          if (form.warehouseId != null) {
+            updateWarehouse(form).then(response => {
               this.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            addWarehouse(this.form).then(response => {
+            addWarehouse(form).then(response => {
               this.msgSuccess("新增成功");
               this.open = false;
               this.getList();
