@@ -16,14 +16,14 @@
       </div>
       <template v-if="toggleSearchFormValue>=1"></template>
       <template v-if="toggleSearchFormValue>=2"></template>
-      <el-form :model="queryParams" ref="queryForm" v-show="showSearch" label-position="left" label-width="100px">
+      <el-form v-show="showSearch" ref="queryForm" :model="queryParams" label-position="left" label-width="100px">
         <el-row :gutter="24">
           <ICol>
             <el-form-item label="仓库ID" prop="warehouseId">
               <el-input
                 v-model="queryParams.warehouseId"
-                placeholder="请输入仓库ID"
                 clearable
+                placeholder="请输入仓库ID"
                 size="small"
                 @keyup.enter.native="handleQuery"
               />
@@ -33,8 +33,8 @@
             <el-form-item label="方格横轴" prop="itemX">
               <el-input
                 v-model="queryParams.itemX"
-                placeholder="请输入方格横轴"
                 clearable
+                placeholder="请输入方格横轴"
                 size="small"
                 @keyup.enter.native="handleQuery"
               />
@@ -44,8 +44,8 @@
             <el-form-item label="方格纵轴" prop="itemY">
               <el-input
                 v-model="queryParams.itemY"
-                placeholder="请输入方格纵轴"
                 clearable
+                placeholder="请输入方格纵轴"
                 size="small"
                 @keyup.enter.native="handleQuery"
               />
@@ -53,7 +53,7 @@
           </ICol>
           <ICol>
             <el-form-item label="状态" prop="status">
-              <el-select v-model="queryParams.status" placeholder="请选择状态" clearable size="small">
+              <el-select v-model="queryParams.status" clearable placeholder="请选择状态" size="small">
                 <el-option
                   v-for="dict in statusOptions"
                   :key="dict.dictValue"
@@ -67,111 +67,111 @@
         <el-row>
           <ICol type="search">
             <el-form-item>
-              <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+              <el-button icon="el-icon-search" size="mini" type="primary" @click="handleQuery">搜索</el-button>
               <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
             </el-form-item>
           </ICol>
         </el-row>
       </el-form>
     </el-card>
+    <!--    <el-card :body-style="{padding:'15px'}">-->
+    <!--      <el-row :gutter="10" class="mb8">-->
+    <!--        <el-col :span="1.5">-->
+    <!--          <el-button-->
+    <!--            v-hasPermi="['wms:ExtItem:add']"-->
+    <!--            icon="el-icon-plus"-->
+    <!--            plain-->
+    <!--            size="mini"-->
+    <!--            type="primary"-->
+    <!--            @click="handleAdd"-->
+    <!--          >新增-->
+    <!--          </el-button>-->
+    <!--        </el-col>-->
+    <!--        <el-col :span="1.5">-->
+    <!--          <el-button-->
+    <!--            v-hasPermi="['wms:ExtItem:edit']"-->
+    <!--            :disabled="single"-->
+    <!--            icon="el-icon-edit"-->
+    <!--            plain-->
+    <!--            size="mini"-->
+    <!--            type="success"-->
+    <!--            @click="handleUpdate"-->
+    <!--          >修改-->
+    <!--          </el-button>-->
+    <!--        </el-col>-->
+    <!--        <el-col :span="1.5">-->
+    <!--          <el-button-->
+    <!--            v-hasPermi="['wms:ExtItem:remove']"-->
+    <!--            :disabled="multiple"-->
+    <!--            icon="el-icon-delete"-->
+    <!--            plain-->
+    <!--            size="mini"-->
+    <!--            type="danger"-->
+    <!--            @click="handleDelete"-->
+    <!--          >删除-->
+    <!--          </el-button>-->
+    <!--        </el-col>-->
+    <!--        <el-col :span="1.5">-->
+    <!--          <el-button-->
+    <!--            v-hasPermi="['wms:ExtItem:export']"-->
+    <!--            icon="el-icon-download"-->
+    <!--            plain-->
+    <!--            size="mini"-->
+    <!--            type="warning"-->
+    <!--            @click="handleExport"-->
+    <!--          >导出-->
+    <!--          </el-button>-->
+    <!--        </el-col>-->
+    <!--        <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>-->
+    <!--      </el-row>-->
+    <!--    </el-card>-->
     <el-card :body-style="{padding:'15px'}">
-      <el-row :gutter="10" class="mb8">
-        <el-col :span="1.5">
-          <el-button
-            type="primary"
-            plain
-            icon="el-icon-plus"
-            size="mini"
-            @click="handleAdd"
-            v-hasPermi="['wms:WmsWarehouseExtItem:add']"
-          >新增
-          </el-button>
-        </el-col>
-        <el-col :span="1.5">
-          <el-button
-            type="success"
-            plain
-            icon="el-icon-edit"
-            size="mini"
-            :disabled="single"
-            @click="handleUpdate"
-            v-hasPermi="['wms:WmsWarehouseExtItem:edit']"
-          >修改
-          </el-button>
-        </el-col>
-        <el-col :span="1.5">
-          <el-button
-            type="danger"
-            plain
-            icon="el-icon-delete"
-            size="mini"
-            :disabled="multiple"
-            @click="handleDelete"
-            v-hasPermi="['wms:WmsWarehouseExtItem:remove']"
-          >删除
-          </el-button>
-        </el-col>
-        <el-col :span="1.5">
-          <el-button
-            type="warning"
-            plain
-            icon="el-icon-download"
-            size="mini"
-            @click="handleExport"
-            v-hasPermi="['wms:WmsWarehouseExtItem:export']"
-          >导出
-          </el-button>
-        </el-col>
-        <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
-      </el-row>
-    </el-card>
-    <el-card :body-style="{padding:'15px'}">
-      <el-table v-loading="loading" :data="WmsWarehouseExtItemList" @selection-change="handleSelectionChange">
+      <!--<el-table v-loading="loading" :data="WmsWarehouseExtItemList" @selection-change="handleSelectionChange">
         <el-table-column align="center" fixed type="selection" width="55"/>
         <el-table-column align="center" fixed label="序号" type="index" width="60"/>
-        <el-table-column label="仓库方格ID" show-overflow-tooltip width="150" align="center" prop="itemId">
+        <el-table-column align="center" label="仓库方格ID" prop="itemId" show-overflow-tooltip width="150">
           <template slot-scope="{row}">
             {{row.itemId}}
           </template>
         </el-table-column>
-        <el-table-column label="仓库ID" show-overflow-tooltip width="150" align="center" prop="warehouseId">
+        <el-table-column align="center" label="仓库ID" prop="warehouseId" show-overflow-tooltip width="150">
           <template slot-scope="{row}">
             {{row.warehouseId}}
           </template>
         </el-table-column>
-        <el-table-column label="方格横轴" show-overflow-tooltip width="150" align="center" prop="itemX">
+        <el-table-column align="center" label="方格横轴" prop="itemX" show-overflow-tooltip width="150">
           <template slot-scope="{row}">
             {{row.itemX}}
           </template>
         </el-table-column>
-        <el-table-column label="方格纵轴" show-overflow-tooltip width="150" align="center" prop="itemY">
+        <el-table-column align="center" label="方格纵轴" prop="itemY" show-overflow-tooltip width="150">
           <template slot-scope="{row}">
             {{row.itemY}}
           </template>
         </el-table-column>
-        <el-table-column label="状态" show-overflow-tooltip width="150" align="center" prop="status"
-                         :formatter="statusFormat"/>
-        <el-table-column label="备注" show-overflow-tooltip width="150" align="center" prop="remark">
+        <el-table-column :formatter="statusFormat" align="center" label="状态" prop="status" show-overflow-tooltip
+                         width="150"/>
+        <el-table-column align="center" label="备注" prop="remark" show-overflow-tooltip width="150">
           <template slot-scope="{row}">
             {{row.remark}}
           </template>
         </el-table-column>
-        <el-table-column label="操作" align="center" fixed="right" width="200" class-name="small-padding fixed-width">
+        <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" width="200">
           <template slot-scope="scope">
             <el-button
+              v-hasPermi="['wms:ExtItem:edit']"
+              icon="el-icon-edit"
               size="mini"
               type="text"
-              icon="el-icon-edit"
               @click="handleUpdate(scope.row)"
-              v-hasPermi="['wms:WmsWarehouseExtItem:edit']"
             >修改
             </el-button>
             <el-button
+              v-hasPermi="['wms:ExtItem:remove']"
+              icon="el-icon-delete"
               size="mini"
               type="text"
-              icon="el-icon-delete"
               @click="handleDelete(scope.row)"
-              v-hasPermi="['wms:WmsWarehouseExtItem:remove']"
             >删除
             </el-button>
           </template>
@@ -180,14 +180,15 @@
 
       <pagination
         v-show="total>0"
-        :total="total"
-        :page.sync="queryParams.pageNum"
         :limit.sync="queryParams.pageSize"
+        :page.sync="queryParams.pageNum"
+        :total="total"
         @pagination="getList"
       />
+      -->
     </el-card>
     <!-- 添加或修改仓库拓展-仓库方格信息对话框 -->
-    <el-dialog :title="title" fullscreen :visible.sync="open" append-to-body>
+    <el-dialog :title="dialog.title" :visible.sync="dialog.open" append-to-body fullscreen>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-row :gutter="24">
           <ICol>
@@ -224,7 +225,7 @@
           <!--      </ICol>-->
           <ICol>
             <el-form-item label="备注" prop="remark">
-              <el-input v-model="form.remark" type="textarea" placeholder="请输入内容"/>
+              <el-input v-model="form.remark" placeholder="请输入内容" type="textarea"/>
             </el-form-item>
           </ICol>
         </el-row>
@@ -234,23 +235,33 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+
+    <el-dialog :close-on-click-modal="false" :close-on-press-escape="false"
+               :show-close="false" :visible.sync="initDialog.open">
+      <span slot="title"><Icon name="warning-outline" color="#ffba00"/> {{initDialog.title}}</span>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary">确定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import {
-  listWmsWarehouseExtItem,
-  getWmsWarehouseExtItem,
-  delWmsWarehouseExtItem,
   addWmsWarehouseExtItem,
+  delWmsWarehouseExtItem,
+  getWmsWarehouseExtItem,
+  listWmsWarehouseExtItem,
   updateWmsWarehouseExtItem
 } from "@/api/wms/WmsWarehouseExtItem";
-import ICol from "@/components/ICol";
+import ICol from "@/components/ICol/index";
+import Icon from "@/components/Icon/index";
+import {getWarehouse} from "@/api/wms/warehouse";
 
 export default {
   name: "WmsWarehouseExtItem",
   components: {
-    ICol,
+    ICol,Icon
   },
   data() {
     return {
@@ -277,9 +288,18 @@ export default {
       // 仓库拓展-仓库方格信息表格数据
       WmsWarehouseExtItemList: [],
       // 弹出层标题
-      title: "",
+      dialog: {
+        title: "",
+        type: 0,
+        open: false,
+      },
+      initDialog: {
+        title: '',
+        type: 0,
+        open: false,
+      },
       // 是否显示弹出层
-      open: false,
+      warehouse: {},
       // 状态字典
       statusOptions: [],
       // 查询参数
@@ -309,18 +329,41 @@ export default {
     };
   },
   created() {
-    this.getList();
+    const params = this.$route.params;
+    const warehouseId = params && params.warehouseId;
+    this.checkPageParams(params);
+    getWarehouse(warehouseId).then((res) => {
+      this.warehouse = res.data;
+      this.checkPageParams(this.warehouse);
+    });
     this.getDicts("sys_common_status").then(response => {
       this.statusOptions = response.data;
     });
   },
+  mounted() {
+    this.getList();
+  },
   methods: {
+    checkPageParams(params) {
+      const {warehouseId} = params;
+      if (warehouseId && warehouseId <= 0) {
+        this.$router.back();
+        return;
+      }
+    },
     /** 查询仓库拓展-仓库方格信息列表 */
     getList() {
       this.loading = true;
-      listWmsWarehouseExtItem(this.queryParams).then(response => {
-        this.WmsWarehouseExtItemList = response.rows;
-        this.total = response.total;
+      listWmsWarehouseExtItem({
+        warehouseId: this.warehouse.warehouseId,
+        ...this.queryParams,
+      }).then((res) => {
+        this.WmsWarehouseExtItemList = res.rows;
+        this.total = res.total;
+        if (res.total <= 0 || res.rows.length <= 0) {
+          this.initDialog.open=true;
+          this.initDialog.title=`警告-当前未初始化`;
+        }
         this.loading = false;
       });
     },
@@ -330,7 +373,7 @@ export default {
     },
     // 取消按钮
     cancel() {
-      this.open = false;
+      this.dialog.open = false;
       this.reset();
     },
     // 表单重置
@@ -369,8 +412,8 @@ export default {
     /** 新增按钮操作 */
     handleAdd() {
       this.reset();
-      this.open = true;
-      this.title = "添加仓库拓展-仓库方格信息";
+      this.dialog.open = true;
+      this.dialog.title = "添加仓库拓展-仓库方格信息";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
@@ -378,8 +421,8 @@ export default {
       const itemId = row.itemId || this.ids
       getWmsWarehouseExtItem(itemId).then(response => {
         this.form = response.data;
-        this.open = true;
-        this.title = "修改仓库拓展-仓库方格信息";
+        this.dialog.open = true;
+        this.dialog.title = "修改仓库拓展-仓库方格信息";
       });
     },
     /** 提交按钮 */
@@ -389,13 +432,13 @@ export default {
           if (this.form.itemId != null) {
             updateWmsWarehouseExtItem(this.form).then(response => {
               this.msgSuccess("修改成功");
-              this.open = false;
+              this.dialog.open = false;
               this.getList();
             });
           } else {
             addWmsWarehouseExtItem(this.form).then(response => {
               this.msgSuccess("新增成功");
-              this.open = false;
+              this.dialog.open = false;
               this.getList();
             });
           }
@@ -418,7 +461,7 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
-      this.download('wms/WmsWarehouseExtItem/export', {
+      this.download('wms/ExtItem/export', {
         ...this.queryParams
       }, `wms_WmsWarehouseExtItem.xlsx`)
     },
@@ -426,6 +469,9 @@ export default {
       if (toggle >= 0) {
         this.toggleSearchFormValue = toggle;
       }
+    },
+    handleInitDialogClose() {
+      console.log('close')
     },
   }
 };

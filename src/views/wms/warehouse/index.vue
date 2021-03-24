@@ -46,7 +46,9 @@
           </ICol>
           <ICol>
             <el-form-item label="站点主管" prop="warehouseInCharge">
-              <el-select v-model="queryParams.warehouseInCharge" :disabled="!this.queryParams.warehouseInChargeOptions.length > 0" placeholder="请选择站点主管" size="small"
+              <el-select v-model="queryParams.warehouseInCharge"
+                         :disabled="!this.queryParams.warehouseInChargeOptions.length > 0" placeholder="请选择站点主管"
+                         size="small"
                          @keyup.enter.native="handleQuery">
                 <el-option v-for="(item,index) in queryParams.warehouseInChargeOptions" :key="index"
                            :label="item.nickName"
@@ -54,7 +56,6 @@
               </el-select>
             </el-form-item>
           </ICol>
-
           <template v-if="toggleSearchFormValue>=1">
             <ICol :grid="regionSelectGrid">
               <el-form-item>
@@ -265,7 +266,7 @@
             {{row.warehouseCode}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="站点名" show-overflow-tooltip prop="warehouseName" show-overflow-tooltip>
+        <el-table-column align="center" label="站点名" prop="warehouseName" show-overflow-tooltip show-overflow-tooltip>
           <template slot-scope="{row}">
             {{row.warehouseName}}
           </template>
@@ -334,21 +335,30 @@
           </template>
         </el-table-column>
         <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" width="200">
-          <template slot-scope="scope">
+          <template slot-scope="{row}">
+            <el-button
+              v-hasPermi="['wms:warehouse:edit']"
+              icon="el-icon-view"
+              size="mini"
+              type="text">
+              <router-link :to="$route.path+'/WmsWarehouseExtItem/' + row. warehouseId" class="link-type">
+                <span>仓库预览</span>
+              </router-link>
+            </el-button>
             <el-button
               v-hasPermi="['wms:warehouse:edit']"
               icon="el-icon-edit"
               size="mini"
               type="text"
-              @click="handleUpdate(scope.row)"
-            >修改
+              @click="handleUpdate(row)">
+              修改
             </el-button>
             <el-button
               v-hasPermi="['wms:warehouse:remove']"
               icon="el-icon-delete"
               size="mini"
               type="text"
-              @click="handleDelete(scope.row)"
+              @click="handleDelete(row)"
             >删除
             </el-button>
           </template>
@@ -364,12 +374,12 @@
       />
     </el-card>
     <!-- 添加或修改站点(仓库)信息对话框 -->
-    <el-dialog :title="title" :visible.sync="open" append-to-body fullscreen>
+    <el-dialog :title="dialog.title" :visible.sync="dialog.open" append-to-body fullscreen>
       <el-form ref="form" :model="form" :rules="rules" label-position="top" label-width="100px">
         <el-row :gutter="24">
-          <ICol>
+          <ICol v-if="readOnly">
             <el-form-item label="站点编码" prop="warehouseCode">
-              <el-input v-model="form.warehouseCode" placeholder="请输入站点编码"/>
+              <el-input v-model="form.warehouseCode" :readonly="readOnly" placeholder="请输入站点编码"/>
             </el-form-item>
           </ICol>
           <ICol>
@@ -396,17 +406,19 @@
         <el-row :gutter="24">
           <ICol>
             <el-form-item label="站点面积" prop="warehouseArea">
-              <el-input v-model="form.warehouseArea" placeholder="请输入站点面积"/>
+              <el-input v-model="form.warehouseArea" :disabled="true" placeholder="请输入站点面积"/>
             </el-form-item>
           </ICol>
           <ICol>
             <el-form-item label="站点面积长" prop="warehouseAreaX">
-              <el-input v-model="form.warehouseAreaX" placeholder="请输入站点面积长"/>
+              <el-input-number v-model="form.warehouseAreaX" :disabled="false" :min="1" :precision="2"
+                               :step="0.1" @change="calculateArea"></el-input-number>
             </el-form-item>
           </ICol>
           <ICol>
             <el-form-item label="站点面积宽" prop="warehouseAreaY">
-              <el-input v-model="form.warehouseAreaY" placeholder="请输入站点面积宽"/>
+              <el-input-number v-model="form.warehouseAreaY" :disabled="false" :min="1" :precision="2"
+                               :step="0.1" @change="calculateArea"></el-input-number>
             </el-form-item>
           </ICol>
           <ICol>
@@ -499,6 +511,7 @@ import {
   listWarehouse,
   updateWarehouse
 } from "@/api/wms/warehouse";
+import {multiply,divide} from '@/utils/number/math'
 import ICol from "@/components/ICol";
 import {treeselect} from "@/api/system/dept";
 import TreeSelect from "@riophae/vue-treeselect";
@@ -518,6 +531,9 @@ export default {
   computed: {
     checkWarehouseInChargeOptions() {
       return !this.warehouseInChargeOptions.length > 0;
+    },
+    readOnly() {
+      return this.dialog.type != 0;
     },
   },
   data() {
@@ -545,9 +561,12 @@ export default {
       // 站点(仓库)信息表格数据
       warehouseList: [],
       // 弹出层标题
-      title: "",
+      dialog: {
+        title: "",
+        type: 0,
+        open: false,
+      },
       // 是否显示弹出层
-      open: false,
       // 站点类型字典
       warehouseTypeOptions: [],
       warehouseInChargeOptions: [],
@@ -618,7 +637,6 @@ export default {
   created() {
     this.getList();
     this.getTreeSelect();
-    // this.getUserInChargeWarehouse();
     this.getDicts("wms_warehouse_type").then(response => {
       this.warehouseTypeOptions = response.data;
     });
@@ -647,7 +665,7 @@ export default {
     },
     // 取消按钮
     cancel() {
-      this.open = false;
+      this.dialog.open = false;
       this.reset();
     },
     // 表单重置
@@ -699,8 +717,8 @@ export default {
     handleAdd() {
       this.reset();
       this.getTreeSelect();
-      this.open = true;
-      this.title = "添加站点(仓库)信息";
+      this.dialog.open = true;
+      this.dialog.title = "添加站点(仓库)信息";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
@@ -709,7 +727,8 @@ export default {
       const warehouseId = row.warehouseId || this.ids
       getWarehouse(warehouseId).then(response => {
         const data = this.form = response.data;
-        this.getUserInTheDepartment(data.deptId, 0);
+        this.getUserInTheDepartment(data.deptId, 0, 1);
+        this.form.warehouseInCharge = +this.form.warehouseInCharge;
         this.form.regionSelectValue = {
           level: 0,
           code: data.provinceCode,
@@ -730,8 +749,9 @@ export default {
             },
           },
         };
-        this.open = true;
-        this.title = "修改站点(仓库)信息";
+        this.dialog.open = true;
+        this.dialog.type = 1;
+        this.dialog.title = "修改站点(仓库)信息";
       });
     },
     /** 提交按钮 */
@@ -747,13 +767,13 @@ export default {
           if (form.warehouseId != null) {
             updateWarehouse(form).then(response => {
               this.msgSuccess("修改成功");
-              this.open = false;
+              this.form.open = false;
               this.getList();
             });
           } else {
             addWarehouse(form).then(response => {
               this.msgSuccess("新增成功");
-              this.open = false;
+              this.form.open = false;
               this.getList();
             });
           }
@@ -833,6 +853,9 @@ export default {
       if (toggle >= 0) {
         this.toggleSearchFormValue = toggle;
       }
+    },
+    calculateArea() {
+      this.form.warehouseArea = multiply(this.form.warehouseAreaX,this.form.warehouseAreaY);
     },
   }
 };
