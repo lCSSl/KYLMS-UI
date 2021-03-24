@@ -3,7 +3,8 @@ import request from '@/utils/request'
 // 查询运单信息主列表
 export function listWaybill(query) {
   return request({
-    url: '/wms/waybill/list',
+    // url: '/wms/waybill/list',
+    url: '/wms/waybill/list/vo',
     method: 'get',
     params: query
   })

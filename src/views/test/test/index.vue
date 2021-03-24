@@ -19,15 +19,15 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="删除标志" prop="delFlag">
-        <el-input
-          v-model="queryParams.delFlag"
-          placeholder="请输入删除标志"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
+<!--      <el-form-item label="删除标志" prop="delFlag">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.delFlag"-->
+<!--          placeholder="请输入删除标志"-->
+<!--          clearable-->
+<!--          size="small"-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
       <el-form-item label="创建者" prop="createBy">
         <el-input
           v-model="queryParams.createBy"

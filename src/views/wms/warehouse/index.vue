@@ -265,7 +265,7 @@
             {{row.warehouseCode}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="站点名" prop="warehouseName" show-overflow-tooltip>
+        <el-table-column align="center" label="站点名" show-overflow-tooltip prop="warehouseName" show-overflow-tooltip>
           <template slot-scope="{row}">
             {{row.warehouseName}}
           </template>

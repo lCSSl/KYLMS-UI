@@ -35,21 +35,38 @@
           </ICol>
           <ICol>
             <el-form-item label="始发站" prop="departure">
-              <regionSelect v-model="departureRegionSelectValue" :level="1"
-                            @on-change="updateDepartureRegionSelectValue"/>
+              <el-select
+                filterable
+                remote
+                reserve-keyword
+                :remote-method="(keyword)=>getWarehouseOptions(keyword,1)"
+                :loading="loading"
+                v-model="queryParams.departure" placeholder="请选择站点类型">
+                <el-option
+                  v-for="warehouse in departureWarehouseOptions"
+                  :key="warehouse.warehouseId"
+                  :label="warehouse.warehouseName"
+                  :value="warehouse.warehouseId"
+                />
+              </el-select>
             </el-form-item>
           </ICol>
           <ICol>
             <el-form-item label="到达站" prop="destination">
-              <!--              <el-input-->
-              <!--                v-model="queryParams.destination"-->
-              <!--                placeholder="请输入到达站"-->
-              <!--                clearable-->
-              <!--                size="small"-->
-              <!--                @keyup.enter.native="handleQuery"-->
-              <!--              />-->
-              <regionSelect v-model="destinationRegionSelectValue" :level="1"
-                            @on-change="updateDestinationRegionSelectValue"/>
+              <el-select
+                filterable
+                remote
+                reserve-keyword
+                :remote-method="(keyword)=>getWarehouseOptions(keyword,2)"
+                :loading="loading"
+                v-model="queryParams.destination" placeholder="请选择站点类型">
+                <el-option
+                  v-for="warehouse in destinationWarehouseOptions"
+                  :key="warehouse.warehouseId"
+                  :label="warehouse.warehouseName"
+                  :value="warehouse.warehouseId"
+                />
+              </el-select>
             </el-form-item>
           </ICol>
 
@@ -588,27 +605,24 @@
     <el-card :body-style="{padding:'15px'}">
       <el-table v-loading="loading" :data="waybillList" @selection-change="handleSelectionChange">
         <el-table-column align="center" fixed type="selection" width="55"/>
-        <el-table-column align="center" fixed label="序号" prop="waybillId">
-          <template slot-scope="{row}">
-            {{row.waybillId}}
-          </template>
-        </el-table-column>
-        <el-table-column align="center" label="运单号" prop="waybillCode">
+        <el-table-column align="center" fixed label="序号" type="index" prop="waybillId"/>
+        <el-table-column align="center" label="运单号" show-overflow-tooltip width="150" prop="waybillCode">
           <template slot-scope="{row}">
             <Ellipsis :text="row.waybillCode"/>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="到达站" prop="destination">
+        <el-table-column align="center" label="始发站" show-overflow-tooltip width="150" prop="departure">
           <template slot-scope="{row}">
-            {{row.destination}}
+            {{row.departureName}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="始发站" prop="departure">
+        <el-table-column align="center" label="到达站" show-overflow-tooltip width="150" prop="destination">
           <template slot-scope="{row}">
-            {{row.departure}}
+            {{row.destinationName}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="中转地" prop="transitPlace">
+
+        <el-table-column align="center" label="中转地" show-overflow-tooltip width="150" prop="transitPlace">
           <template slot-scope="{row}">
             {{row.transitPlace}}
           </template>
@@ -628,148 +642,149 @@
             {{row.csrOrderNumber}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="发货人手机" prop="consignorMobile">
+        <el-table-column align="center" label="发货人手机" show-overflow-tooltip width="150" prop="consignorMobile">
           <template slot-scope="{row}">
             {{row.consignorMobile}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="发货人座机" prop="consignorTelephone">
+        <el-table-column align="center" label="发货人座机" show-overflow-tooltip width="150" prop="consignorTelephone">
           <template slot-scope="{row}">
             {{row.consignorTelephone}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="发货联系人" prop="consignorName">
+        <el-table-column align="center" label="发货联系人" show-overflow-tooltip width="150" prop="consignorName">
           <template slot-scope="{row}">
             {{row.consignorName}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="发货公司名称" prop="deliverCoName">
+        <el-table-column align="center" label="发货公司名称" show-overflow-tooltip width="150" prop="deliverCoName">
           <template slot-scope="{row}">
             {{row.deliverCoName}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="收货人手机" prop="consigneeMobile">
+        <el-table-column align="center" label="收货人手机" show-overflow-tooltip width="150" prop="consigneeMobile">
           <template slot-scope="{row}">
             {{row.consigneeMobile}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="收货人座机" prop="consigneeTelephone">
+        <el-table-column align="center" label="收货人座机" show-overflow-tooltip width="150" prop="consigneeTelephone">
           <template slot-scope="{row}">
             {{row.consigneeTelephone}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="收货联系人" prop="consigneeName">
+        <el-table-column align="center" label="收货联系人" show-overflow-tooltip width="150" prop="consigneeName">
           <template slot-scope="{row}">
             {{row.consigneeName}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="收货公司名称" prop="receivingCoName">
+        <el-table-column align="center" label="收货公司名称" show-overflow-tooltip width="150" prop="receivingCoName">
           <template slot-scope="{row}">
             {{row.receivingCoName}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="收货省" prop="receivingProvince">
+        <el-table-column align="center" label="收货省" show-overflow-tooltip width="150" prop="receivingProvince">
           <template slot-scope="{row}">
             {{row.receivingProvince}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="收货市" prop="receivingCity">
+        <el-table-column align="center" label="收货市" show-overflow-tooltip width="150" prop="receivingCity">
           <template slot-scope="{row}">
             {{row.receivingCity}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="收货区" prop="receivingDistrict">
+        <el-table-column align="center" label="收货区" show-overflow-tooltip width="150" prop="receivingDistrict">
           <template slot-scope="{row}">
             {{row.receivingDistrict}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="收货街道" prop="receivingStreet">
+        <el-table-column align="center" label="收货街道" show-overflow-tooltip width="150" prop="receivingStreet">
           <template slot-scope="{row}">
             {{row.receivingStreet}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="收货详细地址" prop="receivingAddress">
+        <el-table-column align="center" label="收货详细地址" show-overflow-tooltip width="150" prop="receivingAddress">
           <template slot-scope="{row}">
             {{row.receivingAddress}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="开单事业部" prop="deptId">
+        <el-table-column align="center" label="开单事业部" show-overflow-tooltip width="150" prop="deptId">
           <template slot-scope="{row}">
             {{row.deptId}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="配载站点" prop="stowageId">
+        <el-table-column align="center" label="配载站点" show-overflow-tooltip width="150" prop="stowageId">
           <template slot-scope="{row}">
             {{row.stowageId}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="目的网点" prop="destinationNode">
+        <el-table-column align="center" label="目的网点" show-overflow-tooltip width="150" prop="destinationNode">
           <template slot-scope="{row}">
             {{row.destinationNode}}
           </template>
         </el-table-column>
-        <el-table-column :formatter="handoverModeFormat" align="center" label="交接方式" prop="handoverMode"/>
-        <el-table-column :formatter="transportModeFormat" align="center" label="运输方式" prop="transportMode"/>
-        <el-table-column :formatter="payMethodFormat" align="center" label="付款方式" prop="payMethod"/>
+        <el-table-column :formatter="handoverModeFormat" align="center" label="交接方式" width="100" prop="handoverMode"/>
+        <el-table-column :formatter="transportModeFormat" align="center" label="运输方式" width="100" prop="transportMode"/>
+        <el-table-column :formatter="payMethodFormat" align="center" label="付款方式" width="100" prop="payMethod"/>
         <el-table-column :formatter="receiptStatusFormat" align="center" label="回单状态" prop="receiptStatus"/>
-        <el-table-column :formatter="rebateReturnedFormat" align="center" label="回扣已返" prop="rebateReturned"/>
-        <el-table-column :formatter="writeInvoiceFormat" align="center" label="是否开发票" prop="writeInvoice"/>
-        <el-table-column align="center" label="基本运费" prop="basicFreight">
+        <el-table-column :formatter="rebateReturnedFormat" align="center" label="回扣已返" width="100"
+                         prop="rebateReturned"/>
+        <el-table-column :formatter="writeInvoiceFormat" align="center" label="是否开发票" width="100" prop="writeInvoice"/>
+        <el-table-column align="center" label="基本运费" show-overflow-tooltip width="150" prop="basicFreight">
           <template slot-scope="{row}">
             {{row.basicFreight}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="实收运费" prop="realFreight">
+        <el-table-column align="center" label="实收运费" show-overflow-tooltip width="150" prop="realFreight">
           <template slot-scope="{row}">
             {{row.realFreight}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="总运费" prop="totalFreight">
+        <el-table-column align="center" label="总运费" show-overflow-tooltip width="150" prop="totalFreight">
           <template slot-scope="{row}">
             {{row.totalFreight}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="送货车号" prop="deliveryVehicleId">
+        <el-table-column align="center" label="送货车号" show-overflow-tooltip width="150" prop="deliveryVehicleId">
           <template slot-scope="{row}">
             {{row.deliveryVehicleId}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="送货车号" prop="deliveryVehicleCode">
+        <el-table-column align="center" label="送货车号" show-overflow-tooltip width="150" prop="deliveryVehicleCode">
           <template slot-scope="{row}">
             {{row.deliveryVehicleCode}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="送货司机" prop="deliveryDriverId">
+        <el-table-column align="center" label="送货司机" show-overflow-tooltip width="150" prop="deliveryDriverId">
           <template slot-scope="{row}">
             {{row.deliveryDriverId}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="送货司机" prop="deliveryDriverName">
+        <el-table-column align="center" label="送货司机" show-overflow-tooltip width="150" prop="deliveryDriverName">
           <template slot-scope="{row}">
             {{row.deliveryDriverName}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="送货时间" prop="deliveryTime" width="180">
+        <el-table-column align="center" label="送货时间" show-overflow-tooltip prop="deliveryTime" width="180">
           <template slot-scope="scope">
             <span>{{ parseTime(scope.row.deliveryTime, '{y}-{m}-{d}') }}</span>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="开单人ID" prop="drawerId">
+        <el-table-column align="center" label="开单人ID" show-overflow-tooltip width="150" prop="drawerId">
           <template slot-scope="{row}">
             {{row.drawerId}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="开单人" prop="drawerName">
+        <el-table-column align="center" label="开单人" show-overflow-tooltip width="150" prop="drawerName">
           <template slot-scope="{row}">
             {{row.drawerName}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="设备来源" prop="equipmentSource">
+        <el-table-column align="center" label="设备来源" show-overflow-tooltip width="150" prop="equipmentSource">
           <template slot-scope="{row}">
             {{row.equipmentSource}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="开单来源" prop="creationSource">
+        <el-table-column align="center" label="开单来源" show-overflow-tooltip width="150" prop="creationSource">
           <template slot-scope="{row}">
             {{row.creationSource}}
           </template>
@@ -812,22 +827,48 @@
       />
     </el-card>
     <!-- 添加或修改运单信息主对话框 -->
-    <el-dialog :title="title" :visible.sync="open" append-to-body fullscreen>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+    <el-dialog :title="title" :visible.sync="dialog.open" append-to-body fullscreen>
+      <el-form ref="form" :model="form" :rules="rules" label-position="top" label-width="100px">
         <el-row :gutter="24">
-          <ICol>
+          <ICol v-if="dialog.type!=0">
             <el-form-item label="运单号" prop="waybillCode">
-              <el-input v-model="form.waybillCode" placeholder="请输入运单号"/>
-            </el-form-item>
-          </ICol>
-          <ICol>
-            <el-form-item label="到达站" prop="destination">
-              <el-input v-model="form.destination" placeholder="请输入到达站"/>
+              <el-input readonly v-model="form.waybillCode" placeholder="请输入运单号"/>
             </el-form-item>
           </ICol>
           <ICol>
             <el-form-item label="始发站" prop="departure">
-              <!--              <el-input v-model="form.departure" placeholder="请输入始发站"/>-->
+              <el-select
+                filterable
+                remote
+                reserve-keyword
+                :remote-method="(keyword)=>getWarehouseOptions(keyword,1)"
+                :loading="loading"
+                v-model="form.departure" placeholder="请选择站点类型">
+                <el-option
+                  v-for="(warehouse,index)  in departureWarehouseOptions"
+                  :key="index"
+                  :label="warehouse.warehouseName"
+                  :value="warehouse.warehouseId"
+                />
+              </el-select>
+            </el-form-item>
+          </ICol>
+          <ICol>
+            <el-form-item label="到达站" prop="destination">
+              <el-select
+                filterable
+                remote
+                reserve-keyword
+                :remote-method="(keyword)=>getWarehouseOptions(keyword,2)"
+                :loading="loading"
+                v-model="form.destination" placeholder="请选择站点类型">
+                <el-option
+                  v-for="(warehouse,index) in destinationWarehouseOptions"
+                  :key="index"
+                  :label="warehouse.warehouseName"
+                  :value="warehouse.warehouseId"
+                />
+              </el-select>
             </el-form-item>
           </ICol>
           <ICol>
@@ -1070,11 +1111,11 @@
               </el-radio-group>
             </el-form-item>
           </ICol>
-          <ICol>
-            <el-form-item label="删除标志" prop="delFlag">
-              <el-input v-model="form.delFlag" placeholder="请输入删除标志"/>
-            </el-form-item>
-          </ICol>
+          <!--          <ICol>-->
+          <!--            <el-form-item label="删除标志" prop="delFlag">-->
+          <!--              <el-input v-model="form.delFlag" placeholder="请输入删除标志"/>-->
+          <!--            </el-form-item>-->
+          <!--          </ICol>-->
           <ICol>
             <el-form-item label="开单备注" prop="remark">
               <el-input v-model="form.remark" placeholder="请输入开单备注"/>
@@ -1096,6 +1137,7 @@ import 'element-ui/lib/theme-chalk/display.css';
 import ICol from "@/components/ICol";
 import RegionSelect from "@/components/regionSelect/index";
 import Ellipsis from "@/components/Ellipsis/index";
+import {listWarehouse} from "@/api/wms/warehouse";
 
 export default {
   name: "Waybill",
@@ -1118,6 +1160,8 @@ export default {
       loading: true,
       // 选中数组
       ids: [],
+      departureWarehouseOptions: [],
+      destinationWarehouseOptions: [],
       // 非单个禁用
       single: true,
       // 非多个禁用
@@ -1131,7 +1175,10 @@ export default {
       // 弹出层标题
       title: "",
       // 是否显示弹出层
-      open: false,
+      dialog: {
+        type: 0,
+        open: false,
+      },
       // 交接方式字典
       handoverModeOptions: [],
       // 运输方式字典
@@ -1201,8 +1248,6 @@ export default {
       },
       // 表单参数
       form: {},
-      destinationRegionSelectValue: {},
-      departureRegionSelectValue: {},
       // 表单校验
       rules: {
         destination: [
@@ -1223,30 +1268,8 @@ export default {
   },
   created() {
     this.getList();
-    this.getDicts("wms_waybill_handover_mode").then(response => {
-      this.handoverModeOptions = response.data;
-    });
-    this.getDicts("wms_waybill_transport_mode").then(response => {
-      this.transportModeOptions = response.data;
-    });
-    this.getDicts("wms_waybill_pay_method").then(response => {
-      this.payMethodOptions = response.data;
-    });
-    this.getDicts("wms_waybill_receipt_status").then(response => {
-      this.receiptStatusOptions = response.data;
-    });
-    this.getDicts("sys_common_status").then(response => {
-      this.rebateReturnedOptions = response.data;
-    });
-    this.getDicts("sys_common_status").then(response => {
-      this.writeInvoiceOptions = response.data;
-    });
-    this.getDicts("wms_waybile_status").then(response => {
-      this.waybillStatusOptions = response.data;
-    });
-    this.getDicts("sys_common_status").then(response => {
-      this.statusOptions = response.data;
-    });
+    this.getDictsMethods();
+    this.getWarehouseOptions(null, 0);
   },
   methods: {
     /** 查询运单信息主列表 */
@@ -1257,13 +1280,53 @@ export default {
         this.queryParams.params["beginCreateTime"] = this.daterangeCreateTime[0];
         this.queryParams.params["endCreateTime"] = this.daterangeCreateTime[1];
       }
-      console.log('a', this.departureRegionSelectValue);
-      console.log('b', this.destinationRegionSelectValue);
-      console.log('c', this.queryParams);
       listWaybill(this.queryParams).then(response => {
         this.waybillList = response.rows;
         this.total = response.total;
         this.loading = false;
+      });
+    },
+    getDictsMethods() {
+      this.getDicts("wms_waybill_handover_mode").then(response => {
+        this.handoverModeOptions = response.data;
+      });
+      this.getDicts("wms_waybill_transport_mode").then(response => {
+        this.transportModeOptions = response.data;
+      });
+      this.getDicts("wms_waybill_pay_method").then(response => {
+        this.payMethodOptions = response.data;
+      });
+      this.getDicts("wms_waybill_receipt_status").then(response => {
+        this.receiptStatusOptions = response.data;
+      });
+      this.getDicts("sys_common_status").then(response => {
+        this.rebateReturnedOptions = response.data;
+      });
+      this.getDicts("sys_common_status").then(response => {
+        this.writeInvoiceOptions = response.data;
+      });
+      this.getDicts("wms_waybile_status").then(response => {
+        this.waybillStatusOptions = response.data;
+      });
+      this.getDicts("sys_common_status").then(response => {
+        this.statusOptions = response.data;
+      });
+    },
+    getWarehouseOptions(warehouseName, type) {
+      console.log(type)
+      listWarehouse({
+        warehouseName,
+        pageNum: 1,
+        pageSize: 10
+      }).then(res => {
+        if (type === 0) {
+          this.departureWarehouseOptions = res.rows;
+          this.destinationWarehouseOptions = res.rows;
+        } else if (type === 1) {
+          this.departureWarehouseOptions = res.rows;
+        } else if (type === 2) {
+          this.destinationWarehouseOptions = res.rows;
+        }
       });
     },
     // 交接方式字典翻译
@@ -1305,7 +1368,8 @@ export default {
     },
     // 取消按钮
     cancel() {
-      this.open = false;
+      this.dialog.open = false;
+      this.dialog.type = 0;
       this.reset();
     },
     // 表单重置
@@ -1384,17 +1448,25 @@ export default {
     /** 新增按钮操作 */
     handleAdd() {
       this.reset();
-      this.open = true;
-      this.title = "添加运单信息主";
+      this.dialog.open = true;
+      this.dialog.type = 0;
+      this.title = "添加运单信息";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
+      this.getWarehouseOptions(null, 0);
       const waybillId = row.waybillId || this.ids
       getWaybill(waybillId).then(response => {
         this.form = response.data;
-        this.open = true;
-        this.title = "修改运单信息主";
+        console.log(this.form);
+        // this.form.waybillId = +this.form.waybillId;
+        this.form.departure = +this.form.departure;
+        this.form.destination = +this.form.destination;
+        this.dialog.open = true;
+        this.dialog.type = 1;
+        this.title = "修改运单信息";
+        console.log(this.form);
       });
     },
     /** 提交按钮 */
@@ -1404,13 +1476,13 @@ export default {
           if (this.form.waybillId != null) {
             updateWaybill(this.form).then(response => {
               this.msgSuccess("修改成功");
-              this.open = false;
+              this.dialog.open = false;
               this.getList();
             });
           } else {
             addWaybill(this.form).then(response => {
               this.msgSuccess("新增成功");
-              this.open = false;
+              this.dialog.open = false;
               this.getList();
             });
           }
@@ -1436,22 +1508,6 @@ export default {
       this.download('wms/waybill/export', {
         ...this.queryParams
       }, `wms_waybill.xlsx`)
-    },
-    updateDepartureRegionSelectValue(data, label, status) {
-      this.departureRegionSelectValue = data
-      if (status) {
-        // this.rowData.provinceCity = label.split('-').join('');
-      } else {
-        // this.rowData.provinceCity = '';
-      }
-    },
-    updateDestinationRegionSelectValue(data, label, status) {
-      this.destinationRegionSelectValue = data
-      if (status) {
-        // this.rowData.provinceCity = label.split('-').join('');
-      } else {
-        // this.rowData.provinceCity = '';
-      }
     },
   }
 };
