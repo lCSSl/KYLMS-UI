@@ -16,6 +16,14 @@ export function getWmsWarehouseExtItem(itemId) {
     method: 'get'
   })
 }
+// 查询仓库拓展-仓库方格信息详细
+export function getWmsWarehouseExtItemByXY(query) {
+  return request({
+    url: '/wms/WmsWarehouseExtItem/getInfo',
+    method: 'get',
+    params: query
+  })
+}
 
 // 新增仓库拓展-仓库方格信息
 export function addWmsWarehouseExtItem(data) {

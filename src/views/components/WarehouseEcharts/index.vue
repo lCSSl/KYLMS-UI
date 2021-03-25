@@ -1,13 +1,14 @@
 <template>
-  <div id="warehouseExtItemCanvas">
-
-  </div>
+  <el-card>
+    <div id="warehouseExtItemCanvas"></div>
+  </el-card>
 </template>
 
 <script>
 
 import * as echarts from "echarts";
 import 'echarts-gl';
+
 export default {
   props: {
     value: {
@@ -48,7 +49,7 @@ export default {
   computed: {
     canvasData() {
       return this.data.map(function (item) {
-        return [item.itemX, item.itemY, item ? item.itemId%2==0 ? 1 : 0 : 0];
+        return [item.itemX, item.itemY, item ? (item.status ? +item.status : 1) : 0];
       });
     }
   },
@@ -68,8 +69,26 @@ export default {
       // var i=0;
       // 基于准备好的dom，初始化echarts实例
       const charts = echarts.init(document.getElementById("warehouseExtItemCanvas"));
+
+
       const option = {
         tooltip: {},
+        toolbox: {
+          feature: {
+            saveAsImage: {
+              show: true,
+            },
+            restore: {
+              show: true,
+            },
+            dataView: {
+              show: true,
+            },
+            dataZoom: {
+              show: true,
+            },
+          }
+        },
         grid: {
           top: '0%',
           bottom: '0%',
@@ -81,7 +100,7 @@ export default {
         visualMap: {
           max: 6,
           inRange: {
-            color: ['#989898','#83f364', '#fee090', '#fdae61', '#f46d43', '#d73027', '#a50026']
+            color: ['#8d8787', '#83f364', '#ffdf61', '#fdae61', '#f46d43', '#d73027', '#a50026']
           }
         },
         xAxis3D: {
@@ -94,8 +113,9 @@ export default {
         },
         zAxis3D: {
           type: 'category',
-          data:[1,2,3,4,5,6],
+          data: [1, 2, 3, 4, 5, 6],
         },
+
         grid3D: {
           boxWidth: 200,
           boxDepth: 80,
@@ -112,7 +132,7 @@ export default {
           type: 'bar3D',
           data: this.canvasData,
           shading: 'color',
-
+          name: '',
           label: {
             show: false,
             fontSize: 16,
@@ -135,13 +155,17 @@ export default {
         }]
       };
       charts.setOption(option);
+      const that = this
+      charts.on('click', function (params) {
+        that.$emit('on-click-item', params);
+      });
     }
   }
 };
 </script>
 <style>
 #warehouseExtItemCanvas {
-  width: 1800px;
+  /*width: 1800px;*/
   height: 500px;
 }
 </style>
