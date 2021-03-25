@@ -126,6 +126,7 @@
     <!--      </el-row>-->
     <!--    </el-card>-->
     <el-card :body-style="{padding:'15px'}">
+      <WarehouseEcharts v-model="WmsWarehouseExtItemCanvasData" :x="xList" :y="yList" :loading="loading"/>
       <!--<el-table v-loading="loading" :data="WmsWarehouseExtItemList" @selection-change="handleSelectionChange">
         <el-table-column align="center" fixed type="selection" width="55"/>
         <el-table-column align="center" fixed label="序号" type="index" width="60"/>
@@ -177,7 +178,6 @@
           </template>
         </el-table-column>
       </el-table>
-
       <pagination
         v-show="total>0"
         :limit.sync="queryParams.pageSize"
@@ -238,14 +238,14 @@
 
     <el-dialog :close-on-click-modal="false" :close-on-press-escape="false"
                :show-close="false" :visible.sync="initDialog.open">
-      <span slot="title"><Icon name="warning-outline" color="#ffba00"/> {{initDialog.title}}</span>
-      <el-form ref="initDialogForm" :model="initDialogForm" :rules="initDialogFormRules" :inline="false">
+      <span slot="title"><Icon color="#ffba00" name="warning-outline"/> {{initDialog.title}}</span>
+      <el-form ref="initDialogForm" :inline="false" :model="initDialogForm" :rules="initDialogFormRules">
         <el-row>
           <ICol>
             <el-form-item label="托盘规格" prop="trayType">
               <el-select v-model="initDialogForm.trayType" placeholder="请选择托盘规格">
-                <el-option v-for="(dict,index) in trayTypeOptions" :key="index" :value="dict.dictValue"
-                           :label="dict.dictLabel">
+                <el-option v-for="(dict,index) in trayTypeOptions" :key="index" :label="dict.dictLabel"
+                           :value="dict.dictValue">
                   {{dict.dictLabel}}
                 </el-option>
               </el-select>
@@ -253,8 +253,8 @@
           </ICol>
           <ICol>
             <el-form-item label="托盘间隔" prop="trayInterval">
-              <el-input-number v-model="initDialogForm.trayInterval" :disabled="false" :min="100" prefix="mm"
-                               :step="10"></el-input-number>
+              <el-input-number v-model="initDialogForm.trayInterval" :disabled="false" :min="100" :step="10"
+                               prefix="mm"></el-input-number>
             </el-form-item>
           </ICol>
         </el-row>
@@ -276,12 +276,13 @@ import {
 } from "@/api/wms/WmsWarehouseExtItem";
 import ICol from "@/components/ICol/index";
 import Icon from "@/components/Icon/index";
+import WarehouseEcharts from "@/views/components/WarehouseEcharts/index";
 import {getWarehouse, initWarehouseExtItem} from "@/api/wms/warehouse";
 
 export default {
   name: "WmsWarehouseExtItem",
   components: {
-    ICol, Icon
+    ICol, Icon, WarehouseEcharts
   },
   data() {
     return {
@@ -307,6 +308,9 @@ export default {
       total: 0,
       // 仓库拓展-仓库方格信息表格数据
       WmsWarehouseExtItemList: [],
+      WmsWarehouseExtItemCanvasData: [],
+      xList: [],
+      yList: [],
       // 弹出层标题
       dialog: {
         title: "",
@@ -361,9 +365,9 @@ export default {
         ],
       },
       toggleSearchFormValue: 0,
-    };
+    }
   },
-  created() {
+  mounted() {
     this.init();
   },
   methods: {
@@ -371,13 +375,22 @@ export default {
       const params = this.$route.params;
       const warehouseId = params && params.warehouseId;
       this.checkPageParams(params);
+      this.getDicts("sys_common_status").then(response => {
+        this.statusOptions = response.data;
+      });
       getWarehouse(warehouseId).then((res) => {
         this.warehouse = res.data;
         this.checkPageParams(this.warehouse);
-        this.getList();
-        this.getDicts("sys_common_status").then(response => {
-          this.statusOptions = response.data;
-        });
+        if (this.warehouse.warehouseMaxX <= 0 || this.warehouse.warehouseMaxX <= 0) {
+          this.getDicts('wms_tray_type').then(response => {
+            this.trayTypeOptions = response.data;
+          });
+          this.initDialogForm.warehouseId = warehouseId;
+          this.initDialog.open = true;
+          this.initDialog.title = `警告-当前未初始化`;
+        } else {
+          this.getList();
+        }
       });
     },
     checkPageParams(params) {
@@ -392,18 +405,19 @@ export default {
       this.loading = true;
       const warehouseId = this.warehouse.warehouseId;
       listWmsWarehouseExtItem({
-        warehouseId,
         ...this.queryParams,
-      }).then((res) => {
-        this.WmsWarehouseExtItemList = res.rows;
-        this.total = res.total;
-        if (res.total <= 0 || res.rows.length <= 0) {
-          this.getDicts('wms_tray_type').then(response => {
-            this.trayTypeOptions = response.data;
-          });
-          this.initDialogForm.warehouseId = warehouseId;
-          this.initDialog.open = true;
-          this.initDialog.title = `警告-当前未初始化`;
+        warehouseId,
+      }).then(({data}) => {
+        this.WmsWarehouseExtItemCanvasData = data.canvasList;
+        const maxX = data.x;
+        const maxY = data.y;
+        this.xList = []
+        this.yList = []
+        for (let i = 1; i <= maxX; i++) {
+          this.xList.push(i)
+        }
+        for (let i = 1; i <= maxY; i++) {
+          this.yList.push(i)
         }
         this.loading = false;
       });
@@ -514,10 +528,14 @@ export default {
     handleInitDialogClose() {
       this.$refs["initDialogForm"].validate(valid => {
         if (valid) {
+          this.loading = true;
           const initDialogForm = this.initDialogForm;
-          initDialogForm.dictCode = this.trayTypeOptions.find(i=>i.dictValue==initDialogForm.trayType).dictCode;
-          initWarehouseExtItem(initDialogForm).then(res=>{
-            console.log(res)
+          initDialogForm.dictCode = this.trayTypeOptions.find(i => i.dictValue == initDialogForm.trayType).dictCode;
+          initWarehouseExtItem(initDialogForm).then(res => {
+            this.loading = false;
+            this.initDialog.open = false;
+          }).finally(() => {
+            this.loading = false;
           });
         }
       });
