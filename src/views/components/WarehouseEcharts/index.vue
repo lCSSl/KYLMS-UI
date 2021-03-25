@@ -48,7 +48,7 @@ export default {
   computed: {
     canvasData() {
       return this.data.map(function (item) {
-        return [item.itemX, item.itemY, item ? item.status == '0' ? 1 : '-' : '-'];
+        return [item.itemX, item.itemY, item ? item.itemId%2==0 ? 1 : 0 : 0];
       });
     }
   },
@@ -70,10 +70,18 @@ export default {
       const charts = echarts.init(document.getElementById("warehouseExtItemCanvas"));
       const option = {
         tooltip: {},
+        grid: {
+          top: '0%',
+          bottom: '0%',
+          right: '0%',
+          left: '0%',
+          width: '100%',
+          height: '100%'
+        },
         visualMap: {
-          max: 20,
+          max: 6,
           inRange: {
-            color: ['#313695', '#4575b4', '#74add1', '#abd9e9', '#e0f3f8', '#ffffbf', '#fee090', '#fdae61', '#f46d43', '#d73027', '#a50026']
+            color: ['#989898','#83f364', '#fee090', '#fdae61', '#f46d43', '#d73027', '#a50026']
           }
         },
         xAxis3D: {
@@ -85,7 +93,8 @@ export default {
           data: this.y
         },
         zAxis3D: {
-          type: 'value'
+          type: 'category',
+          data:[1,2,3,4,5,6],
         },
         grid3D: {
           boxWidth: 200,
@@ -133,6 +142,6 @@ export default {
 <style>
 #warehouseExtItemCanvas {
   width: 1800px;
-  height: 1000px;
+  height: 500px;
 }
 </style>
