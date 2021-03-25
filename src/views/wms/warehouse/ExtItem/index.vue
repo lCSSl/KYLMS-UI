@@ -239,8 +239,28 @@
     <el-dialog :close-on-click-modal="false" :close-on-press-escape="false"
                :show-close="false" :visible.sync="initDialog.open">
       <span slot="title"><Icon name="warning-outline" color="#ffba00"/> {{initDialog.title}}</span>
+      <el-form ref="initDialogForm" :model="initDialogForm" :rules="initDialogFormRules" :inline="false">
+        <el-row>
+          <ICol>
+            <el-form-item label="托盘规格" prop="trayType">
+              <el-select v-model="initDialogForm.trayType" placeholder="请选择托盘规格">
+                <el-option v-for="(dict,index) in trayTypeOptions" :key="index" :value="dict.dictValue"
+                           :label="dict.dictLabel">
+                  {{dict.dictLabel}}
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </ICol>
+          <ICol>
+            <el-form-item label="托盘间隔" prop="trayInterval">
+              <el-input-number v-model="initDialogForm.trayInterval" :disabled="false" :min="100" prefix="mm"
+                               :step="10"></el-input-number>
+            </el-form-item>
+          </ICol>
+        </el-row>
+      </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary">确定</el-button>
+        <el-button type="warning" @click="handleInitDialogClose">初始化</el-button>
       </div>
     </el-dialog>
   </div>
@@ -256,12 +276,12 @@ import {
 } from "@/api/wms/WmsWarehouseExtItem";
 import ICol from "@/components/ICol/index";
 import Icon from "@/components/Icon/index";
-import {getWarehouse} from "@/api/wms/warehouse";
+import {getWarehouse, initWarehouseExtItem} from "@/api/wms/warehouse";
 
 export default {
   name: "WmsWarehouseExtItem",
   components: {
-    ICol,Icon
+    ICol, Icon
   },
   data() {
     return {
@@ -298,10 +318,17 @@ export default {
         type: 0,
         open: false,
       },
+      initDialogForm: {
+        warehouseId: '',
+        dictCode: '',
+        trayType: '',
+        trayInterval: 100,
+      },
       // 是否显示弹出层
       warehouse: {},
       // 状态字典
       statusOptions: [],
+      trayTypeOptions: [],
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -325,25 +352,34 @@ export default {
           {required: true, message: "方格纵轴不能为空", trigger: "blur"}
         ],
       },
+      initDialogFormRules: {
+        trayType: [
+          {required: true, message: "托盘类型不能为空", trigger: "blur"}
+        ],
+        trayInterval: [
+          {required: true, message: "托盘间距不能为空", trigger: "blur"}
+        ],
+      },
       toggleSearchFormValue: 0,
     };
   },
   created() {
-    const params = this.$route.params;
-    const warehouseId = params && params.warehouseId;
-    this.checkPageParams(params);
-    getWarehouse(warehouseId).then((res) => {
-      this.warehouse = res.data;
-      this.checkPageParams(this.warehouse);
-    });
-    this.getDicts("sys_common_status").then(response => {
-      this.statusOptions = response.data;
-    });
-  },
-  mounted() {
-    this.getList();
+    this.init();
   },
   methods: {
+    init() {
+      const params = this.$route.params;
+      const warehouseId = params && params.warehouseId;
+      this.checkPageParams(params);
+      getWarehouse(warehouseId).then((res) => {
+        this.warehouse = res.data;
+        this.checkPageParams(this.warehouse);
+        this.getList();
+        this.getDicts("sys_common_status").then(response => {
+          this.statusOptions = response.data;
+        });
+      });
+    },
     checkPageParams(params) {
       const {warehouseId} = params;
       if (warehouseId && warehouseId <= 0) {
@@ -354,15 +390,20 @@ export default {
     /** 查询仓库拓展-仓库方格信息列表 */
     getList() {
       this.loading = true;
+      const warehouseId = this.warehouse.warehouseId;
       listWmsWarehouseExtItem({
-        warehouseId: this.warehouse.warehouseId,
+        warehouseId,
         ...this.queryParams,
       }).then((res) => {
         this.WmsWarehouseExtItemList = res.rows;
         this.total = res.total;
         if (res.total <= 0 || res.rows.length <= 0) {
-          this.initDialog.open=true;
-          this.initDialog.title=`警告-当前未初始化`;
+          this.getDicts('wms_tray_type').then(response => {
+            this.trayTypeOptions = response.data;
+          });
+          this.initDialogForm.warehouseId = warehouseId;
+          this.initDialog.open = true;
+          this.initDialog.title = `警告-当前未初始化`;
         }
         this.loading = false;
       });
@@ -471,7 +512,15 @@ export default {
       }
     },
     handleInitDialogClose() {
-      console.log('close')
+      this.$refs["initDialogForm"].validate(valid => {
+        if (valid) {
+          const initDialogForm = this.initDialogForm;
+          initDialogForm.dictCode = this.trayTypeOptions.find(i=>i.dictValue==initDialogForm.trayType).dictCode;
+          initWarehouseExtItem(initDialogForm).then(res=>{
+            console.log(res)
+          });
+        }
+      });
     },
   }
 };

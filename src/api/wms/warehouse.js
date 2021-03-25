@@ -9,6 +9,7 @@ export function listWarehouse(query) {
     params: query
   })
 }
+
 // 查询仓库主管列表
 export function getWarehouseInChargeList() {
   return request({
@@ -49,4 +50,21 @@ export function delWarehouse(warehouseId) {
     url: '/wms/warehouse/' + warehouseId,
     method: 'delete'
   })
+}
+
+// 初始化站点(仓库)方格
+export function initWarehouseExtItem(data) {
+  return request({
+    url: '/wms/warehouse/initWarehouseExtItem' + testLoopObj(data),
+    method: 'post'
+  });
+}
+
+function testLoopObj(data) {
+  let params = '';
+  for (let key in data) {
+    params = params + '/' + data[key];
+  }
+  console.log(params)
+  return params;
 }

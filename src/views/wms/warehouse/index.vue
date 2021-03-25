@@ -261,7 +261,7 @@
         <!--            {{row.warehouseId}}-->
         <!--          </template>-->
         <!--        </el-table-column>-->
-        <el-table-column align="center" label="站点编码" prop="warehouseCode">
+        <el-table-column align="center" show-tooltip-when-overflow label="站点编码" prop="warehouseCode">
           <template slot-scope="{row}">
             {{row.warehouseCode}}
           </template>
@@ -767,13 +767,13 @@ export default {
           if (form.warehouseId != null) {
             updateWarehouse(form).then(response => {
               this.msgSuccess("修改成功");
-              this.form.open = false;
+              this.dialog.open = false;
               this.getList();
             });
           } else {
             addWarehouse(form).then(response => {
               this.msgSuccess("新增成功");
-              this.form.open = false;
+              this.dialog.open = false;
               this.getList();
             });
           }
