@@ -345,7 +345,7 @@
 <script>
 import { listUser, getUser, delUser, addUser, updateUser, resetUserPwd, changeUserStatus } from "@/api/system/user";
 import { getToken } from "@/utils/auth";
-import { treeselect } from "@/api/system/dept";
+import { treeSelect } from "@/api/system/dept";
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 
@@ -488,7 +488,7 @@ export default {
     },
     /** 查询部门下拉树结构 */
     getTreeSelect() {
-      treeselect().then(response => {
+      treeSelect().then(response => {
         this.deptOptions = response.data;
       });
     },

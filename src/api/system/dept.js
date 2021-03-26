@@ -33,17 +33,18 @@ export function getDeptNameByDeptId(deptId) {
 }
 
 // 查询部门下拉树结构
-export function treeselect() {
+export function treeSelect(params) {
   return request({
-    url: '/system/dept/treeselect',
-    method: 'get'
+    url: '/system/dept/treeSelect',
+    method: 'get',
+    params
   })
 }
 
 // 根据角色ID查询部门树结构
-export function roleDeptTreeselect(roleId) {
+export function roleDeptTreeSelect(roleId) {
   return request({
-    url: '/system/dept/roleDeptTreeselect/' + roleId,
+    url: '/system/dept/roleDeptTreeSelect/' + roleId,
     method: 'get'
   })
 }

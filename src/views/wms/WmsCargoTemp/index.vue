@@ -88,8 +88,8 @@
       <el-form-item label="贵重货物" prop="valuable">
         <el-select v-model="queryParams.valuable" placeholder="请选择贵重货物" clearable size="small">
           <el-option
-            v-for="dict in valuableOptions"
-            :key="dict.dictValue"
+            v-for="(dict,index) in valuableOptions"
+            :key="index"
             :label="dict.dictLabel"
             :value="dict.dictValue"
           />
@@ -100,8 +100,8 @@
       <el-form-item label="异形货物" prop="irregular">
         <el-select v-model="queryParams.irregular" placeholder="请选择异形货物" clearable size="small">
           <el-option
-            v-for="dict in irregularOptions"
-            :key="dict.dictValue"
+            v-for="(dict,index) in irregularOptions"
+            :key="index"
             :label="dict.dictLabel"
             :value="dict.dictValue"
           />
@@ -112,8 +112,8 @@
       <el-form-item label="货物单据" prop="documents">
         <el-select v-model="queryParams.documents" placeholder="请选择货物单据" clearable size="small">
           <el-option
-            v-for="dict in documentsOptions"
-            :key="dict.dictValue"
+            v-for="(dict,index) in documentsOptions"
+            :key="index"
             :label="dict.dictLabel"
             :value="dict.dictValue"
           />
@@ -124,8 +124,20 @@
       <el-form-item label="包装方式" prop="packageType">
         <el-select v-model="queryParams.packageType" placeholder="请选择包装方式" clearable size="small">
           <el-option
-            v-for="dict in packageTypeOptions"
-            :key="dict.dictValue"
+            v-for="(dict,index) in packageTypeOptions"
+            :key="index"
+            :label="dict.dictLabel"
+            :value="dict.dictValue"
+          />
+        </el-select>
+      </el-form-item>
+    </ICol>
+  <ICol>
+      <el-form-item label="状态" prop="status">
+        <el-select v-model="queryParams.status" placeholder="请选择状态" clearable size="small">
+          <el-option
+            v-for="(dict,index) in statusOptions"
+            :key="index"
             :label="dict.dictLabel"
             :value="dict.dictValue"
           />
@@ -194,7 +206,7 @@
     <el-table v-loading="loading" :data="WmsCargoTempList" @selection-change="handleSelectionChange">
       <el-table-column align="center" fixed type="selection" width="55"/>
       <el-table-column align="center" fixed label="序号" type="index" width="60"/>
-              <el-table-column label="主键ID--序号" show-overflow-tooltip width="150" align="center" prop="id" >
+              <el-table-column label="序号" show-overflow-tooltip width="150" align="center" prop="id" >
         <template slot-scope="{row}">
           {{row.id}}
         </template>
@@ -233,6 +245,12 @@
       <el-table-column label="异形货物" show-overflow-tooltip width="150" align="center" prop="irregular" :formatter="irregularFormat" />
       <el-table-column label="货物单据" show-overflow-tooltip width="150" align="center" prop="documents" :formatter="documentsFormat" />
       <el-table-column label="包装方式" show-overflow-tooltip width="150" align="center" prop="packageType" :formatter="packageTypeFormat" />
+      <el-table-column label="状态" show-overflow-tooltip width="150" align="center" prop="status" :formatter="statusFormat" />
+      <el-table-column label="开单备注" show-overflow-tooltip width="150" align="center" prop="remark" >
+        <template slot-scope="{row}">
+          {{row.remark}}
+        </template>
+      </el-table-column>
       <el-table-column label="操作" align="center" fixed="right" width="200" class-name="small-padding fixed-width">
          <template slot-scope="scope">
           <el-button
@@ -299,8 +317,8 @@
         <el-form-item label="贵重货物">
           <el-radio-group v-model="form.valuable">
             <el-radio
-              v-for="dict in valuableOptions"
-              :key="dict.dictValue"
+              v-for="(dict,index) in valuableOptions"
+              :key="index"
               :label="dict.dictValue"
             >{{dict.dictLabel}}</el-radio>
           </el-radio-group>
@@ -310,8 +328,8 @@
         <el-form-item label="异形货物">
           <el-radio-group v-model="form.irregular">
             <el-radio
-              v-for="dict in irregularOptions"
-              :key="dict.dictValue"
+              v-for="(dict,index) in irregularOptions"
+              :key="index"
               :label="dict.dictValue"
             >{{dict.dictLabel}}</el-radio>
           </el-radio-group>
@@ -321,8 +339,8 @@
         <el-form-item label="货物单据">
           <el-radio-group v-model="form.documents">
             <el-radio
-              v-for="dict in documentsOptions"
-              :key="dict.dictValue"
+              v-for="(dict,index) in documentsOptions"
+              :key="index"
               :label="dict.dictValue"
             >{{dict.dictLabel}}</el-radio>
           </el-radio-group>
@@ -332,14 +350,30 @@
         <el-form-item label="包装方式" prop="packageType">
           <el-select v-model="form.packageType" placeholder="请选择包装方式">
             <el-option
-              v-for="dict in packageTypeOptions"
-              :key="dict.dictValue"
+              v-for="(dict,index) in packageTypeOptions"
+              :key="index"
               :label="dict.dictLabel"
               :value="dict.dictValue"
             ></el-option>
           </el-select>
         </el-form-item>
 </ICol>
+<ICol>
+        <el-form-item label="状态">
+          <el-radio-group v-model="form.status">
+            <el-radio
+              v-for="(dict,index) in statusOptions"
+              :key="index"
+              :label="dict.dictValue"
+            >{{dict.dictLabel}}</el-radio>
+          </el-radio-group>
+        </el-form-item>
+</ICol>
+      <ICol>
+        <el-form-item label="开单备注" prop="remark">
+          <el-input v-model="form.remark" placeholder="请输入开单备注" />
+        </el-form-item>
+      </ICol>
         </el-row>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -394,6 +428,8 @@ export default {
       documentsOptions: [],
       // 包装方式字典
       packageTypeOptions: [],
+      // 状态字典
+      statusOptions: [],
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -407,7 +443,8 @@ export default {
         valuable: null,
         irregular: null,
         documents: null,
-        packageType: null
+        packageType: null,
+        status: null,
       },
       // 表单参数
       form: {},
@@ -430,6 +467,9 @@ export default {
     });
     this.getDicts("wms_cargo_package_type").then(response => {
       this.packageTypeOptions = response.data;
+    });
+    this.getDicts("sys_common_status").then(response => {
+      this.statusOptions = response.data;
     });
   },
   methods: {
@@ -458,6 +498,10 @@ export default {
     packageTypeFormat(row, column) {
       return this.selectDictLabel(this.packageTypeOptions, row.packageType);
     },
+    // 状态字典翻译
+    statusFormat(row, column) {
+      return this.selectDictLabel(this.statusOptions, row.status);
+    },
     // 取消按钮
     cancel() {
       this.open = false;
@@ -476,7 +520,14 @@ export default {
         valuable: "0",
         irregular: "0",
         documents: "0",
-        packageType: null
+        packageType: null,
+        status: "0",
+        delFlag: null,
+        createBy: null,
+        createTime: null,
+        updateBy: null,
+        updateTime: null,
+        remark: null
       };
       this.resetForm("form");
     },

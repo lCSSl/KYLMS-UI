@@ -16,14 +16,14 @@
       </div>
       <template v-if="toggleSearchFormValue>=1"></template>
       <template v-if="toggleSearchFormValue>=2"></template>
-      <el-form :model="queryParams" ref="queryForm" v-show="showSearch" label-position="left" label-width="100px">
+      <el-form v-show="showSearch" ref="queryForm" :model="queryParams" label-position="left" label-width="100px">
         <el-row :gutter="24">
           <ICol>
             <el-form-item label="编码" prop="cargoCode">
               <el-input
                 v-model="queryParams.cargoCode"
-                placeholder="请输入编码"
                 clearable
+                placeholder="请输入编码"
                 size="small"
                 @keyup.enter.native="handleQuery"
               />
@@ -33,8 +33,8 @@
             <el-form-item label="品名" prop="cargoName">
               <el-input
                 v-model="queryParams.cargoName"
-                placeholder="请输入品名"
                 clearable
+                placeholder="请输入品名"
                 size="small"
                 @keyup.enter.native="handleQuery"
               />
@@ -44,19 +44,19 @@
             <el-form-item label="单件重量" prop="cargoWeight">
               <el-input
                 v-model="queryParams.cargoWeight"
-                placeholder="请输入单件重量"
                 clearable
+                placeholder="请输入单件重量"
                 size="small"
                 @keyup.enter.native="handleQuery"
               />
             </el-form-item>
           </ICol>
           <ICol>
-            <el-form-item label="单件重量" prop="cargoVolume">
+            <el-form-item label="单件体积" prop="cargoVolume">
               <el-input
                 v-model="queryParams.cargoVolume"
-                placeholder="请输入单件重量"
                 clearable
+                placeholder="请输入单件体积"
                 size="small"
                 @keyup.enter.native="handleQuery"
               />
@@ -64,9 +64,9 @@
           </ICol>
           <ICol>
             <el-form-item label="贵重货物" prop="valuable">
-              <el-select v-model="queryParams.valuable" placeholder="请选择贵重货物" clearable size="small">
+              <el-select v-model="queryParams.valuable" clearable placeholder="请选择贵重货物" size="small">
                 <el-option
-                  v-for="(dict,index) in valuableOptions"
+                  v-for="(dict,index) in publicCommonYesNo"
                   :key="index"
                   :label="dict.dictLabel"
                   :value="dict.dictValue"
@@ -76,9 +76,9 @@
           </ICol>
           <ICol>
             <el-form-item label="异形货物" prop="irregular">
-              <el-select v-model="queryParams.irregular" placeholder="请选择异形货物" clearable size="small">
+              <el-select v-model="queryParams.irregular" clearable placeholder="请选择异形货物" size="small">
                 <el-option
-                  v-for="(dict,index) in irregularOptions"
+                  v-for="(dict,index) in publicCommonYesNo"
                   :key="index"
                   :label="dict.dictLabel"
                   :value="dict.dictValue"
@@ -88,9 +88,9 @@
           </ICol>
           <ICol>
             <el-form-item label="货物单据" prop="documents">
-              <el-select v-model="queryParams.documents" placeholder="请选择货物单据" clearable size="small">
+              <el-select v-model="queryParams.documents" clearable placeholder="请选择货物单据" size="small">
                 <el-option
-                  v-for="(dict,index) in documentsOptions"
+                  v-for="(dict,index) in publicCommonYesNo"
                   :key="index"
                   :label="dict.dictLabel"
                   :value="dict.dictValue"
@@ -100,7 +100,7 @@
           </ICol>
           <ICol>
             <el-form-item label="包装方式" prop="packageType">
-              <el-select v-model="queryParams.packageType" placeholder="请选择包装方式" clearable size="small">
+              <el-select v-model="queryParams.packageType" clearable placeholder="请选择包装方式" size="small">
                 <el-option
                   v-for="(dict,index) in packageTypeOptions"
                   :key="index"
@@ -111,30 +111,26 @@
             </el-form-item>
           </ICol>
           <ICol>
-            <el-form-item label="客户ID" prop="csrId">
-              <el-input
-                v-model="queryParams.csrId"
-                placeholder="请输入客户ID"
-                clearable
-                size="small"
-                @keyup.enter.native="handleQuery"
-              />
+            <el-form-item label="客户公司" prop="deptId">
+              <TreeSelect v-model="queryParams.deptId" :options="deptOptions" :show-count="true"
+                          placeholder="请选择归属部门" @select="handleQueryParamsDeptIdClick"/>
             </el-form-item>
           </ICol>
           <ICol>
-            <el-form-item label="部门ID-客户公司" prop="deptId">
-              <el-input
-                v-model="queryParams.deptId"
-                placeholder="请输入部门ID-客户公司"
-                clearable
-                size="small"
-                @keyup.enter.native="handleQuery"
-              />
+            <el-form-item label="客户" prop="csrId">
+              <el-select v-model="queryParams.csrId"
+                         :disabled="!this.queryParams.customerOptions.length > 0" placeholder="请选择站点主管"
+                         size="small"
+                         @keyup.enter.native="handleQuery">
+                <el-option v-for="(item,index) in queryParams.customerOptions" :key="index"
+                           :label="item.nickName"
+                           :value="item.userId"/>
+              </el-select>
             </el-form-item>
           </ICol>
           <ICol>
             <el-form-item label="状态" prop="status">
-              <el-select v-model="queryParams.status" placeholder="请选择状态" clearable size="small">
+              <el-select v-model="queryParams.status" clearable placeholder="请选择状态" size="small">
                 <el-option
                   v-for="(dict,index) in statusOptions"
                   :key="index"
@@ -148,7 +144,7 @@
         <el-row>
           <ICol type="search">
             <el-form-item>
-              <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+              <el-button icon="el-icon-search" size="mini" type="primary" @click="handleQuery">搜索</el-button>
               <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
             </el-form-item>
           </ICol>
@@ -159,47 +155,47 @@
       <el-row :gutter="10" class="mb8">
         <el-col :span="1.5">
           <el-button
-            type="primary"
-            plain
-            icon="el-icon-plus"
-            size="mini"
-            @click="handleAdd"
             v-hasPermi="['wms:cargo:add']"
+            icon="el-icon-plus"
+            plain
+            size="mini"
+            type="primary"
+            @click="handleAdd"
           >新增
           </el-button>
         </el-col>
         <el-col :span="1.5">
           <el-button
-            type="success"
-            plain
-            icon="el-icon-edit"
-            size="mini"
-            :disabled="single"
-            @click="handleUpdate"
             v-hasPermi="['wms:cargo:edit']"
+            :disabled="single"
+            icon="el-icon-edit"
+            plain
+            size="mini"
+            type="success"
+            @click="handleUpdate"
           >修改
           </el-button>
         </el-col>
         <el-col :span="1.5">
           <el-button
-            type="danger"
-            plain
-            icon="el-icon-delete"
-            size="mini"
-            :disabled="multiple"
-            @click="handleDelete"
             v-hasPermi="['wms:cargo:remove']"
+            :disabled="multiple"
+            icon="el-icon-delete"
+            plain
+            size="mini"
+            type="danger"
+            @click="handleDelete"
           >删除
           </el-button>
         </el-col>
         <el-col :span="1.5">
           <el-button
-            type="warning"
-            plain
-            icon="el-icon-download"
-            size="mini"
-            @click="handleExport"
             v-hasPermi="['wms:cargo:export']"
+            icon="el-icon-download"
+            plain
+            size="mini"
+            type="warning"
+            @click="handleExport"
           >导出
           </el-button>
         </el-col>
@@ -210,72 +206,68 @@
       <el-table v-loading="loading" :data="cargoList" @selection-change="handleSelectionChange">
         <el-table-column align="center" fixed type="selection" width="55"/>
         <el-table-column align="center" fixed label="序号" type="index" width="60"/>
-        <el-table-column label="主键ID" show-overflow-tooltip width="150" align="center" prop="cargoId">
-          <template slot-scope="{row}">
-            {{row.cargoId}}
-          </template>
-        </el-table-column>
-        <el-table-column label="编码" show-overflow-tooltip width="150" align="center" prop="cargoCode">
+        <el-table-column align="center" label="编码" prop="cargoCode" show-overflow-tooltip width="150">
           <template slot-scope="{row}">
             {{row.cargoCode}}
           </template>
         </el-table-column>
-        <el-table-column label="品名" show-overflow-tooltip width="150" align="center" prop="cargoName">
+        <el-table-column align="center" label="品名" prop="cargoName" show-overflow-tooltip width="150">
           <template slot-scope="{row}">
             {{row.cargoName}}
           </template>
         </el-table-column>
-        <el-table-column label="单件重量" show-overflow-tooltip width="150" align="center" prop="cargoWeight">
+        <el-table-column align="center" label="单件重量" prop="cargoWeight" show-overflow-tooltip width="150">
           <template slot-scope="{row}">
             {{row.cargoWeight}}
           </template>
         </el-table-column>
-        <el-table-column label="单件重量" show-overflow-tooltip width="150" align="center" prop="cargoVolume">
+        <el-table-column align="center" label="单件体积" prop="cargoVolume" show-overflow-tooltip width="150">
           <template slot-scope="{row}">
             {{row.cargoVolume}}
           </template>
         </el-table-column>
-        <el-table-column label="贵重货物" show-overflow-tooltip width="150" align="center" prop="valuable"
-                         :formatter="valuableFormat"/>
-        <el-table-column label="异形货物" show-overflow-tooltip width="150" align="center" prop="irregular"
-                         :formatter="irregularFormat"/>
-        <el-table-column label="货物单据" show-overflow-tooltip width="150" align="center" prop="documents"
-                         :formatter="documentsFormat"/>
-        <el-table-column label="包装方式" show-overflow-tooltip width="150" align="center" prop="packageType"
-                         :formatter="packageTypeFormat"/>
-        <el-table-column label="客户ID" show-overflow-tooltip width="150" align="center" prop="csrId">
+        <el-table-column :formatter="publicCommonYesNoFormat" align="center" label="贵重货物" prop="valuable" show-overflow-tooltip
+                         width="150"/>
+        <el-table-column :formatter="publicCommonYesNoFormat" align="center" label="异形货物" prop="irregular" show-overflow-tooltip
+                         width="150"/>
+        <el-table-column :formatter="publicCommonYesNoFormat" align="center" label="货物单据" prop="documents" show-overflow-tooltip
+                         width="150"/>
+        <el-table-column :formatter="packageTypeFormat" align="center" label="包装方式" prop="packageType"
+                         show-overflow-tooltip
+                         width="150"/>
+        <el-table-column align="center" label="客户ID" prop="csrId" show-overflow-tooltip width="150">
           <template slot-scope="{row}">
             {{row.csrId}}
           </template>
         </el-table-column>
-        <el-table-column label="部门ID-客户公司" show-overflow-tooltip width="150" align="center" prop="deptId">
+        <el-table-column align="center" label="部门ID-客户公司" prop="deptId" show-overflow-tooltip width="150">
           <template slot-scope="{row}">
             {{row.deptId}}
           </template>
         </el-table-column>
-        <el-table-column label="状态" show-overflow-tooltip width="150" align="center" prop="status"
-                         :formatter="statusFormat"/>
-        <el-table-column label="开单备注" show-overflow-tooltip width="150" align="center" prop="remark">
+        <el-table-column :formatter="statusFormat" align="center" label="状态" prop="status" show-overflow-tooltip
+                         width="150"/>
+        <el-table-column align="center" label="开单备注" prop="remark" show-overflow-tooltip width="150">
           <template slot-scope="{row}">
             {{row.remark}}
           </template>
         </el-table-column>
-        <el-table-column label="操作" align="center" fixed="right" width="200" class-name="small-padding fixed-width">
+        <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" width="200">
           <template slot-scope="scope">
             <el-button
+              v-hasPermi="['wms:cargo:edit']"
+              icon="el-icon-edit"
               size="mini"
               type="text"
-              icon="el-icon-edit"
               @click="handleUpdate(scope.row)"
-              v-hasPermi="['wms:cargo:edit']"
             >修改
             </el-button>
             <el-button
+              v-hasPermi="['wms:cargo:remove']"
+              icon="el-icon-delete"
               size="mini"
               type="text"
-              icon="el-icon-delete"
               @click="handleDelete(scope.row)"
-              v-hasPermi="['wms:cargo:remove']"
             >删除
             </el-button>
           </template>
@@ -284,14 +276,14 @@
 
       <pagination
         v-show="total>0"
-        :total="total"
-        :page.sync="queryParams.pageNum"
         :limit.sync="queryParams.pageSize"
+        :page.sync="queryParams.pageNum"
+        :total="total"
         @pagination="getList"
       />
     </el-card>
     <!-- 添加或修改货物对话框 -->
-    <el-dialog :title="title" fullscreen :visible.sync="open" append-to-body>
+    <el-dialog :title="title" :visible.sync="open" append-to-body fullscreen>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-row :gutter="24">
           <ICol>
@@ -306,22 +298,23 @@
           </ICol>
           <ICol>
             <el-form-item label="单件重量" prop="cargoWeight">
-              <el-input v-model="form.cargoWeight" placeholder="请输入单件重量"/>
+              <el-input-number v-model="form.cargoWeight" :min="0.01" placeholder="请输入单件重量" :precision="2" :step="0.1"/>
             </el-form-item>
           </ICol>
           <ICol>
-            <el-form-item label="单件重量" prop="cargoVolume">
-              <el-input v-model="form.cargoVolume" placeholder="请输入单件重量"/>
+            <el-form-item label="单件体积" prop="cargoVolume">
+              <el-input-number v-model="form.cargoVolume" :min="0.01" placeholder="请输入单件重量" :precision="2" :step="0.1"/>
             </el-form-item>
           </ICol>
           <ICol>
             <el-form-item label="贵重货物">
               <el-radio-group v-model="form.valuable">
                 <el-radio
-                  v-for="(dict,index) in valuableOptions"
+                  v-for="(dict,index) in publicCommonYesNo"
                   :key="index"
                   :label="dict.dictValue"
-                >{{dict.dictLabel}}
+                >
+                  {{dict.dictLabel}}
                 </el-radio>
               </el-radio-group>
             </el-form-item>
@@ -330,7 +323,7 @@
             <el-form-item label="异形货物">
               <el-radio-group v-model="form.irregular">
                 <el-radio
-                  v-for="(dict,index) in irregularOptions"
+                  v-for="(dict,index) in publicCommonYesNo"
                   :key="index"
                   :label="dict.dictValue"
                 >{{dict.dictLabel}}
@@ -342,7 +335,7 @@
             <el-form-item label="货物单据">
               <el-radio-group v-model="form.documents">
                 <el-radio
-                  v-for="(dict,index) in documentsOptions"
+                  v-for="(dict,index) in publicCommonYesNo"
                   :key="index"
                   :label="dict.dictValue"
                 >{{dict.dictLabel}}
@@ -363,13 +356,18 @@
             </el-form-item>
           </ICol>
           <ICol>
-            <el-form-item label="客户ID" prop="csrId">
-              <el-input v-model="form.csrId" placeholder="请输入客户ID"/>
+            <el-form-item label="客户公司" prop="deptId">
+              <TreeSelect v-model="form.deptId" :options="deptOptions" :show-count="true"
+                          placeholder="请选择归属部门" @select="handleFormDeptIdClick"/>
             </el-form-item>
           </ICol>
           <ICol>
-            <el-form-item label="部门ID-客户公司" prop="deptId">
-              <el-input v-model="form.deptId" placeholder="请输入部门ID-客户公司"/>
+            <el-form-item label="客户" prop="csrId">
+              <el-select v-model="form.csrId" :disabled="checkCustomerOptions"
+                         placeholder="请选择客户">
+                <el-option v-for="(item,index) in customerOptions" :key="index" :label="item.nickName"
+                           :value="item.userId"/>
+              </el-select>
             </el-form-item>
           </ICol>
           <ICol>
@@ -384,11 +382,6 @@
               </el-radio-group>
             </el-form-item>
           </ICol>
-<!--          <ICol>-->
-<!--            <el-form-item label="删除标志" prop="delFlag">-->
-<!--              <el-input v-model="form.delFlag" placeholder="请输入删除标志"/>-->
-<!--            </el-form-item>-->
-<!--          </ICol>-->
           <ICol>
             <el-form-item label="开单备注" prop="remark">
               <el-input v-model="form.remark" placeholder="请输入开单备注"/>
@@ -405,13 +398,24 @@
 </template>
 
 <script>
-import {listCargo, getCargo, delCargo, addCargo, updateCargo} from "@/api/wms/cargo";
+import {addCargo, delCargo, getCargo, listCargo, updateCargo} from "@/api/wms/cargo";
+import TreeSelect from "@riophae/vue-treeselect";
+import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import ICol from "@/components/ICol";
-
+import NumberInput from "@/components/NumberInput";
+import {treeSelect} from "@/api/system/dept";
+import {listUser} from "@/api/system/user";
 export default {
   name: "Cargo",
   components: {
     ICol,
+    TreeSelect,
+    NumberInput,
+  },
+  computed:{
+    checkCustomerOptions() {
+      return !this.customerOptions.length > 0;
+    },
   },
   data() {
     return {
@@ -442,15 +446,14 @@ export default {
       // 是否显示弹出层
       open: false,
       // 贵重货物字典
-      valuableOptions: [],
-      // 异形货物字典
-      irregularOptions: [],
-      // 货物单据字典
-      documentsOptions: [],
+      publicCommonYesNo: [],
       // 包装方式字典
       packageTypeOptions: [],
       // 状态字典
       statusOptions: [],
+      // 部门树选项
+      deptOptions: [],
+      customerOptions: [],
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -458,6 +461,7 @@ export default {
         cargoCode: null,
         cargoName: null,
         cargoWeight: null,
+        customerOptions: [],
         cargoVolume: null,
         valuable: null,
         irregular: null,
@@ -471,26 +475,8 @@ export default {
       form: {},
       // 表单校验
       rules: {
-        cargoName: [
-          {required: true, message: "品名不能为空", trigger: "blur"}
-        ],
-        cargoWeight: [
-          {required: true, message: "单件重量不能为空", trigger: "blur"}
-        ],
-        cargoVolume: [
-          {required: true, message: "单件重量不能为空", trigger: "blur"}
-        ],
-        valuable: [
-          {required: true, message: "贵重货物不能为空", trigger: "blur"}
-        ],
-        irregular: [
-          {required: true, message: "异形货物不能为空", trigger: "blur"}
-        ],
-        documents: [
-          {required: true, message: "货物单据不能为空", trigger: "blur"}
-        ],
-        packageType: [
-          {required: true, message: "包装方式不能为空", trigger: "change"}
+        cargoCode: [
+          {required: true, message: "编码不能为空", trigger: "blur"}
         ],
       },
       toggleSearchFormValue: 0,
@@ -498,14 +484,9 @@ export default {
   },
   created() {
     this.getList();
+    this.getTreeSelect();
     this.getDicts("public_common_yes_no").then(response => {
-      this.valuableOptions = response.data;
-    });
-    this.getDicts("public_common_yes_no").then(response => {
-      this.irregularOptions = response.data;
-    });
-    this.getDicts("public_common_yes_no").then(response => {
-      this.documentsOptions = response.data;
+      this.publicCommonYesNo = response.data;
     });
     this.getDicts("wms_cargo_package_type").then(response => {
       this.packageTypeOptions = response.data;
@@ -525,16 +506,8 @@ export default {
       });
     },
     // 贵重货物字典翻译
-    valuableFormat(row, column) {
-      return this.selectDictLabel(this.valuableOptions, row.valuable);
-    },
-    // 异形货物字典翻译
-    irregularFormat(row, column) {
-      return this.selectDictLabel(this.irregularOptions, row.irregular);
-    },
-    // 货物单据字典翻译
-    documentsFormat(row, column) {
-      return this.selectDictLabel(this.documentsOptions, row.documents);
+    publicCommonYesNoFormat(row, column) {
+      return this.selectDictLabel(this.publicCommonYesNo, row.valuable);
     },
     // 包装方式字典翻译
     packageTypeFormat(row, column) {
@@ -648,6 +621,38 @@ export default {
     toggleSearchForm(toggle) {
       if (toggle >= 0) {
         this.toggleSearchFormValue = toggle;
+      }
+    },
+    /** 查询部门下拉树结构 */
+    getTreeSelect() {
+      treeSelect({
+        parentId:110
+      }).then(response => {
+        this.deptOptions = response.data;
+      });
+    },
+    handleQueryParamsDeptIdClick({id, orderNum}) {
+      this.queryParams.csrId = '';
+      this.getUserInTheDepartment(id, orderNum, 0);
+    },
+    handleFormDeptIdClick({id, orderNum}) {
+      this.form.csrId = '';
+      this.getUserInTheDepartment(id, orderNum, 1);
+    },
+    getUserInTheDepartment(deptId, orderNum, type) {
+      if (deptId && +orderNum >= 0)
+        listUser({deptId}).then(res => {
+          switch (+type) {
+            case 0:
+              this.queryParams.customerOptions = res.rows;
+              break;
+            case 1:
+              this.customerOptions = res.rows;
+              break;
+          }
+        });
+      else {
+        return;
       }
     },
   }

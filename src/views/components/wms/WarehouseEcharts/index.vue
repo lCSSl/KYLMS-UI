@@ -1,5 +1,5 @@
 <template>
-  <el-card>
+  <el-card v-loading="isLoading">
     <div id="warehouseExtItemCanvas"></div>
   </el-card>
 </template>

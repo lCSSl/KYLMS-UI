@@ -24,7 +24,13 @@ export function getWmsWarehouseExtItemByXY(query) {
     params: query
   })
 }
-
+// 查询仓库拓展-仓库方格信息详细
+export function getWmsWaybillByItemId(itemId) {
+  return request({
+    url: '/wms/WmsWarehouseExtItem/getWaybillInfo/'+itemId,
+    method: 'get',
+  })
+}
 // 新增仓库拓展-仓库方格信息
 export function addWmsWarehouseExtItem(data) {
   return request({

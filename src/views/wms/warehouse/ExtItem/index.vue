@@ -16,7 +16,7 @@
       </div>
       <template v-if="toggleSearchFormValue>=1"></template>
       <template v-if="toggleSearchFormValue>=2"></template>
-      <el-form disabled v-show="showSearch" ref="queryForm" :model="queryParams" label-position="left"
+      <el-form v-show="showSearch" ref="queryForm" :model="queryParams" disabled label-position="left"
                label-width="100px">
         <el-row :gutter="24">
           <ICol>
@@ -131,8 +131,8 @@
     <el-card :body-style="{padding:'15px'}">
       <ICol
         :grid="{xs: {span: 24, offset: 0},sm: {span: 24, offset: 0},md: {span: 12, offset: 0},lg: {span: 12, offset: 0},xl: {span: 12, offset: 0}}">
-        <WarehouseEcharts @on-click-item="handleEchartsClickItem" v-model="WmsWarehouseExtItemCanvasData" :x="xList"
-                          :y="yList" :loading="loading"/>
+        <WarehouseEcharts v-model="WmsWarehouseExtItemCanvasData" :loading="loading" :x="xList"
+                          :y="yList" @on-click-item="handleEchartsClickItem"/>
       </ICol>
       <ICol
         :grid="{xs: {span: 24, offset: 0},sm: {span: 24, offset: 0},md: {span: 12, offset: 0},lg: {span: 12, offset: 0},xl: {span: 12, offset: 0}}">
@@ -140,16 +140,16 @@
           <div slot="header" class="clearfix">
             <span>{{itemCardTitle}}</span>
           </div>
-          <el-form :disabled="!form.itemId>0" ref="form" :model="form" label-position="top" :rules="rules">
+          <el-form ref="form" :disabled="!form.itemId>0" :model="form" :rules="rules" label-position="top">
             <el-row :gutter="24">
               <ICol>
                 <el-form-item label="方格横轴" prop="itemX">
-                  <el-input readonly v-model="form.itemX" placeholder="请输入方格横轴"/>
+                  <el-input v-model="form.itemX" placeholder="请输入方格横轴" readonly/>
                 </el-form-item>
               </ICol>
               <ICol>
                 <el-form-item label="方格纵轴" prop="itemY">
-                  <el-input readonly v-model="form.itemY" placeholder="请输入方格纵轴"/>
+                  <el-input v-model="form.itemY" placeholder="请输入方格纵轴" readonly/>
                 </el-form-item>
               </ICol>
               <ICol>
@@ -161,11 +161,11 @@
                     </el-tooltip>
                   </div>
                   <el-switch
-                    :disabled="showItemStatusTooltip"
                     v-model="form.status"
+                    :disabled="showItemStatusTooltip"
                     active-color="#13ce66"
-                    inactive-color="#ff4949"
                     active-value="1"
+                    inactive-color="#ff4949"
                     inactive-value="0">
                   </el-switch>
                 </el-form-item>
@@ -175,12 +175,13 @@
                   <el-input v-model="form.remark" placeholder="请输入内容" type="textarea"/>
                 </el-form-item>
               </ICol>
+              <ICol type="search">
+                <el-button v-if="showItemStatusTooltip" icon="el-icon-paperclip" @click="handleClickLookBindingWaybillCargo">查看装载运单</el-button>
+                <el-button :disabled="!form.itemId>0" type="primary" @click="submitForm">保 存</el-button>
+              </ICol>
             </el-row>
           </el-form>
-          <div class="dialog-footer">
-            <el-button type="primary" @click="submitForm">确 定</el-button>
-            <el-button @click="cancel">取 消</el-button>
-          </div>
+
         </el-card>
       </ICol>
       <!--<el-table v-loading="loading" :data="WmsWarehouseExtItemList" @selection-change="handleSelectionChange">
@@ -324,13 +325,14 @@
 import {
   addWmsWarehouseExtItem,
   delWmsWarehouseExtItem,
-  getWmsWarehouseExtItem, getWmsWarehouseExtItemByXY,
+  getWmsWarehouseExtItem,
+  getWmsWarehouseExtItemByXY, getWmsWaybillByItemId,
   listWmsWarehouseExtItem,
   updateWmsWarehouseExtItem
 } from "@/api/wms/WmsWarehouseExtItem";
 import ICol from "@/components/ICol/index";
 import Icon from "@/components/Icon/index";
-import WarehouseEcharts from "@/views/components/WarehouseEcharts/index";
+import WarehouseEcharts from "@/views/components/wms/WarehouseEcharts/index";
 import {getWarehouse, initWarehouseExtItem} from "@/api/wms/warehouse";
 
 export default {
@@ -552,9 +554,11 @@ export default {
         if (valid) {
           const form = this.form;
           if (form.itemId != null) {
+            const {itemId, status, remark,} = form;
             updateWmsWarehouseExtItem({
-              itemId: form.itemId,
-              status: form.status,
+              itemId,
+              status,
+              remark,
             }).then(response => {
               this.msgSuccess("修改成功");
               this.dialog.open = false;
@@ -622,6 +626,11 @@ export default {
       }).then(res => {
         this.form = res.data;
       });
+    },
+    handleClickLookBindingWaybillCargo(){
+      getWmsWaybillByItemId(this.form.itemId).then(res=>{
+        console.log(res)
+      })
     },
   }
 };

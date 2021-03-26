@@ -513,7 +513,7 @@ import {
 } from "@/api/wms/warehouse";
 import {multiply,divide} from '@/utils/number/math'
 import ICol from "@/components/ICol";
-import {treeselect} from "@/api/system/dept";
+import {treeSelect} from "@/api/system/dept";
 import TreeSelect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import RegionSelect from "@/components/regionSelect/index";
@@ -831,7 +831,7 @@ export default {
     },
     /** 查询部门下拉树结构 */
     getTreeSelect() {
-      treeselect().then(response => {
+      treeSelect().then(response => {
         this.deptOptions = response.data;
       });
     },

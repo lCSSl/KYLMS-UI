@@ -1,9 +1,11 @@
 <template>
-  <el-col :offset="offset" :pull="pull" :push="push" :xs="grid.xs" :sm="grid.sm" :md="grid.md" :lg="grid.lg"
-          :xl="grid.xl">
-    <slot>
+  <el-col :offset="offset" :pull="pull" :push="push" :xs="gridData.xs" :sm="gridData.sm" :md="gridData.md" :lg="gridData.lg"
+          :xl="gridData.xl">
+    <div :style="colStyle">
+      <slot>
 
-    </slot>
+      </slot>
+    </div>
   </el-col>
 </template>
 
@@ -29,18 +31,35 @@ export default {
     push: Number,
     type: String,
   },
+  watch: {
+    grid: {
+      handler(val) {
+        if (val !== this.gridData) {
+          this.gridData = val;
+        }
+      },
+      immediate: true
+    },
+  },
   computed: {},
+  data(){
+    return{
+      gridData:{},
+      colStyle:{},
+    };
+  },
   mounted() {
     switch (this.type) {
       case 'search':
-        this.grid.xs.offset = 0;
-        this.grid.sm.offset = 0;
-        this.grid.md.offset = 12;
-        this.grid.lg.offset = 18;
-        this.grid.xl.offset = 18;
+        this.gridData.xs.offset = 0;
+        this.gridData.sm.offset = 0;
+        this.gridData.md.offset = 12;
+        this.gridData.lg.offset = 18;
+        this.gridData.xl.offset = 18;
+        this.colStyle={display:'flex',justifyContent:'flex-end',};
         break;
       case 'full':
-        this.grid = {
+        this.gridData = {
           gutter: 24,
           xs: {span: 24, offset: 0},
           sm: {span: 24, offset: 0},
