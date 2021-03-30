@@ -8,6 +8,7 @@
 
 import * as echarts from "echarts";
 import 'echarts-gl';
+import {listWmsWarehouseExtItem} from "@/api/wms/WmsWarehouseExtItem";
 
 export default {
   props: {
@@ -39,7 +40,7 @@ export default {
         if (val !== this.isLoading) {
           this.isLoading = val;
           if (!this.isLoading) {
-            this.init();
+            this.checkData();
           }
         }
       },
@@ -48,29 +49,33 @@ export default {
   },
   computed: {
     canvasData() {
-      return this.data.map(function (item) {
+      return this.wmsWarehouseExtItemCanvasData.map(function (item) {
         return [item.itemX, item.itemY, item ? (item.status ? +item.status : 1) : 0];
       });
     }
   },
   data() {
     return {
+      wmsWarehouseExtItemCanvasData:[],
       data: '',
+      xList:[],
+      yList:[],
       isLoading: false,
     };
   },
   mounted() {
-    if (!this.isLoading && this.data.length > 0) {
-      this.init();
-    }
+    this.checkData();
   },
   methods: {
-    init() {
+    checkData(){
+      if (!this.isLoading && this.data&&this.data.warehouseId&&this.data.warehouseId > 0) {
+        this.getCanvasData();
+      }
+    },
+    initCanvas() {
       // var i=0;
       // 基于准备好的dom，初始化echarts实例
       const charts = echarts.init(document.getElementById("warehouseExtItemCanvas"));
-
-
       const option = {
         tooltip: {},
         toolbox: {
@@ -159,7 +164,29 @@ export default {
       charts.on('click', function (params) {
         that.$emit('on-click-item', params);
       });
-    }
+    },
+    getCanvasData() {
+      this.isLoading = true;
+      const warehouseId = this.value.warehouseId;
+      listWmsWarehouseExtItem({
+        ...this.queryParams,
+        warehouseId,
+      }).then(({data}) => {
+        this.wmsWarehouseExtItemCanvasData = data.canvasList;
+        const maxX = data.x;
+        const maxY = data.y;
+        this.xList = []
+        this.yList = []
+        for (let i = 1; i <= maxX; i++) {
+          this.xList.push(i)
+        }
+        for (let i = 1; i <= maxY; i++) {
+          this.yList.push(i)
+        }
+        this.initCanvas();
+        this.isLoading = false;
+      });
+    },
   }
 };
 </script>
