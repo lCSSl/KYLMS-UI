@@ -59,6 +59,13 @@ export function initWarehouseExtItem(data) {
     method: 'post'
   });
 }
+// 获取默认站点
+export function getDefaultWarehouse() {
+  return request({
+    url: '/wms/warehouse/getDefaultWarehouse',
+    method: 'get'
+  });
+}
 
 function testLoopObj(data) {
   let params = '';

@@ -383,7 +383,6 @@
     </el-dialog>
   </div>
 </template>
-
 <script>
 import { listWmsCargoTemp, getWmsCargoTemp, delWmsCargoTemp, addWmsCargoTemp, updateWmsCargoTemp } from "@/api/wms/WmsCargoTemp";
 import ICol from "@/components/ICol";

@@ -1,5 +1,5 @@
 <template>
-  <el-row :gutter="10">
+  <el-row :gutter="gutter">
     <ICol v-if="+regionLevel>=0" :grid="grid">
       <el-select v-model="provinceCode" :disabled="disabled" :size="size" placeholder="省" transfer
                  @change="(code)=>{setCode(code,0);setCityList(code);}">
@@ -53,6 +53,10 @@ export default {
       type: Boolean,
       default: false
     },
+    gutter:{
+      type:Number,
+      default:10,
+    },
     size: {
       type: String,
       default: 'small'
@@ -97,11 +101,11 @@ export default {
     value: {
       handler(val) {
         if (val !== this.currentValue) {
-          this.currentValue = val;
+          this.currentValue=val;
           if (this.currentValue) {
             this.main(this.currentValue);
           } else {
-            console.log('go watch')
+            this.reset();
             this.main();
           }
         }
@@ -137,7 +141,6 @@ export default {
           this.main(this.currentValue);
         }
       } else {
-        console.log('go init')
         this.main();
       }
     },
@@ -227,6 +230,7 @@ export default {
           break;
       }
       const regionLevel = this.regionLevel;
+      console.log(regionLevel,this.streetCode);
       switch (+regionLevel) {
         case 0:
           this.provinceCode ? this.status = true : this.status = false;
@@ -314,6 +318,15 @@ export default {
           this.provinceList = res.rows
         }));
       }
+    },
+    reset(){
+      this.provinceCode = '';
+      this.cityList = [];
+      this.cityCode = '';
+      this.districtList = [];
+      this.districtCode = '';
+      this.streetList = [];
+      this.streetCode = '';
     }
   },
   mounted() {
