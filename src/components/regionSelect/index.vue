@@ -53,9 +53,9 @@ export default {
       type: Boolean,
       default: false
     },
-    gutter:{
-      type:Number,
-      default:10,
+    gutter: {
+      type: Number,
+      default: 10,
     },
     size: {
       type: String,
@@ -101,7 +101,7 @@ export default {
     value: {
       handler(val) {
         if (val !== this.currentValue) {
-          this.currentValue=val;
+          this.currentValue = val;
           if (this.currentValue) {
             this.main(this.currentValue);
           } else {
@@ -230,7 +230,6 @@ export default {
           break;
       }
       const regionLevel = this.regionLevel;
-      console.log(regionLevel,this.streetCode);
       switch (+regionLevel) {
         case 0:
           this.provinceCode ? this.status = true : this.status = false;
@@ -309,7 +308,7 @@ export default {
       }));
     },
     main(val) {
-      if (val&&val.code) {
+      if (val && val.code) {
         this.renderData(val)
       } else {
         listArea({
@@ -319,7 +318,7 @@ export default {
         }));
       }
     },
-    reset(){
+    reset() {
       this.provinceCode = '';
       this.cityList = [];
       this.cityCode = '';

@@ -893,46 +893,54 @@
           <el-row>
             <ICol border>
               <el-form-item label="发货公司名称" prop="deliverCoName">
-                <el-input v-model="form.deliverCoName" placeholder="请输入发货公司名称"/>
+                <el-input v-model="form.deliverEntity.deliverCoName" placeholder="请输入发货公司名称"/>
               </el-form-item>
             </ICol>
             <ICol border>
               <el-form-item label="发货联系人" prop="consignorName">
-                <el-input v-model="form.consignorName" placeholder="请输入发货联系人"/>
+                <el-input v-model="form.deliverEntity.consignorName" placeholder="请输入发货联系人"/>
               </el-form-item>
             </ICol>
             <ICol border>
               <el-form-item label="发货人手机" prop="consignorMobile">
-                <el-input v-model="form.consignorMobile" placeholder="请输入发货人手机"/>
+                <el-input v-model="form.deliverEntity.consignorMobile" placeholder="请输入发货人手机"/>
               </el-form-item>
             </ICol>
             <ICol border>
               <el-form-item label="发货人座机" prop="consignorTelephone">
-                <el-input v-model="form.consignorTelephone" placeholder="请输入发货人座机"/>
+                <el-input v-model="form.deliverEntity.consignorTelephone" placeholder="请输入发货人座机"/>
               </el-form-item>
             </ICol>
           </el-row>
           <el-row>
-            <ICol border>
-              <el-form-item label="收货公司名称" prop="receivingCoName">
-                <el-input v-model="form.receivingCoName" placeholder="请输入收货公司名称"/>
-              </el-form-item>
-            </ICol>
-            <ICol border>
-              <el-form-item label="收货联系人" prop="consigneeName">
-                <el-input v-model="form.consigneeName" placeholder="请输入收货联系人"/>
-              </el-form-item>
-            </ICol>
-            <ICol border>
-              <el-form-item label="收货人手机" prop="consigneeMobile">
-                <el-input v-model="form.consigneeMobile" placeholder="请输入收货人手机"/>
-              </el-form-item>
-            </ICol>
-            <ICol border>
-              <el-form-item label="收货人座机" prop="consigneeTelephone">
-                <el-input v-model="form.consigneeTelephone" placeholder="请输入收货人座机"/>
-              </el-form-item>
-            </ICol>
+            <template>
+              <ICol v-if="!form.receivingEntity.visible" type="full">
+                <el-form-item label="收货方" prop="receivingEntity">
+                </el-form-item>
+              </ICol>
+            </template>
+            <template v-if="form.receivingEntity.visible">
+              <ICol border>
+                <el-form-item label="收货公司名称" prop="receivingCoName">
+                  <el-input v-model="form.receivingEntity.receivingCoName" placeholder="请输入收货公司名称"/>
+                </el-form-item>
+              </ICol>
+              <ICol border>
+                <el-form-item label="收货联系人" prop="consigneeName">
+                  <el-input v-model="form.receivingEntity.consigneeName" placeholder="请输入收货联系人"/>
+                </el-form-item>
+              </ICol>
+              <ICol border>
+                <el-form-item label="收货人手机" prop="consigneeMobile">
+                  <el-input v-model="form.receivingEntity.consigneeMobile" placeholder="请输入收货人手机"/>
+                </el-form-item>
+              </ICol>
+              <ICol border>
+                <el-form-item label="收货人座机" prop="consigneeTelephone">
+                  <el-input v-model="form.receivingEntity.consigneeTelephone" placeholder="请输入收货人座机"/>
+                </el-form-item>
+              </ICol>
+            </template>
           </el-row>
           <el-row>
             <ICol border type="half">
@@ -1288,6 +1296,8 @@ export default {
       },
       // 表单参数
       form: {
+        deliverEntity: {},
+        receivingEntity: {},
         provinceCityDistrictStreet: null
       },
       // 表单校验
@@ -1421,19 +1431,33 @@ export default {
         departure: null,
         destination: null,
         transitPlace: null,
+        deliverEntity: {
+          visible: false,
+          deliverCoName: null,
+          consignorName: null,
+          consignorMobile: null,
+          consignorTelephone: null,
+        },
+        receivingEntity: {
+          visible: false,
+          receivingCoName: null,
+          consigneeName: null,
+          consigneeMobile: null,
+          consigneeTelephone: null,
+        },
         csrId: null,
         csrCode: null,
         regionSelectValue: null,
         provinceCityDistrictStreet: null,
         csrOrderNumber: null,
+        deliverCoName: null,
+        consignorName: null,
         consignorMobile: null,
         consignorTelephone: null,
-        consignorName: null,
-        deliverCoName: null,
+        receivingCoName: null,
+        consigneeName: null,
         consigneeMobile: null,
         consigneeTelephone: null,
-        consigneeName: null,
-        receivingCoName: null,
         receivingProvince: null,
         receivingCity: null,
         receivingDistrict: null,
@@ -1525,9 +1549,23 @@ export default {
             },
           },
         };
+        this.form.deliverEntity = {
+          visible: true,
+          deliverCoName: data.deliverCoName,
+          consignorName: data.consignorName,
+          consignorMobile: data.consignorMobile,
+          consignorTelephone: data.consignorTelephone,
+        };
+        this.form.receivingEntity = {
+          visible: true,
+          receivingCoName: data.receivingCoName,
+          consigneeName: data.consigneeName,
+          consigneeMobile: data.consigneeMobile,
+          consigneeTelephone: data.consigneeTelephone,
+        };
         this.form.provinceCityDistrictStreet = '';
-        this.form.departure = +this.form.departure;
-        this.form.destination = +this.form.destination;
+        this.form.departure = +data.departure;
+        this.form.destination = +data.destination;
         this.dialog.open = true;
         this.dialog.type = 1;
         this.dialog.title = "修改运单信息";
