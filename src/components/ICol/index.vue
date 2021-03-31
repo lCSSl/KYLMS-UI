@@ -107,6 +107,16 @@ export default {
           xl: {span: 8, offset: 0}
         }
         break;
+      case 'two_thirds':
+        this.gridData = {
+          gutter: 24,
+          xs: {span: 24, offset: 0},
+          sm: {span: 16, offset: 0},
+          md: {span: 16, offset: 0},
+          lg: {span: 16, offset: 0},
+          xl: {span: 16, offset: 0}
+        }
+        break;
       case 'quarter':
         this.gridData = {
           gutter: 24,

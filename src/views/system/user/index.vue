@@ -258,7 +258,7 @@
 import {changeUserStatus, delUser, listUser, resetUserPwd} from "@/api/system/user";
 import {getToken} from "@/utils/auth";
 import {treeSelect} from "@/api/system/dept";
-import UserDialog from '@/views/components/system/user/dialog'
+import UserDialog from '@/views/components/system/user/Dialog'
 
 export default {
   name: "User",

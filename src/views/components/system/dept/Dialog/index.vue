@@ -137,15 +137,14 @@ export default {
 
   methods: {
     checkProps() {
-      console.log('check')
       if (this.value !== this.row) {
         this.row = this.value;
       }
       if (this.option !== this.dialog) {
         this.dialog.type = this.option.type;
-        this.dialog.open = this.option.open;
+        // this.dialog.open = this.option.open;
       }
-      if (this.dialog.open) {
+      if (this.option.open) {
         const type = +this.dialog.type;
         switch (type) {
           case 0:

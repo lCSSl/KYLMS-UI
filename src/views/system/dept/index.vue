@@ -145,7 +145,7 @@
 
 <script>
 import {addDept, delDept, listDept, updateDept} from "@/api/system/dept";
-import DeptDialog from "@/views/components/system/dept/dialog";
+import DeptDialog from "@/views/components/system/dept/Dialog";
 
 export default {
   name: "Dept",

@@ -74,3 +74,9 @@ export function delDept(deptId) {
     method: 'delete'
   })
 }
+export function countByName(deptName){
+  return request({
+    url: '/system/dept/count/name/' + deptName,
+    method: 'get'
+  })
+}

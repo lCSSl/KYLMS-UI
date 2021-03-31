@@ -57,8 +57,8 @@
               <el-radio
                 v-for="dict in statusOptions"
                 :key="dict.dictValue"
-                :label="dict.dictValue"
-              >{{dict.dictLabel}}
+                :label="dict.dictValue">
+                {{dict.dictLabel}}
               </el-radio>
             </el-radio-group>
           </el-form-item>
@@ -86,8 +86,7 @@
                 :key="item.roleId"
                 :disabled="item.status == 1"
                 :label="item.roleName"
-                :value="item.roleId"
-              ></el-option>
+                :value="item.roleId"/>
             </el-select>
           </el-form-item>
         </el-col>
@@ -108,9 +107,9 @@
 </template>
 
 <script>
-import TreeSelect from "@riophae/vue-treeselect";
 import {addUser, getUser, updateUser} from "@/api/system/user";
 import {treeSelect} from "@/api/system/dept";
+import TreeSelect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 
 export default {
@@ -206,15 +205,14 @@ export default {
   },
   methods: {
     checkProps() {
-      console.log('check')
       if (this.value !== this.row) {
         this.row = this.value;
       }
       if (this.option !== this.dialog) {
         this.dialog.type = this.option.type;
-        this.dialog.open = this.option.open;
+        // this.dialog.open = this.option.open;
       }
-      if (this.dialog.open) {
+      if (this.option.open) {
         const type = +this.dialog.type;
         switch (type) {
           case 0:
