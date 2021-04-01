@@ -5,7 +5,7 @@
       :current-page.sync="currentPage"
       :page-size.sync="pageSize"
       :layout="layout"
-      :page-sizes="pageSizes"
+      :page-sizes="computedPageSizes"
       :total="total"
       v-bind="$attrs"
       @size-change="handleSizeChange"
@@ -35,7 +35,7 @@ export default {
     pageSizes: {
       type: Array,
       default() {
-        return [10, 50, 100, 200]
+        return []
       }
     },
     layout: {
@@ -71,7 +71,14 @@ export default {
       set(val) {
         this.$emit('update:limit', val)
       }
-    }
+    },
+    computedPageSizes(){
+      let pageSizes= [10, 50, 100, 200]
+      if (pageSizes.indexOf(this.limit)<0){
+        pageSizes = [this.limit,10,50,100,200];
+      }
+      return pageSizes;
+    },
   },
   methods: {
     handleSizeChange(val) {

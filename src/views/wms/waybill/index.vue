@@ -626,97 +626,97 @@
             {{row.transitPlace}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="客户ID" prop="csrId">
+        <el-table-column align="center" label="客户ID" show-overflow-tooltip  prop="csrId">
           <template slot-scope="{row}">
             {{row.csrId}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="客户编号" prop="csrCode">
+        <el-table-column align="center" label="客户编号" show-overflow-tooltip  prop="csrCode">
           <template slot-scope="{row}">
             {{row.csrCode}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="客户单号" prop="csrOrderNumber">
+        <el-table-column align="center" label="客户单号" show-overflow-tooltip  prop="csrOrderNumber">
           <template slot-scope="{row}">
             {{row.csrOrderNumber}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="发货人手机" prop="consignorMobile" show-overflow-tooltip width="150">
+        <el-table-column align="center" label="发货人手机" show-overflow-tooltip  prop="consignorMobile" show-overflow-tooltip width="150">
           <template slot-scope="{row}">
             {{row.consignorMobile}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="发货人座机" prop="consignorTelephone" show-overflow-tooltip width="150">
+        <el-table-column align="center" label="发货人座机" show-overflow-tooltip  prop="consignorTelephone" show-overflow-tooltip width="150">
           <template slot-scope="{row}">
             {{row.consignorTelephone}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="发货联系人" prop="consignorName" show-overflow-tooltip width="150">
+        <el-table-column align="center" label="发货联系人" show-overflow-tooltip  prop="consignorName" show-overflow-tooltip width="150">
           <template slot-scope="{row}">
             {{row.consignorName}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="发货公司名称" prop="deliverCoName" show-overflow-tooltip width="150">
+        <el-table-column align="center" label="发货公司名称" show-overflow-tooltip  prop="deliverCoName" show-overflow-tooltip width="150">
           <template slot-scope="{row}">
             {{row.deliverCoName}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="收货人手机" prop="consigneeMobile" show-overflow-tooltip width="150">
+        <el-table-column align="center" label="收货人手机" show-overflow-tooltip  prop="consigneeMobile" show-overflow-tooltip width="150">
           <template slot-scope="{row}">
             {{row.consigneeMobile}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="收货人座机" prop="consigneeTelephone" show-overflow-tooltip width="150">
+        <el-table-column align="center" label="收货人座机" show-overflow-tooltip  prop="consigneeTelephone" show-overflow-tooltip width="150">
           <template slot-scope="{row}">
             {{row.consigneeTelephone}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="收货联系人" prop="consigneeName" show-overflow-tooltip width="150">
+        <el-table-column align="center" label="收货联系人" show-overflow-tooltip  prop="consigneeName" show-overflow-tooltip width="150">
           <template slot-scope="{row}">
             {{row.consigneeName}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="收货公司名称" prop="receivingCoName" show-overflow-tooltip width="150">
+        <el-table-column align="center" label="收货公司名称" show-overflow-tooltip  prop="receivingCoName" show-overflow-tooltip width="150">
           <template slot-scope="{row}">
             {{row.receivingCoName}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="收货省" prop="receivingProvince" show-overflow-tooltip width="150">
+        <el-table-column align="center" label="收货省" show-overflow-tooltip  prop="receivingProvince" show-overflow-tooltip width="150">
           <template slot-scope="{row}">
             {{row.receivingProvince}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="收货市" prop="receivingCity" show-overflow-tooltip width="150">
+        <el-table-column align="center" label="收货市" show-overflow-tooltip  prop="receivingCity" show-overflow-tooltip width="150">
           <template slot-scope="{row}">
             {{row.receivingCity}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="收货区" prop="receivingDistrict" show-overflow-tooltip width="150">
+        <el-table-column align="center" label="收货区" show-overflow-tooltip  prop="receivingDistrict" show-overflow-tooltip width="150">
           <template slot-scope="{row}">
             {{row.receivingDistrict}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="收货街道" prop="receivingStreet" show-overflow-tooltip width="150">
+        <el-table-column align="center" label="收货街道" show-overflow-tooltip  prop="receivingStreet" show-overflow-tooltip width="150">
           <template slot-scope="{row}">
             {{row.receivingStreet}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="收货详细地址" prop="receivingAddress" show-overflow-tooltip width="150">
+        <el-table-column align="center" label="收货详细地址" show-overflow-tooltip  prop="receivingAddress" show-overflow-tooltip width="150">
           <template slot-scope="{row}">
             {{row.receivingAddress}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="开单事业部" prop="deptId" show-overflow-tooltip width="150">
+        <el-table-column align="center" label="开单事业部" show-overflow-tooltip  prop="deptId" show-overflow-tooltip width="150">
           <template slot-scope="{row}">
             {{row.deptId}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="配载站点" prop="stowageId" show-overflow-tooltip width="150">
+        <el-table-column align="center" label="配载站点" show-overflow-tooltip  prop="stowageId" show-overflow-tooltip width="150">
           <template slot-scope="{row}">
             {{row.stowageId}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="目的网点" prop="destinationNode" show-overflow-tooltip width="150">
+        <el-table-column align="center" label="目的网点" show-overflow-tooltip  prop="destinationNode" show-overflow-tooltip width="150">
           <template slot-scope="{row}">
             {{row.destinationNode}}
           </template>
@@ -959,20 +959,6 @@ export default {
         provinceCityDistrictStreet: null
       },
       // 表单校验
-      rules: {
-        destination: [
-          {required: true, message: "到达站不能为空", trigger: "blur"}
-        ],
-        departure: [
-          {required: true, message: "始发站不能为空", trigger: "blur"}
-        ],
-        destinationNode: [
-          {required: true, message: "目的网点不能为空", trigger: "blur"}
-        ],
-        creationSource: [
-          {required: true, message: "开单来源不能为空", trigger: "blur"}
-        ],
-      },
       toggleSearchFormValue: 0,
     };
   },
@@ -1009,13 +995,11 @@ export default {
       this.getDicts("wms_waybill_receipt_status").then(response => {
         this.receiptStatusOptions = response.data;
       });
-      this.getDicts("sys_common_status").then(response => {
+      this.getDicts("public_common_yes_no").then(response => {
         this.rebateReturnedOptions = response.data;
-      });
-      this.getDicts("sys_common_status").then(response => {
         this.writeInvoiceOptions = response.data;
       });
-      this.getDicts("wms_waybile_status").then(response => {
+      this.getDicts("wms_waybill_status").then(response => {
         this.waybillStatusOptions = response.data;
       });
       this.getDicts("sys_common_status").then(response => {

@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-// 查询运单货物临时列表
+// 查询运单货物临时表列表
 export function listWmsCargoTemp(query) {
   return request({
     url: '/wms/WmsCargoTemp/list',
@@ -9,7 +9,7 @@ export function listWmsCargoTemp(query) {
   })
 }
 
-// 查询运单货物临时详细
+// 查询运单货物临时表详细
 export function getWmsCargoTemp(id) {
   return request({
     url: '/wms/WmsCargoTemp/' + id,
@@ -17,7 +17,7 @@ export function getWmsCargoTemp(id) {
   })
 }
 
-// 新增运单货物临时
+// 新增运单货物临时表
 export function addWmsCargoTemp(data) {
   return request({
     url: '/wms/WmsCargoTemp',
@@ -26,7 +26,7 @@ export function addWmsCargoTemp(data) {
   })
 }
 
-// 修改运单货物临时
+// 修改运单货物临时表
 export function updateWmsCargoTemp(data) {
   return request({
     url: '/wms/WmsCargoTemp',
@@ -35,7 +35,7 @@ export function updateWmsCargoTemp(data) {
   })
 }
 
-// 删除运单货物临时
+// 删除运单货物临时表
 export function delWmsCargoTemp(id) {
   return request({
     url: '/wms/WmsCargoTemp/' + id,

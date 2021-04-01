@@ -19,10 +19,111 @@
     <el-form :model="queryParams" ref="queryForm" v-show="showSearch" label-position="left" label-width="100px" >
       <el-row :gutter="24">
     <ICol>
-      <el-form-item label="运单ID" prop="waybillId">
+      <el-form-item label="品名" prop="tCargoName">
         <el-input
-          v-model="queryParams.waybillId"
-          placeholder="请输入运单ID"
+          v-model="queryParams.tCargoName"
+          placeholder="请输入品名"
+          clearable
+          size="small"
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+    </ICol>
+  <ICol>
+      <el-form-item label="包装方式" prop="packageType">
+        <el-select v-model="queryParams.packageType" placeholder="请选择包装方式" clearable size="small">
+          <el-option
+            v-for="(dict,index) in packageTypeOptions"
+            :key="index"
+            :label="dict.dictLabel"
+            :value="dict.dictValue"
+          />
+        </el-select>
+      </el-form-item>
+    </ICol>
+    <ICol>
+      <el-form-item label="件数" prop="tCargoCount">
+        <el-input
+          v-model="queryParams.tCargoCount"
+          placeholder="请输入件数"
+          clearable
+          size="small"
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+    </ICol>
+  <ICol>
+      <el-form-item label="计价方式" prop="valuationType">
+        <el-select v-model="queryParams.valuationType" placeholder="请选择计价方式" clearable size="small">
+          <el-option
+            v-for="(dict,index) in valuationTypeOptions"
+            :key="index"
+            :label="dict.dictLabel"
+            :value="dict.dictValue"
+          />
+        </el-select>
+      </el-form-item>
+    </ICol>
+    <ICol>
+      <el-form-item label="计价值" prop="valuationValue">
+        <el-input
+          v-model="queryParams.valuationValue"
+          placeholder="请输入计价值"
+          clearable
+          size="small"
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+    </ICol>
+    <ICol>
+      <el-form-item label="计量数" prop="valuationCount">
+        <el-input
+          v-model="queryParams.valuationCount"
+          placeholder="请输入计量数"
+          clearable
+          size="small"
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+    </ICol>
+    <ICol>
+      <el-form-item label="基础运费" prop="tCargoTotalFee">
+        <el-input
+          v-model="queryParams.tCargoTotalFee"
+          placeholder="请输入基础运费"
+          clearable
+          size="small"
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+    </ICol>
+    <ICol>
+      <el-form-item label="贵重货物" prop="valuable">
+        <el-input
+          v-model="queryParams.valuable"
+          placeholder="请输入贵重货物"
+          clearable
+          size="small"
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+    </ICol>
+    <ICol>
+      <el-form-item label="异形货物" prop="irregular">
+        <el-input
+          v-model="queryParams.irregular"
+          placeholder="请输入异形货物"
+          clearable
+          size="small"
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+    </ICol>
+    <ICol>
+      <el-form-item label="货物单据" prop="documents">
+        <el-input
+          v-model="queryParams.documents"
+          placeholder="请输入货物单据"
           clearable
           size="small"
           @keyup.enter.native="handleQuery"
@@ -41,95 +142,14 @@
       </el-form-item>
     </ICol>
     <ICol>
-      <el-form-item label="品名" prop="tCargoName">
+      <el-form-item label="运单ID" prop="waybillId">
         <el-input
-          v-model="queryParams.tCargoName"
-          placeholder="请输入品名"
+          v-model="queryParams.waybillId"
+          placeholder="请输入运单ID"
           clearable
           size="small"
           @keyup.enter.native="handleQuery"
         />
-      </el-form-item>
-    </ICol>
-    <ICol>
-      <el-form-item label="件数" prop="tCargoNumber">
-        <el-input
-          v-model="queryParams.tCargoNumber"
-          placeholder="请输入件数"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-    </ICol>
-    <ICol>
-      <el-form-item label="重量" prop="tCargoTotalWeight">
-        <el-input
-          v-model="queryParams.tCargoTotalWeight"
-          placeholder="请输入重量"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-    </ICol>
-    <ICol>
-      <el-form-item label="体积" prop="tCargoTotalVolume">
-        <el-input
-          v-model="queryParams.tCargoTotalVolume"
-          placeholder="请输入体积"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-    </ICol>
-  <ICol>
-      <el-form-item label="贵重货物" prop="valuable">
-        <el-select v-model="queryParams.valuable" placeholder="请选择贵重货物" clearable size="small">
-          <el-option
-            v-for="(dict,index) in valuableOptions"
-            :key="index"
-            :label="dict.dictLabel"
-            :value="dict.dictValue"
-          />
-        </el-select>
-      </el-form-item>
-    </ICol>
-  <ICol>
-      <el-form-item label="异形货物" prop="irregular">
-        <el-select v-model="queryParams.irregular" placeholder="请选择异形货物" clearable size="small">
-          <el-option
-            v-for="(dict,index) in irregularOptions"
-            :key="index"
-            :label="dict.dictLabel"
-            :value="dict.dictValue"
-          />
-        </el-select>
-      </el-form-item>
-    </ICol>
-  <ICol>
-      <el-form-item label="货物单据" prop="documents">
-        <el-select v-model="queryParams.documents" placeholder="请选择货物单据" clearable size="small">
-          <el-option
-            v-for="(dict,index) in documentsOptions"
-            :key="index"
-            :label="dict.dictLabel"
-            :value="dict.dictValue"
-          />
-        </el-select>
-      </el-form-item>
-    </ICol>
-  <ICol>
-      <el-form-item label="包装方式" prop="packageType">
-        <el-select v-model="queryParams.packageType" placeholder="请选择包装方式" clearable size="small">
-          <el-option
-            v-for="(dict,index) in packageTypeOptions"
-            :key="index"
-            :label="dict.dictLabel"
-            :value="dict.dictValue"
-          />
-        </el-select>
       </el-form-item>
     </ICol>
   <ICol>
@@ -206,19 +226,9 @@
     <el-table v-loading="loading" :data="WmsCargoTempList" @selection-change="handleSelectionChange">
       <el-table-column align="center" fixed type="selection" width="55"/>
       <el-table-column align="center" fixed label="序号" type="index" width="60"/>
-              <el-table-column label="序号" show-overflow-tooltip width="150" align="center" prop="id" >
+              <el-table-column label="主键ID--序号" show-overflow-tooltip width="150" align="center" prop="id" >
         <template slot-scope="{row}">
           {{row.id}}
-        </template>
-      </el-table-column>
-      <el-table-column label="运单ID" show-overflow-tooltip width="150" align="center" prop="waybillId" >
-        <template slot-scope="{row}">
-          {{row.waybillId}}
-        </template>
-      </el-table-column>
-      <el-table-column label="货物ID" show-overflow-tooltip width="150" align="center" prop="cargoId" >
-        <template slot-scope="{row}">
-          {{row.cargoId}}
         </template>
       </el-table-column>
       <el-table-column label="品名" show-overflow-tooltip width="150" align="center" prop="tCargoName" >
@@ -226,25 +236,41 @@
           {{row.tCargoName}}
         </template>
       </el-table-column>
-      <el-table-column label="件数" show-overflow-tooltip width="150" align="center" prop="tCargoNumber" >
+      <el-table-column label="包装方式" show-overflow-tooltip width="150" align="center" prop="packageType" :formatter="packageTypeFormat" />
+      <el-table-column label="件数" show-overflow-tooltip width="150" align="center" prop="tCargoCount" >
         <template slot-scope="{row}">
-          {{row.tCargoNumber}}
+          {{row.tCargoCount}}
         </template>
       </el-table-column>
-      <el-table-column label="重量" show-overflow-tooltip width="150" align="center" prop="tCargoTotalWeight" >
+      <el-table-column label="计价方式" show-overflow-tooltip width="150" align="center" prop="valuationType" :formatter="valuationTypeFormat" />
+      <el-table-column label="计价值" show-overflow-tooltip width="150" align="center" prop="valuationValue" >
         <template slot-scope="{row}">
-          {{row.tCargoTotalWeight}}
+          {{row.valuationValue}}
         </template>
       </el-table-column>
-      <el-table-column label="体积" show-overflow-tooltip width="150" align="center" prop="tCargoTotalVolume" >
+      <el-table-column label="计量数" show-overflow-tooltip width="150" align="center" prop="valuationCount" >
         <template slot-scope="{row}">
-          {{row.tCargoTotalVolume}}
+          {{row.valuationCount}}
+        </template>
+      </el-table-column>
+      <el-table-column label="基础运费" show-overflow-tooltip width="150" align="center" prop="tCargoTotalFee" >
+        <template slot-scope="{row}">
+          {{row.tCargoTotalFee}}
         </template>
       </el-table-column>
       <el-table-column label="贵重货物" show-overflow-tooltip width="150" align="center" prop="valuable" :formatter="valuableFormat" />
       <el-table-column label="异形货物" show-overflow-tooltip width="150" align="center" prop="irregular" :formatter="irregularFormat" />
       <el-table-column label="货物单据" show-overflow-tooltip width="150" align="center" prop="documents" :formatter="documentsFormat" />
-      <el-table-column label="包装方式" show-overflow-tooltip width="150" align="center" prop="packageType" :formatter="packageTypeFormat" />
+      <el-table-column label="货物ID" show-overflow-tooltip width="150" align="center" prop="cargoId" >
+        <template slot-scope="{row}">
+          {{row.cargoId}}
+        </template>
+      </el-table-column>
+      <el-table-column label="运单ID" show-overflow-tooltip width="150" align="center" prop="waybillId" >
+        <template slot-scope="{row}">
+          {{row.waybillId}}
+        </template>
+      </el-table-column>
       <el-table-column label="状态" show-overflow-tooltip width="150" align="center" prop="status" :formatter="statusFormat" />
       <el-table-column label="开单备注" show-overflow-tooltip width="150" align="center" prop="remark" >
         <template slot-scope="{row}">
@@ -279,73 +305,15 @@
       @pagination="getList"
     />
     </el-card>
-    <!-- 添加或修改运单货物临时对话框 -->
+    <!-- 添加或修改运单货物临时表对话框 -->
     <el-dialog :title="title" fullscreen :visible.sync="open" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-row :gutter="24">
-      <ICol>
-        <el-form-item label="运单ID" prop="waybillId">
-          <el-input v-model="form.waybillId" placeholder="请输入运单ID" />
-        </el-form-item>
-      </ICol>
-      <ICol>
-        <el-form-item label="货物ID" prop="cargoId">
-          <el-input v-model="form.cargoId" placeholder="请输入货物ID" />
-        </el-form-item>
-      </ICol>
       <ICol>
         <el-form-item label="品名" prop="tCargoName">
           <el-input v-model="form.tCargoName" placeholder="请输入品名" />
         </el-form-item>
       </ICol>
-      <ICol>
-        <el-form-item label="件数" prop="tCargoNumber">
-          <el-input v-model="form.tCargoNumber" placeholder="请输入件数" />
-        </el-form-item>
-      </ICol>
-      <ICol>
-        <el-form-item label="重量" prop="tCargoTotalWeight">
-          <el-input v-model="form.tCargoTotalWeight" placeholder="请输入重量" />
-        </el-form-item>
-      </ICol>
-      <ICol>
-        <el-form-item label="体积" prop="tCargoTotalVolume">
-          <el-input v-model="form.tCargoTotalVolume" placeholder="请输入体积" />
-        </el-form-item>
-      </ICol>
-<ICol>
-        <el-form-item label="贵重货物">
-          <el-radio-group v-model="form.valuable">
-            <el-radio
-              v-for="(dict,index) in valuableOptions"
-              :key="index"
-              :label="dict.dictValue"
-            >{{dict.dictLabel}}</el-radio>
-          </el-radio-group>
-        </el-form-item>
-</ICol>
-<ICol>
-        <el-form-item label="异形货物">
-          <el-radio-group v-model="form.irregular">
-            <el-radio
-              v-for="(dict,index) in irregularOptions"
-              :key="index"
-              :label="dict.dictValue"
-            >{{dict.dictLabel}}</el-radio>
-          </el-radio-group>
-        </el-form-item>
-</ICol>
-<ICol>
-        <el-form-item label="货物单据">
-          <el-radio-group v-model="form.documents">
-            <el-radio
-              v-for="(dict,index) in documentsOptions"
-              :key="index"
-              :label="dict.dictValue"
-            >{{dict.dictLabel}}</el-radio>
-          </el-radio-group>
-        </el-form-item>
-</ICol>
 <ICol>
         <el-form-item label="包装方式" prop="packageType">
           <el-select v-model="form.packageType" placeholder="请选择包装方式">
@@ -358,6 +326,53 @@
           </el-select>
         </el-form-item>
 </ICol>
+      <ICol>
+        <el-form-item label="件数" prop="tCargoCount">
+          <el-input v-model="form.tCargoCount" placeholder="请输入件数" />
+        </el-form-item>
+      </ICol>
+<ICol>
+        <el-form-item label="计价方式" prop="valuationType">
+          <el-select v-model="form.valuationType" placeholder="请选择计价方式">
+            <el-option
+              v-for="(dict,index) in valuationTypeOptions"
+              :key="index"
+              :label="dict.dictLabel"
+              :value="dict.dictValue"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+</ICol>
+      <ICol>
+        <el-form-item label="计价值" prop="valuationValue">
+          <el-input v-model="form.valuationValue" placeholder="请输入计价值" />
+        </el-form-item>
+      </ICol>
+      <ICol>
+        <el-form-item label="计量数" prop="valuationCount">
+          <el-input v-model="form.valuationCount" placeholder="请输入计量数" />
+        </el-form-item>
+      </ICol>
+      <ICol>
+        <el-form-item label="基础运费" prop="tCargoTotalFee">
+          <el-input v-model="form.tCargoTotalFee" placeholder="请输入基础运费" />
+        </el-form-item>
+      </ICol>
+      <ICol>
+        <el-form-item label="贵重货物" prop="valuable">
+          <el-input v-model="form.valuable" placeholder="请输入贵重货物" />
+        </el-form-item>
+      </ICol>
+      <ICol>
+        <el-form-item label="异形货物" prop="irregular">
+          <el-input v-model="form.irregular" placeholder="请输入异形货物" />
+        </el-form-item>
+      </ICol>
+      <ICol>
+        <el-form-item label="货物单据" prop="documents">
+          <el-input v-model="form.documents" placeholder="请输入货物单据" />
+        </el-form-item>
+      </ICol>
 <ICol>
         <el-form-item label="状态">
           <el-radio-group v-model="form.status">
@@ -383,6 +398,7 @@
     </el-dialog>
   </div>
 </template>
+
 <script>
 import { listWmsCargoTemp, getWmsCargoTemp, delWmsCargoTemp, addWmsCargoTemp, updateWmsCargoTemp } from "@/api/wms/WmsCargoTemp";
 import ICol from "@/components/ICol";
@@ -413,48 +429,70 @@ export default {
       showSearch: true,
       // 总条数
       total: 0,
-      // 运单货物临时表格数据
+      // 运单货物临时表表格数据
       WmsCargoTempList: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
       open: false,
+      // 包装方式字典
+      packageTypeOptions: [],
+      // 计价方式字典
+      valuationTypeOptions: [],
       // 贵重货物字典
       valuableOptions: [],
       // 异形货物字典
       irregularOptions: [],
       // 货物单据字典
       documentsOptions: [],
-      // 包装方式字典
-      packageTypeOptions: [],
       // 状态字典
       statusOptions: [],
       // 查询参数
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        waybillId: null,
-        cargoId: null,
         tCargoName: null,
-        tCargoNumber: null,
-        tCargoTotalWeight: null,
-        tCargoTotalVolume: null,
+        packageType: null,
+        tCargoCount: null,
+        valuationType: null,
+        valuationValue: null,
+        valuationCount: null,
+        tCargoTotalFee: null,
         valuable: null,
         irregular: null,
         documents: null,
-        packageType: null,
+        cargoId: null,
+        waybillId: null,
         status: null,
       },
       // 表单参数
       form: {},
       // 表单校验
       rules: {
+        valuationType: [
+          { required: true, message: "计价方式不能为空", trigger: "change" }
+        ],
+        valuationValue: [
+          { required: true, message: "计价值不能为空", trigger: "blur" }
+        ],
+        valuationCount: [
+          { required: true, message: "计量数不能为空", trigger: "blur" }
+        ],
+        tCargoTotalFee: [
+          { required: true, message: "基础运费不能为空", trigger: "blur" }
+        ],
       },
     toggleSearchFormValue:0,
     };
   },
   created() {
     this.getList();
+    this.getDicts("wms_cargo_package_type").then(response => {
+      this.packageTypeOptions = response.data;
+    });
+    this.getDicts("wms_waybill_billing_type").then(response => {
+      this.valuationTypeOptions = response.data;
+    });
     this.getDicts("public_common_yes_no").then(response => {
       this.valuableOptions = response.data;
     });
@@ -464,15 +502,12 @@ export default {
     this.getDicts("public_common_yes_no").then(response => {
       this.documentsOptions = response.data;
     });
-    this.getDicts("wms_cargo_package_type").then(response => {
-      this.packageTypeOptions = response.data;
-    });
     this.getDicts("sys_common_status").then(response => {
       this.statusOptions = response.data;
     });
   },
   methods: {
-    /** 查询运单货物临时列表 */
+    /** 查询运单货物临时表列表 */
     getList() {
       this.loading = true;
       listWmsCargoTemp(this.queryParams).then(response => {
@@ -480,6 +515,14 @@ export default {
         this.total = response.total;
         this.loading = false;
       });
+    },
+    // 包装方式字典翻译
+    packageTypeFormat(row, column) {
+      return this.selectDictLabel(this.packageTypeOptions, row.packageType);
+    },
+    // 计价方式字典翻译
+    valuationTypeFormat(row, column) {
+      return this.selectDictLabel(this.valuationTypeOptions, row.valuationType);
     },
     // 贵重货物字典翻译
     valuableFormat(row, column) {
@@ -492,10 +535,6 @@ export default {
     // 货物单据字典翻译
     documentsFormat(row, column) {
       return this.selectDictLabel(this.documentsOptions, row.documents);
-    },
-    // 包装方式字典翻译
-    packageTypeFormat(row, column) {
-      return this.selectDictLabel(this.packageTypeOptions, row.packageType);
     },
     // 状态字典翻译
     statusFormat(row, column) {
@@ -510,16 +549,18 @@ export default {
     reset() {
       this.form = {
         id: null,
-        waybillId: null,
-        cargoId: null,
         tCargoName: null,
-        tCargoNumber: null,
-        tCargoTotalWeight: null,
-        tCargoTotalVolume: null,
-        valuable: "0",
-        irregular: "0",
-        documents: "0",
         packageType: null,
+        tCargoCount: null,
+        valuationType: null,
+        valuationValue: null,
+        valuationCount: null,
+        tCargoTotalFee: null,
+        valuable: null,
+        irregular: null,
+        documents: null,
+        cargoId: null,
+        waybillId: null,
         status: "0",
         delFlag: null,
         createBy: null,
@@ -550,7 +591,7 @@ export default {
     handleAdd() {
       this.reset();
       this.open = true;
-      this.title = "添加运单货物临时";
+      this.title = "添加运单货物临时表";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
@@ -559,7 +600,7 @@ export default {
       getWmsCargoTemp(id).then(response => {
         this.form = response.data;
         this.open = true;
-        this.title = "修改运单货物临时";
+        this.title = "修改运单货物临时表";
       });
     },
     /** 提交按钮 */
@@ -585,7 +626,7 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
-      this.$confirm('是否确认删除运单货物临时编号为"' + ids + '"的数据项?', "警告", {
+      this.$confirm('是否确认删除运单货物临时表编号为"' + ids + '"的数据项?', "警告", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning"

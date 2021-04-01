@@ -634,16 +634,6 @@ export default {
       toggleSearchFormValue: 0,
     };
   },
-  created() {
-    this.getList();
-    this.getTreeSelect();
-    this.getDicts("wms_warehouse_type").then(response => {
-      this.warehouseTypeOptions = response.data;
-    });
-    this.getDicts("sys_common_status").then(response => {
-      this.statusOptions = response.data;
-    });
-  },
   methods: {
     /** 查询站点(仓库)信息列表 */
     getList() {
@@ -857,6 +847,20 @@ export default {
     calculateArea() {
       this.form.warehouseArea = multiply(this.form.warehouseAreaX,this.form.warehouseAreaY);
     },
-  }
+    getDictMethods() {
+      this.getDicts("wms_warehouse_type").then(response => {
+        this.warehouseTypeOptions = response.data;
+      });
+      this.getDicts("sys_common_status").then(response => {
+        this.statusOptions = response.data;
+      });
+    },
+
+  },
+  created() {
+    this.getDictMethods();
+    this.getList();
+    this.getTreeSelect();
+  },
 };
 </script>

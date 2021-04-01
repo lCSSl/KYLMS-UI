@@ -329,11 +329,15 @@ export default {
     }
   },
   mounted() {
-    if (!isNotEmpty(this.level)) {
-      console.log('props level can not be empty');
-      return;
-    }
-    this.init();
+    // console.log('mounted');
+    // if (!isNotEmpty(this.level)) {
+    //   console.log('props level can not be empty');
+    //   return;
+    // }
+    // if (this.value) {
+    //   console.log('mounted.init');
+    //   this.init();
+    // }
   },
   beforeDestroy() {
 

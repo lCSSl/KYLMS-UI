@@ -1,0 +1,102 @@
+        <!-- 不在此编辑开单事业部
+        <ICol>
+          <el-form-item label="开单事业部" prop="deptId">
+            <el-input v-model="form.deptId" placeholder="请输入开单事业部"/>
+          </el-form-item>
+        </ICol>-->
+        <!-- 不在此编辑配载站点
+        <ICol>
+          <el-form-item label="配载站点" prop="stowageId">
+            <el-input v-model="form.stowageId" placeholder="请输入配载站点"/>
+          </el-form-item>
+        </ICol>
+        <ICol>
+          <el-form-item label="目的网点" prop="destinationNode">
+            <el-input v-model="form.destinationNode" placeholder="请输入目的网点"/>
+          </el-form-item>
+        </ICol>
+        -->
+        <!-- 回单状态不在此编辑
+        <ICol>
+          <el-form-item label="回单状态">
+            <el-select
+              v-model="form.receiptStatus"
+              clearable size="small">
+              <el-option
+                v-for="dict in receiptStatusOptions"
+                :key="dict.dictValue"
+                :label="dict.dictLabel"
+                :value="dict.dictValue"/>
+            </el-select>
+          </el-form-item>
+        </ICol>-->
+        <!-- 回扣已返不在此编辑
+        <ICol>
+          <el-form-item label="回扣已返">
+            <el-radio-group v-model="form.rebateReturned">
+              <el-radio
+                v-for="dict in rebateReturnedOptions"
+                :key="dict.dictValue"
+                :label="dict.dictValue">
+                {{dict.dictLabel}}
+              </el-radio>
+            </el-radio-group>
+          </el-form-item>
+        </ICol>
+        -->
+        <!-- 不在此编辑
+        <ICol>
+          <el-form-item label="开单人ID" prop="drawerId">
+            <el-input v-model="form.drawerId" placeholder="请输入开单人ID"/>
+          </el-form-item>
+        </ICol>
+        <ICol>
+          <el-form-item label="开单人" prop="drawerName">
+            <el-input v-model="form.drawerName" placeholder="请输入开单人"/>
+          </el-form-item>
+        </ICol>
+        -->
+        <!-- 不在此编辑
+        <ICol>
+          <el-form-item label="设备来源" prop="equipmentSource">
+            <el-input v-model="form.equipmentSource" placeholder="请输入设备来源"/>
+          </el-form-item>
+        </ICol>
+        -->
+        <!-- 不在此编辑
+        <ICol>
+          <el-form-item label="开单来源" prop="creationSource">
+            <el-input v-model="form.creationSource" placeholder="请输入开单来源"/>
+          </el-form-item>
+        </ICol>
+        -->
+        <!--
+        <ICol>
+          <el-form-item label="运单状态" prop="waybillStatus">
+            <el-select v-model="form.waybillStatus" placeholder="请选择运单状态">
+              <el-option
+                v-for="dict in waybillStatusOptions"
+                :key="dict.dictValue"
+                :label="dict.dictLabel"
+                :value="dict.dictValue"/>
+            </el-select>
+          </el-form-item>
+        </ICol>
+        <ICol>
+          <el-form-item label="状态">
+            <el-radio-group v-model="form.status">
+              <el-radio
+                v-for="dict in statusOptions"
+                :key="dict.dictValue"
+                :label="dict.dictValue">
+                {{dict.dictLabel}}
+              </el-radio>
+            </el-radio-group>
+          </el-form-item>
+        </ICol>
+        -->
+        <!--          <ICol>-->
+        <!--            <el-form-item label="删除标志" prop="delFlag">-->
+        <!--              <el-input v-model="form.delFlag" placeholder="请输入删除标志"/>-->
+        <!--            </el-form-item>-->
+        <!--          </ICol>-->

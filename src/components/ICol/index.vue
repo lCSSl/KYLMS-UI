@@ -117,6 +117,7 @@ export default {
           xl: {span: 16, offset: 0}
         }
         break;
+
       case 'quarter':
         this.gridData = {
           gutter: 24,
@@ -125,6 +126,16 @@ export default {
           md: {span: 6, offset: 0},
           lg: {span: 6, offset: 0},
           xl: {span: 6, offset: 0}
+        }
+        break;
+      case 'three_quarters':
+        this.gridData = {
+          gutter: 24,
+          xs: {span: 24, offset: 0},
+          sm: {span: 18, offset: 0},
+          md: {span: 18, offset: 0},
+          lg: {span: 18, offset: 0},
+          xl: {span: 18, offset: 0}
         }
         break;
     }

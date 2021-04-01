@@ -63,6 +63,20 @@
               </ICol>
             </el-row>
           </ICol>
+          <ICol type="half">
+            <el-row>
+              <ICol border type="half">
+                <el-form-item label="中转地" prop="transitPlace">
+                  <el-input v-model="form.transitPlace" placeholder="请输入中转地"/>
+                </el-form-item>
+              </ICol>
+              <ICol border type="half">
+                <el-form-item label="客户单号" prop="csrOrderNumber">
+                  <el-input v-model="form.csrOrderNumber" placeholder="请输入客户单号"/>
+                </el-form-item>
+              </ICol>
+            </el-row>
+          </ICol>
         </el-row>
         <el-row>
           <el-row>
@@ -202,93 +216,34 @@
               </el-select>
             </el-form-item>
           </ICol>
+          <ICol border>
+            <el-form-item label="付款方式" prop="payMethod">
+              <el-select
+                v-model="form.payMethod" class="select-width"
+                clearable placeholder="请输入付款方式" size="small">
+                <el-option
+                  v-for="dict in payMethodOptions"
+                  :key="dict.dictValue"
+                  :label="dict.dictLabel"
+                  :value="dict.dictValue"/>
+              </el-select>
+            </el-form-item>
+          </ICol>
+          <ICol border>
+            <el-form-item label="是否开发票">
+              <el-radio-group v-model="form.writeInvoice">
+                <el-radio
+                  v-for="dict in writeInvoiceOptions"
+                  :key="dict.dictValue"
+                  :label="dict.dictValue"
+                >{{dict.dictLabel}}
+                </el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </ICol>
         </el-row>
       </el-row>
       <el-row>
-        <ICol>
-          <el-form-item label="中转地" prop="transitPlace">
-            <el-input v-model="form.transitPlace" placeholder="请输入中转地"/>
-          </el-form-item>
-        </ICol>
-        <ICol>
-          <el-form-item label="客户ID" prop="csrId">
-            <el-input v-model="form.csrId" placeholder="请输入客户ID"/>
-          </el-form-item>
-        </ICol>
-        <ICol>
-          <el-form-item label="客户编号" prop="csrCode">
-            <el-input v-model="form.csrCode" placeholder="请输入客户编号"/>
-          </el-form-item>
-        </ICol>
-        <ICol>
-          <el-form-item label="客户单号" prop="csrOrderNumber">
-            <el-input v-model="form.csrOrderNumber" placeholder="请输入客户单号"/>
-          </el-form-item>
-        </ICol>
-        <ICol>
-          <el-form-item label="开单事业部" prop="deptId">
-            <el-input v-model="form.deptId" placeholder="请输入开单事业部"/>
-          </el-form-item>
-        </ICol>
-        <ICol>
-          <el-form-item label="配载站点" prop="stowageId">
-            <el-input v-model="form.stowageId" placeholder="请输入配载站点"/>
-          </el-form-item>
-        </ICol>
-        <ICol>
-          <el-form-item label="目的网点" prop="destinationNode">
-            <el-input v-model="form.destinationNode" placeholder="请输入目的网点"/>
-          </el-form-item>
-        </ICol>
-        <ICol>
-          <el-form-item label="付款方式" prop="payMethod">
-            <el-select
-              v-model="form.payMethod"
-              clearable placeholder="请输入付款方式" size="small">
-              <el-option
-                v-for="dict in payMethodOptions"
-                :key="dict.dictValue"
-                :label="dict.dictLabel"
-                :value="dict.dictValue"/>
-            </el-select>
-          </el-form-item>
-        </ICol>
-        <ICol>
-          <el-form-item label="回单状态">
-            <el-radio-group v-model="form.receiptStatus">
-              <el-radio
-                v-for="dict in receiptStatusOptions"
-                :key="dict.dictValue"
-                :label="dict.dictValue">
-                {{dict.dictLabel}}
-              </el-radio>
-            </el-radio-group>
-          </el-form-item>
-        </ICol>
-        <ICol>
-          <el-form-item label="回扣已返">
-            <el-radio-group v-model="form.rebateReturned">
-              <el-radio
-                v-for="dict in rebateReturnedOptions"
-                :key="dict.dictValue"
-                :label="dict.dictValue"
-              >{{dict.dictLabel}}
-              </el-radio>
-            </el-radio-group>
-          </el-form-item>
-        </ICol>
-        <ICol>
-          <el-form-item label="是否开发票">
-            <el-radio-group v-model="form.writeInvoice">
-              <el-radio
-                v-for="dict in writeInvoiceOptions"
-                :key="dict.dictValue"
-                :label="dict.dictValue"
-              >{{dict.dictLabel}}
-              </el-radio>
-            </el-radio-group>
-          </el-form-item>
-        </ICol>
         <ICol>
           <el-form-item label="基本运费" prop="basicFreight">
             <el-input v-model="form.basicFreight" placeholder="请输入基本运费"/>
@@ -305,61 +260,20 @@
           </el-form-item>
         </ICol>
         <ICol>
-          <el-form-item label="开单人ID" prop="drawerId">
-            <el-input v-model="form.drawerId" placeholder="请输入开单人ID"/>
-          </el-form-item>
-        </ICol>
-        <ICol>
-          <el-form-item label="开单人" prop="drawerName">
-            <el-input v-model="form.drawerName" placeholder="请输入开单人"/>
-          </el-form-item>
-        </ICol>
-        <ICol>
-          <el-form-item label="设备来源" prop="equipmentSource">
-            <el-input v-model="form.equipmentSource" placeholder="请输入设备来源"/>
-          </el-form-item>
-        </ICol>
-        <ICol>
-          <el-form-item label="开单来源" prop="creationSource">
-            <el-input v-model="form.creationSource" placeholder="请输入开单来源"/>
-          </el-form-item>
-        </ICol>
-        <ICol>
-          <el-form-item label="运单状态" prop="waybillStatus">
-            <el-select v-model="form.waybillStatus" placeholder="请选择运单状态">
-              <el-option
-                v-for="dict in waybillStatusOptions"
-                :key="dict.dictValue"
-                :label="dict.dictLabel"
-                :value="dict.dictValue"
-              ></el-option>
-            </el-select>
-          </el-form-item>
-        </ICol>
-        <ICol>
-          <el-form-item label="状态">
-            <el-radio-group v-model="form.status">
-              <el-radio
-                v-for="dict in statusOptions"
-                :key="dict.dictValue"
-                :label="dict.dictValue"
-              >{{dict.dictLabel}}
-              </el-radio>
-            </el-radio-group>
-          </el-form-item>
-        </ICol>
-        <!--          <ICol>-->
-        <!--            <el-form-item label="删除标志" prop="delFlag">-->
-        <!--              <el-input v-model="form.delFlag" placeholder="请输入删除标志"/>-->
-        <!--            </el-form-item>-->
-        <!--          </ICol>-->
-        <ICol>
           <el-form-item label="开单备注" prop="remark">
             <el-input v-model="form.remark" placeholder="请输入开单备注"/>
           </el-form-item>
         </ICol>
       </el-row>
     </el-form>
+    <el-row>
+      <ICol type="three_quarters">
+       <CargoTempList v-model="form"/>
+      </ICol>
+      <ICol type="quarter">
+
+      </ICol>
+    </el-row>
     <div slot="footer" class="dialog-footer">
       <el-button type="primary" @click="submitForm">确 定</el-button>
       <el-button @click="cancel">取 消</el-button>
@@ -389,7 +303,8 @@
               <ICol type="two_thirds">
                 <el-form-item label="收货人" prop="userId">
                   <el-select v-model="currentAppendEntity.userId" :disabled="!this.userOptions.length>0"
-                             :placeholder="'请选择'+appendEntityDialog.title+'人'" style="width: 100%;">
+                             :placeholder="'请选择'+appendEntityDialog.title+'人'"
+                             style="width: 100%;" @change="logA">
                     <el-option v-for="(item,index) in userOptions" :key="index"
                                :label="item.nickName"
                                :value="item.userId"/>
@@ -418,24 +333,25 @@ import {addWaybill, getWaybill, updateWaybill} from "@/api/wms/waybill";
 import 'element-ui/lib/theme-chalk/display.css';
 import ICol from "@/components/ICol";
 import RegionSelect from "@/components/regionSelect/index";
-import Ellipsis from "@/components/Ellipsis/index";
 import TreeSelect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
+import {cloneDeep} from 'lodash'
 import {getDefaultWarehouse, listWarehouse} from "@/api/wms/warehouse";
 import {treeSelect} from "@/api/system/dept";
 import {listUser} from "@/api/system/user";
+import CargoTempList from "@/views/components/wms/Waybill/CargoList"
 import UserDialog from "@/views/components/system/user/Dialog/index";
 import DeptDialog from "@/views/components/system/dept/Dialog/index";
 
 export default {
   name: "WaybillDialog",
   components: {
+    ICol,
+    TreeSelect,
+    RegionSelect,
+    CargoTempList,
     DeptDialog,
     UserDialog,
-    Ellipsis,
-    RegionSelect,
-    ICol,
-    TreeSelect
   },
   props: {
     value: {
@@ -484,8 +400,8 @@ export default {
       deptOptions: [],
       userOptions: [],
       currentAppendEntity: {
-        dept:null,
-        userId:null
+        dept: null,
+        userId: null
       },
       currentAppendFormRules: {
         dept: [
@@ -573,9 +489,6 @@ export default {
         departure: [
           {required: true, message: "始发站不能为空", trigger: "blur"}
         ],
-        destinationNode: [
-          {required: true, message: "目的网点不能为空", trigger: "blur"}
-        ],
         creationSource: [
           {required: true, message: "开单来源不能为空", trigger: "blur"}
         ],
@@ -618,13 +531,11 @@ export default {
       this.getDicts("wms_waybill_receipt_status").then(response => {
         this.receiptStatusOptions = response.data;
       });
-      this.getDicts("sys_common_status").then(response => {
+      this.getDicts("public_common_yes_no").then(response => {
         this.rebateReturnedOptions = response.data;
-      });
-      this.getDicts("sys_common_status").then(response => {
         this.writeInvoiceOptions = response.data;
       });
-      this.getDicts("wms_waybile_status").then(response => {
+      this.getDicts("wms_waybill_status").then(response => {
         this.waybillStatusOptions = response.data;
       });
       this.getDicts("sys_common_status").then(response => {
@@ -664,29 +575,33 @@ export default {
         if (valid) {
           const currentAppendEntity = this.currentAppendEntity;
           const type = currentAppendEntity.type;
-          const user = this.userOptions.find(i => i.userId = currentAppendEntity.userId);
+          const form = cloneDeep(this.form);
+          const user = this.userOptions.find(i => i.userId == currentAppendEntity.userId);
           switch (+type) {
             //发货方
             case 0:
-              console.log('发货方')
-              console.log(currentAppendEntity);
-              this.form.deliverEntity.visible = true;
-              this.form.deliverEntity.deliverCoId = currentAppendEntity.dept.id;
-              this.form.deliverEntity.deliverCoName = currentAppendEntity.dept.label;
-              this.form.deliverEntity.consignorName = user.nickName
-              this.form.deliverEntity.consignorMobile = user.phonenumber;
-              console.log(this.form.deliverEntity)
+              form.deliverEntity.visible = true;
+              form.deliverEntity.deliverCoId = currentAppendEntity.dept.id;
+              form.deliverEntity.deliverCoName = currentAppendEntity.dept.label;
+              form.csrId = user.userId
+              form.csrCode = user.userName
+              form.deliverEntity.consignorName = user.nickName
+              form.deliverEntity.consignorMobile = user.phonenumber;
+              this.form = form;
               break;
             //收货方
             case 1:
-              console.log('收货方')
-              this.form.receivingEntity.visible = true;
-              this.form.receivingEntity.receivingCoId = currentAppendEntity.dept.id;
-              this.form.receivingEntity.receivingCoName = currentAppendEntity.dept.label;
-              this.form.receivingEntity.consigneeName = user.nickName
-              this.form.receivingEntity.consigneeMobile = user.phonenumber;
+              form.receivingEntity.visible = true;
+              form.receivingEntity.receivingCoId = currentAppendEntity.dept.id;
+              form.receivingEntity.receivingCoName = currentAppendEntity.dept.label;
+              form.receivingEntity.consigneeId = user.userId
+              form.receivingEntity.consigneeName = user.nickName
+              form.receivingEntity.consigneeMobile = user.phonenumber;
+              this.form = form;
               break;
           }
+          this.$message.info('添加成功');
+          this.appendEntityDialog.open = false;
         }
       })
     },
@@ -702,6 +617,7 @@ export default {
           visible: false,
           deliverCoId: null,
           deliverCoName: null,
+          consignorId: null,
           consignorName: null,
           consignorMobile: null,
           consignorTelephone: null,
@@ -710,14 +626,15 @@ export default {
           visible: false,
           receivingCoId: null,
           receivingCoName: null,
+          consigneeId: null,
           consigneeName: null,
           consigneeMobile: null,
           consigneeTelephone: null,
         },
-        csrId: null,
-        csrCode: null,
         regionSelectValue: null,
         provinceCityDistrictStreet: null,
+        csrId: null,
+        csrCode: null,
         csrOrderNumber: null,
         deliverCoId: null,
         deliverCoName: null,
@@ -838,14 +755,16 @@ export default {
     submitForm() {
       this.$refs["form"].validate(valid => {
         if (valid) {
-          if (this.form.waybillId != null) {
-            updateWaybill(this.form).then(response => {
+          const form = this.form;
+          this.dataProcessing(form);
+          if (form.waybillId != null) {
+            updateWaybill(form).then(response => {
               this.msgSuccess("修改成功");
               this.dialog.open = false;
               this.$emit('on-success');
             });
           } else {
-            addWaybill(this.form).then(response => {
+            addWaybill(form).then(response => {
               this.msgSuccess("新增成功");
               this.dialog.open = false;
               this.$emit('on-success');
@@ -899,6 +818,9 @@ export default {
       this.appendEntityDialog.open = true;
       this.appendEntityDialog.title = +type == 0 ? '发货' : '收货';
     },
+    logA(a) {
+      console.log(a);
+    },
     openAddDialog(type) {
       switch (+type) {
         case 1:
@@ -920,6 +842,20 @@ export default {
       this.userOptions = [];
       this.currentAppendEntity.userId = '';
     },
+    dataProcessing() {
+      const form = cloneDeep(this.form);
+      form.deliverCoId = form.deliverEntity.deliverCoId;
+      form.deliverCoName = form.deliverEntity.deliverCoName;
+      form.consignorName = form.deliverEntity.consignorName;
+      form.consignorMobile = form.deliverEntity.consignorMobile;
+      form.consignorTelephone = form.deliverEntity.consignorTelephone;
+      form.receivingCoId = form.receivingEntity.receivingCoId;
+      form.receivingCoName = form.receivingEntity.receivingCoName;
+      form.consigneeName = form.receivingEntity.consigneeName;
+      form.consigneeMobile = form.receivingEntity.consigneeMobile;
+      form.consigneeTelephone = form.receivingEntity.consigneeTelephone;
+      this.form = form;
+    }
   },
   created() {
     this.getDictMethods();
