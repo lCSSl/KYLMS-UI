@@ -8,7 +8,7 @@
           plain
           size="mini"
           type="primary"
-          @click="handleAdd">
+          @click="handleAddRow">
           新增
         </el-button>
       </el-col>
@@ -138,6 +138,8 @@ export default {
   },
   data() {
     return {
+      maxAppendId:0,
+      appendIds:[],
       waybill:{},
       // 遮罩层
       loading: true,
@@ -154,6 +156,7 @@ export default {
       // 运单货物临时表表格数据
       WmsCargoTempList: [],
       rowData: {},
+      rowDataString:'',
       editing: false,
       // 弹出层标题
       title: "",
@@ -266,7 +269,7 @@ export default {
     },
     handleAddRow() {
       this.WmsCargoTempList.push({
-
+        id:--this.maxAppendId,
         status: '0',
         editable: false,
         isCreate: true,
@@ -274,21 +277,6 @@ export default {
       this.rowData = this.handleGetRow(-1);
       this.editing = true;
       this.rowDataString = JSON.stringify(this.rowData);
-      this.regionSelectValue = {
-        level: 0,
-        code: this.rowData.provinceCode,
-        parentCode: '0',
-        child: {
-          level: 1,
-          code: this.rowData.cityCode,
-          parentCode: this.rowData.provinceCode,
-          child: {
-            level: 2,
-            code: this.rowData.districtCode,
-            parentCode: this.rowData.cityCode,
-          }
-        },
-      }
       this.rowData.editable = !this.rowData.editable;
     },
     // handleDelete (id) {
