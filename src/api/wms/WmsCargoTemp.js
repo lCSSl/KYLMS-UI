@@ -25,6 +25,14 @@ export function addWmsCargoTemp(data) {
     data: data
   })
 }
+// 新增运单货物临时表
+export function addWmsCargoTempList(data) {
+  return request({
+    url: '/wms/WmsCargoTemp/batch',
+    method: 'post',
+    data: data
+  })
+}
 
 // 修改运单货物临时表
 export function updateWmsCargoTemp(data) {

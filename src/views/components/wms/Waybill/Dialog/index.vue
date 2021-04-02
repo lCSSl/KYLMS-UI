@@ -235,8 +235,8 @@
                 <el-radio
                   v-for="dict in writeInvoiceOptions"
                   :key="dict.dictValue"
-                  :label="dict.dictValue"
-                >{{dict.dictLabel}}
+                  :label="dict.dictValue">
+                  {{dict.dictLabel}}
                 </el-radio>
               </el-radio-group>
             </el-form-item>
@@ -244,36 +244,77 @@
         </el-row>
       </el-row>
       <el-row>
-        <ICol>
-          <el-form-item label="基本运费" prop="basicFreight">
-            <el-input v-model="form.basicFreight" placeholder="请输入基本运费"/>
-          </el-form-item>
+        <ICol border type="three_quarters">
+          <el-card>
+            <span slot="header">
+              货物清单
+            </span>
+            <CargoTempList v-model="form" :commit-complete="commitComplete"
+                           @on-change-total-fee="OnChangeCargoBasicFreight"/>
+          </el-card>
         </ICol>
-        <ICol>
-          <el-form-item label="实收运费" prop="realFreight">
-            <el-input v-model="form.realFreight" placeholder="请输入实收运费"/>
-          </el-form-item>
+        <ICol border type="quarter">
+          <el-card>
+            <span slot="header">
+              增值服务
+            </span>
+            <ICol type="full">
+            </ICol>
+          </el-card>
         </ICol>
-        <ICol>
-          <el-form-item label="总运费" prop="totalFreight">
-            <el-input v-model="form.totalFreight" placeholder="请输入总运费"/>
-          </el-form-item>
-        </ICol>
-        <ICol>
-          <el-form-item label="开单备注" prop="remark">
-            <el-input v-model="form.remark" placeholder="请输入开单备注"/>
-          </el-form-item>
+      </el-row>
+      <el-row>
+        <ICol border type="full">
+          <el-card>
+            <span slot="header">结算信息</span>
+            <el-row v-if="false">
+              <ICol border>
+                <el-form-item label="基本运费" prop="basicFreight">
+                  <el-input v-model="form.basicFreight" placeholder="请输入基本运费"/>
+                </el-form-item>
+              </ICol>
+              <ICol border>
+                <el-form-item label="实收运费" prop="realFreight">
+                  <el-input v-model="form.realFreight" placeholder="请输入实收运费"/>
+                </el-form-item>
+              </ICol>
+              <ICol border>
+                <el-form-item label="总运费" prop="totalFreight">
+                  <el-input v-model="form.totalFreight" placeholder="请输入总运费"/>
+                </el-form-item>
+              </ICol>
+              <ICol border>
+                <el-form-item label="开单备注" prop="remark">
+                  <el-input v-model="form.remark" placeholder="请输入开单备注"/>
+                </el-form-item>
+              </ICol>
+            </el-row>
+            <el-row>
+              <ICol border>
+                <el-form-item label="基本运费" prop="basicFreight">
+                  <el-input v-model="form.basicFreight" placeholder="请输入基本运费"/>
+                </el-form-item>
+              </ICol>
+              <ICol border>
+                <el-form-item label="实收运费" prop="realFreight">
+                  <el-input v-model="form.realFreight" placeholder="请输入实收运费"/>
+                </el-form-item>
+              </ICol>
+              <ICol border>
+                <el-form-item label="总运费" prop="totalFreight">
+                  <el-input v-model="form.totalFreight" placeholder="请输入总运费"/>
+                </el-form-item>
+              </ICol>
+              <ICol border>
+                <el-form-item label="开单备注" prop="remark">
+                  <el-input v-model="form.remark" placeholder="请输入开单备注"/>
+                </el-form-item>
+              </ICol>
+            </el-row>
+          </el-card>
         </ICol>
       </el-row>
     </el-form>
-    <el-row>
-      <ICol type="three_quarters">
-       <CargoTempList v-model="form"/>
-      </ICol>
-      <ICol type="quarter">
-
-      </ICol>
-    </el-row>
     <div slot="footer" class="dialog-footer">
       <el-button type="primary" @click="submitForm">确 定</el-button>
       <el-button @click="cancel">取 消</el-button>
@@ -329,7 +370,7 @@
 </template>
 
 <script>
-import {addWaybill, getWaybill, updateWaybill} from "@/api/wms/waybill";
+import {getWaybill} from "@/api/wms/waybill";
 import 'element-ui/lib/theme-chalk/display.css';
 import ICol from "@/components/ICol";
 import RegionSelect from "@/components/regionSelect/index";
@@ -481,6 +522,7 @@ export default {
         },
         provinceCityDistrictStreet: null
       },
+      commitComplete: false,
       // 表单校验
       rules: {
         destination: [
@@ -758,17 +800,21 @@ export default {
           const form = this.form;
           this.dataProcessing(form);
           if (form.waybillId != null) {
-            updateWaybill(form).then(response => {
-              this.msgSuccess("修改成功");
-              this.dialog.open = false;
-              this.$emit('on-success');
-            });
+            console.log('update')
+            // updateWaybill(form).then(response => {
+            this.commitComplete = true;
+            //   this.msgSuccess("修改成功");
+            //   this.dialog.open = false;
+            //   this.$emit('on-success');
+            // });
           } else {
-            addWaybill(form).then(response => {
-              this.msgSuccess("新增成功");
-              this.dialog.open = false;
-              this.$emit('on-success');
-            });
+            console.log('add')
+            // addWaybill(form).then(response => {
+            this.commitComplete = true;
+            //   this.msgSuccess("新增成功");
+            //   this.dialog.open = false;
+            //   this.$emit('on-success');
+            // });
           }
         }
       });
@@ -842,6 +888,9 @@ export default {
       this.userOptions = [];
       this.currentAppendEntity.userId = '';
     },
+    OnChangeCargoBasicFreight(fee) {
+      this.form.basicFreight = fee;
+    },
     dataProcessing() {
       const form = cloneDeep(this.form);
       form.deliverCoId = form.deliverEntity.deliverCoId;
@@ -885,5 +934,13 @@ export default {
 
 .select-width {
   width: 100%;
+}
+
+.erect {
+  width: 15px;
+  margin: 0 auto;
+  line-height: 24px;
+  font-size: 20px;
+  word-wrap: break-word;
 }
 </style>

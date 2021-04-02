@@ -4,6 +4,7 @@
       <el-col :span="1.5">
         <el-button
           v-hasPermi="['wms:WmsCargoTemp:add']"
+          :disabled="disable||readOnly"
           icon="el-icon-plus"
           plain
           size="mini"
@@ -14,46 +15,103 @@
       </el-col>
     </el-row>
     <el-row>
-      <el-table v-loading="loading" :data="WmsCargoTempList" @selection-change="handleSelectionChange">
+      <el-table v-loading="loading" :data="WmsCargoTempList" :show-summary="true" :summary-method="getSummaries" border
+                @selection-change="handleSelectionChange">
         <el-table-column align="center" fixed type="selection" width="55"/>
         <el-table-column align="center" fixed label="序号" type="index" width="60"/>
         <el-table-column align="center" label="品名" prop="tCargoName" show-overflow-tooltip width="150">
           <template slot-scope="{row}">
-            {{row.tCargoName}}
+            <el-input v-if="row.editable" v-model="rowData.tCargoName"/>
+            <span v-else>{{row.tCargoName}}</span>
           </template>
         </el-table-column>
-        <el-table-column :formatter="packageTypeFormat" align="center" label="包装方式" prop="packageType"
-                         show-overflow-tooltip
-                         width="150"/>
-        <el-table-column align="center" label="件数" prop="tCargoCount" show-overflow-tooltip width="150">
+        <el-table-column align="center" label="包装方式" prop="packageType" width="150">
           <template slot-scope="{row}">
-            {{row.tCargoCount}}
+            <el-select v-if="row.editable" v-model="rowData.packageType" placeholder="请选择包装方式">
+              <el-option
+                v-for="(dict,index) in packageTypeOptions"
+                :key="index"
+                :label="dict.dictLabel"
+                :value="dict.dictValue"/>
+            </el-select>
+            <span v-else>{{packageTypeFormat(row)}}</span>
           </template>
         </el-table-column>
-        <el-table-column :formatter="valuationTypeFormat" align="center" label="计价方式" prop="valuationType"
-                         show-overflow-tooltip
-                         width="150"/>
-        <el-table-column align="center" label="计价值" prop="valuationValue" show-overflow-tooltip width="150">
+        <el-table-column align="center" label="件数" prop="tCargoCount" width="150">
           <template slot-scope="{row}">
-            {{row.valuationValue}}
+            <el-input-number v-if="row.editable" v-model="rowData.tCargoCount" :min="1" :precision="0" :step="1"
+                             controls-position="right" size="small"/>
+            <span v-else> {{row.tCargoCount}}</span>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="计量数" prop="valuationCount" show-overflow-tooltip width="150">
+        <el-table-column align="center" label="计价方式" prop="valuationType" width="150">
           <template slot-scope="{row}">
-            {{row.valuationCount}}
+            <el-select v-if="row.editable" v-model="rowData.valuationType" placeholder="请选择包装方式">
+              <el-option
+                v-for="(dict,index) in valuationTypeOptions"
+                :key="index"
+                :label="dict.dictLabel"
+                :value="dict.dictValue"/>
+            </el-select>
+            <span v-else>{{valuationTypeFormat(row)}}</span>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="基础运费" prop="tCargoTotalFee" show-overflow-tooltip width="150">
+        <el-table-column align="center" label="计价值" prop="valuationValue" width="150">
+          <template slot-scope="{row}">
+            <el-input-number v-if="row.editable" v-model="rowData.valuationValue" :min="1" :precision="2" :step="0.1"
+                             controls-position="right" size="small"/>
+            <span v-else>{{row.valuationValue}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column align="center" label="计量数" prop="valuationCount" width="150">
+          <template slot-scope="{row}">
+            <el-input-number v-if="row.editable" v-model="rowData.valuationCount" :min="1" :precision="2" :step="0.1"
+                             controls-position="right" size="small"/>
+            <span v-else>{{row.valuationCount}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column align="center" label="基础运费" prop="tCargoTotalFee" width="150">
           <template slot-scope="{row}">
             {{row.tCargoTotalFee}}
           </template>
         </el-table-column>
-        <el-table-column :formatter="valuableFormat" align="center" label="贵重货物" prop="valuable" show-overflow-tooltip
-                         width="150"/>
-        <el-table-column :formatter="irregularFormat" align="center" label="异形货物" prop="irregular" show-overflow-tooltip
-                         width="150"/>
-        <el-table-column :formatter="documentsFormat" align="center" label="货物单据" prop="documents" show-overflow-tooltip
-                         width="150"/>
+        <el-table-column align="center" label="贵重货物" prop="valuable" width="150">
+          <template slot-scope="{row}">
+            <el-switch
+              v-if="row.editable"
+              active-value="1"
+              inactive-value="0"
+              v-model="rowData.valuable">
+            </el-switch>
+            <i v-else :class="valuableFormat(row)"></i>
+<!--            <span v-else>{{valuableFormat(row)}}</span>-->
+          </template>
+        </el-table-column>
+        <el-table-column align="center" label="异形货物" prop="irregular" width="150">
+          <template slot-scope="{row}">
+            <el-switch
+              v-if="row.editable"
+              active-value="1"
+              inactive-value="0"
+              v-model="rowData.irregular">
+            </el-switch>
+            <i v-else :class="irregularFormat(row)"></i>
+<!--            <span v-else>{{irregularFormat(row)}}</span>-->
+          </template>
+        </el-table-column>
+        <el-table-column align="center" label="货物单据" prop="documents" width="150">
+          <template slot-scope="{row}">
+            <el-switch
+              v-if="row.editable"
+              active-value="1"
+              inactive-value="0"
+              v-model="rowData.documents">
+            </el-switch>
+            <i v-else :class="documentsFormat(row)"></i>
+<!--            <span v-else>{{documentsFormat(row)}}</span>-->
+          </template>
+        </el-table-column>
+        <!--
         <el-table-column align="center" label="货物ID" prop="cargoId" show-overflow-tooltip width="150">
           <template slot-scope="{row}">
             {{row.cargoId}}
@@ -66,38 +124,46 @@
         </el-table-column>
         <el-table-column :formatter="statusFormat" align="center" label="状态" prop="status" show-overflow-tooltip
                          width="150"/>
-        <el-table-column align="center" label="开单备注" prop="remark" show-overflow-tooltip width="150">
+        -->
+        <el-table-column align="center" label="备注" prop="remark" show-overflow-tooltip width="150">
           <template slot-scope="{row}">
-            {{row.remark}}
+            <el-input v-if="row.editable" v-model="rowData.remark"/>
+            <span v-else>{{row.remark}}</span>
           </template>
         </el-table-column>
-        <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" width="200">
-          <template slot-scope="scope">
+        <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" prop="action"
+                         width="200">
+          <template slot-scope="{row}">
             <el-button
               v-hasPermi="['wms:WmsCargoTemp:edit']"
+              :disabled="!row.editable||readOnly"
               icon="el-icon-edit"
               size="mini"
               type="text"
-              @click="handleUpdate(scope.row)"
-            >修改
+              @click="handleClickSave()">
+              保存
+            </el-button>
+            <el-button
+              v-hasPermi="['wms:WmsCargoTemp:edit']"
+              :disabled="disable||readOnly"
+              icon="el-icon-edit"
+              size="mini"
+              type="text"
+              @click="handleClickEdit(row.id)">
+              修改
             </el-button>
             <el-button
               v-hasPermi="['wms:WmsCargoTemp:remove']"
+              :disabled="!row.editable||readOnly"
               icon="el-icon-delete"
               size="mini"
               type="text"
-              @click="handleDelete(scope.row)"
-            >删除
+              @click="handleDelete(row)">
+              删除
             </el-button>
           </template>
         </el-table-column>
       </el-table>
-      <pagination
-        v-show="total>0"
-        :limit.sync="queryParams.pageSize"
-        :page.sync="queryParams.pageNum"
-        :total="total"
-        @pagination="getList"/>
     </el-row>
     <el-row>
 
@@ -107,7 +173,7 @@
 
 <script>
 import {
-  addWmsCargoTemp,
+  addWmsCargoTemp, addWmsCargoTempList,
   delWmsCargoTemp,
   getWmsCargoTemp,
   listWmsCargoTemp,
@@ -115,6 +181,7 @@ import {
 } from "@/api/wms/WmsCargoTemp";
 import ICol from "@/components/ICol";
 import {cloneDeep} from 'lodash';
+import {add, multiply} from "@/utils/number/math";
 
 export default {
   name: "WmsCargoTemp",
@@ -125,6 +192,10 @@ export default {
     value: {
       type: Object,
     },
+    commitComplete:{
+      type:Boolean,
+      default:false
+    }
   },
   watch: {
     value: {
@@ -135,12 +206,41 @@ export default {
       },
       immediate: true
     },
+    commitComplete: {
+      handler(val) {
+        if (val !== this.commit) {
+          this.commit=val;
+          if (this.commit){
+            this.commitCargoTempList();
+          }
+        }
+      },
+      immediate: true
+    },
+  },
+  computed: {
+    readOnly() {
+      return false;
+    },
+    disable() {
+      return this.editing;
+    },
+    totalListFee() {
+      const list = this.WmsCargoTempList;
+      const length = list.length;
+      let totalFee = 0;
+      for (let i = length - 1; i >= 0; i--) {
+        totalFee = add(totalFee, list[i].tCargoTotalFee);
+      }
+      return totalFee;
+    },
   },
   data() {
     return {
-      maxAppendId:0,
-      appendIds:[],
-      waybill:{},
+      commit:false,
+      maxAppendId: 0,
+      appendIds: [],
+      waybill: {},
       // 遮罩层
       loading: true,
       // 选中数组
@@ -156,7 +256,7 @@ export default {
       // 运单货物临时表表格数据
       WmsCargoTempList: [],
       rowData: {},
-      rowDataString:'',
+      rowDataString: '',
       editing: false,
       // 弹出层标题
       title: "",
@@ -177,7 +277,7 @@ export default {
       // 查询参数
       queryParams: {
         pageNum: 1,
-        pageSize: 3,
+        pageSize: 100,
         tCargoName: null,
         packageType: null,
         tCargoCount: null,
@@ -192,6 +292,7 @@ export default {
         waybillId: null,
         status: null,
       },
+      baseTotalFee:0,
       // 表单参数
       form: {},
       // 表单校验
@@ -216,36 +317,39 @@ export default {
     /** 查询运单货物临时表列表 */
     getList() {
       this.loading = true;
-      this.queryParams.waybillId=this.waybill.waybillId;
+      this.queryParams.waybillId = this.waybill.waybillId;
       listWmsCargoTemp(this.queryParams).then(({
-           rows, total
-        }) => {
+                                                 rows, total
+                                               }) => {
         this.WmsCargoTempList = rows.map(item => {
           item.editable = false;
-          return item
+          return item;
         });
         this.total = total;
         this.loading = false;
       });
     },
+    commitCargoTempList(){
+      addWmsCargoTempList(this.WmsCargoTempList).then(res=>{
+        console.log(res)
+      }).finally(()=>{
 
+      });
+    },
     handleGetRow(id) {
       return this.WmsCargoTempList.find(item => (item.id === id || item.isCreate));
     },
     handleClickEdit(id) {
       this.rowData = this.handleGetRow(id);
+      console.log(this.rowData)
       this.editing = true;
       this.rowDataString = JSON.stringify({...this.rowData, editable: null});
       this.rowData.editable = !this.rowData.editable;
     },
     handleClickDisableOrEnable(id, status) {
     },
-    recoveryState(data) {
-      data.editable = !data.editable;
-      this.rowData = data;
-      this.editing = false;
-    },
     handleClickSave() {
+      this.rowData.tCargoTotalFee = multiply(this.rowData.valuationValue, this.rowData.valuationCount);
       const data = cloneDeep(this.rowData);
       data.editable = null;
       const editRowDataString = JSON.stringify(data);
@@ -253,28 +357,32 @@ export default {
         // addWmsCargoTemp({...data}).then(res => {
         //   this.recoveryState(data);
         // }).finally(() => {
-        //   this.recoveryState(data);
         // });
         console.log('create');
       } else {
         console.log('edit');
         // if (editRowDataString !== this.rowDataString) {
         //   updateWmsCargoTemp(data).then(res => {
-        //     this.recoveryState(data);
         //   }).finally(() => {
-        //     this.recoveryState(data);
         //   })
         // }
       }
+      this.rowData.editable = !this.rowData.editable;
+      this.editing = false;
     },
     handleAddRow() {
       this.WmsCargoTempList.push({
-        id:--this.maxAppendId,
+        id: --this.maxAppendId,
+        tCargoName: '',
+        tCargoCount: 1,
+        packageType: '',
+        valuationType: '',
+        valuationValue: 0,
         status: '0',
         editable: false,
         isCreate: true,
       });
-      this.rowData = this.handleGetRow(-1);
+      this.rowData = this.handleGetRow(this.maxAppendId);
       this.editing = true;
       this.rowDataString = JSON.stringify(this.rowData);
       this.rowData.editable = !this.rowData.editable;
@@ -295,15 +403,15 @@ export default {
     },
     // 贵重货物字典翻译
     valuableFormat(row, column) {
-      return this.selectDictLabel(this.valuableOptions, row.valuable);
+      return +row.valuable?'el-icon-check ii':'el-icon-close batu';
     },
     // 异形货物字典翻译
     irregularFormat(row, column) {
-      return this.selectDictLabel(this.irregularOptions, row.irregular);
+      return +row.irregular?'el-icon-check ii':'el-icon-close batu';
     },
     // 货物单据字典翻译
     documentsFormat(row, column) {
-      return this.selectDictLabel(this.documentsOptions, row.documents);
+      return +row.documents?'el-icon-check ii':'el-icon-close batu';
     },
     // 状态字典翻译
     statusFormat(row, column) {
@@ -355,6 +463,125 @@ export default {
       this.ids = selection.map(item => item.id)
       this.single = selection.length !== 1
       this.multiple = !selection.length
+    },
+    getSummaries(param) {
+      const {columns, data} = param;
+      const sums = [];
+      columns.forEach((column, index) => {
+        if (index === 0) {
+          sums[index] = '汇总';
+          return;
+        }
+        if (column.property == 'tCargoName' || column.property == 'valuationType' || column.property == 'status' || column.property == 'remark' || column.property == 'action') {
+          sums[index] = '';
+          return;
+        }
+        if (column.property == 'tCargoCount') {
+          const values = data.map(item => Number(item[column.property]));
+          if (!values.every(value => isNaN(value))) {
+            sums[index] = values.reduce((prev, curr) => {
+              const value = Number(curr);
+              if (!isNaN(value)) {
+                return add(prev, curr);
+              } else {
+                return prev;
+              }
+            }, 0);
+            sums[index] += ' 件';
+          } else {
+            sums[index] = 'N/A';
+          }
+          return;
+        }
+        if (column.property == 'packageType') {
+          const set = Array.from(new Set(data.map(item => Number(item[column.property]))));
+          sums[index] = `${set.length} 种`;
+          return;
+        }
+        if (column.property == 'valuable') {
+          const values = data.map(item => Number(item[column.property]));
+          if (!values.every(value => isNaN(value))) {
+            sums[index] = values.reduce((prev, curr) => {
+              const value = Number(curr);
+              if (!isNaN(value)) {
+                return add(prev, curr);
+              } else {
+                return prev;
+              }
+            }, 0);
+            sums[index] += ' 批';
+          } else {
+            sums[index] = 'N/A';
+          }
+          return;
+        }
+        if (column.property == 'irregular') {
+          const values = data.map(item => Number(item[column.property]));
+          if (!values.every(value => isNaN(value))) {
+            sums[index] = values.reduce((prev, curr) => {
+              const value = Number(curr);
+              if (!isNaN(value)) {
+                return add(prev, curr);
+              } else {
+                return prev;
+              }
+            }, 0);
+            sums[index] += ' 批';
+          } else {
+            sums[index] = 'N/A';
+          }
+          return;
+        }
+        if (column.property == 'documents') {
+          const values = data.map(item => Number(item[column.property]));
+          if (!values.every(value => isNaN(value))) {
+            sums[index] = values.reduce((prev, curr) => {
+              const value = Number(curr);
+              if (!isNaN(value)) {
+                return add(prev, curr);
+              } else {
+                return prev;
+              }
+            }, 0);
+            sums[index] += ' 批';
+          } else {
+            sums[index] = 'N/A';
+          }
+          return;
+        }
+        if (column.property == 'tCargoTotalFee'){
+          const values = data.map(item => Number(item[column.property]));
+          if (!values.every(value => isNaN(value))) {
+            sums[index] = values.reduce((prev, curr) => {
+              const value = Number(curr);
+              if (!isNaN(value)) {
+                return add(prev, curr);
+              } else {
+                return prev;
+              }
+            }, 0);
+            this.$emit('on-change-total-fee',+sums[index])
+            sums[index] += ' 元';
+          } else {
+            sums[index] = 'N/A';
+          }
+        }
+        const values = data.map(item => Number(item[column.property]));
+        if (!values.every(value => isNaN(value))) {
+          sums[index] = values.reduce((prev, curr) => {
+            const value = Number(curr);
+            if (!isNaN(value)) {
+              return add(prev, curr);
+            } else {
+              return prev;
+            }
+          }, 0);
+          sums[index] += ' 元';
+        } else {
+          sums[index] = 'N/A';
+        }
+      });
+      return sums;
     },
     /** 新增按钮操作 */
     handleAdd() {
@@ -417,7 +644,7 @@ export default {
         this.toggleSearchFormValue = toggle;
       }
     },
-    init(){
+    init() {
       this.getList();
     },
     getDictMethods() {
@@ -441,10 +668,10 @@ export default {
       if (this.value !== this.waybill) {
         this.waybill = this.value;
       }
-      if (this.waybill.waybillId&&this.waybill.waybillId>0){
+      if (this.waybill.waybillId && this.waybill.waybillId > 0) {
         this.init();
-      }else {
-
+      } else {
+        this.WmsCargoTempList.length = 0;
         this.loading = false;
       }
     },
@@ -457,3 +684,11 @@ export default {
   }
 };
 </script>
+<style scoped>
+.batu{
+  color: #ff435b;
+}
+.ii{
+  color: #016B09;
+}
+</style>
