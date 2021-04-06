@@ -129,7 +129,8 @@
     </el-card>
 -->
     <el-card :body-style="{padding:'15px'}">
-      <ICol :grid="{xs: {span: 24, offset: 0},sm: {span: 24, offset: 0},md: {span: 12, offset: 0},lg: {span: 12, offset: 0},xl: {span: 12, offset: 0}}">
+      <ICol
+        :grid="{xs: {span: 24, offset: 0},sm: {span: 24, offset: 0},md: {span: 12, offset: 0},lg: {span: 12, offset: 0},xl: {span: 12, offset: 0}}">
         <WarehouseEcharts v-model="warehouse" :loading="loading" :x="xList"
                           :y="yList" @on-click-item="handleEchartsClickItem"/>
       </ICol>
@@ -175,12 +176,16 @@
                 </el-form-item>
               </ICol>
               <ICol type="search">
-                <el-button v-if="showItemStatusTooltip" icon="el-icon-paperclip" @click="handleClickLookBindingWaybillCargo">查看装载运单</el-button>
-                <el-button :disabled="!form.itemId>0" type="primary" @click="submitForm">保 存</el-button>
+                <el-button v-if="showItemStatusTooltip" icon="el-icon-paperclip"
+                           @click="handleClickLookBindingWaybillCargo">查看装载运单
+                </el-button>
+                <el-button v-if="action==0" :disabled="!form.itemId>0" type="primary" @click="submitForm">保 存
+                </el-button>
+                <el-button v-else-if="action==1" :disabled="!form.itemId>0" type="primary" @click="loadWaybill">装 载
+                </el-button>
               </ICol>
             </el-row>
           </el-form>
-
         </el-card>
       </ICol>
       <!--<el-table v-loading="loading" :data="WmsWarehouseExtItemList" @selection-change="handleSelectionChange">
@@ -317,6 +322,9 @@
         <el-button type="warning" @click="handleInitDialogClose">初始化</el-button>
       </div>
     </el-dialog>
+
+    <!-- 添加或修改运单信息主对话框 -->
+    <WaybillDialog v-model="row" :option="dialogOption" @on-success="getList"/>
   </div>
 </template>
 
@@ -325,19 +333,21 @@ import {
   addWmsWarehouseExtItem,
   delWmsWarehouseExtItem,
   getWmsWarehouseExtItem,
-  getWmsWarehouseExtItemByXY, getWmsWaybillByItemId,
+  getWmsWarehouseExtItemByXY,
+  getWmsWaybillByItemId,
   listWmsWarehouseExtItem,
   updateWmsWarehouseExtItem
 } from "@/api/wms/WmsWarehouseExtItem";
 import ICol from "@/components/ICol/index";
 import Icon from "@/components/Icon/index";
 import WarehouseEcharts from "@/views/components/wms/WarehouseEcharts/index";
+import WaybillDialog from "@/views/components/wms/Waybill/Dialog/index";
 import {getWarehouse, initWarehouseExtItem} from "@/api/wms/warehouse";
 
 export default {
   name: "WmsWarehouseExtItem",
   components: {
-    ICol, Icon, WarehouseEcharts
+    ICol, Icon, WarehouseEcharts, WaybillDialog
   },
   computed: {
     filterItemStatusOptions() {
@@ -352,6 +362,7 @@ export default {
   },
   data() {
     return {
+      action: 0,
       grid: {
         gutter: 24,
         xs: 24,
@@ -359,6 +370,13 @@ export default {
         md: 12,
         lg: 6,
         xl: 6
+      },
+      row: {
+        waybillId: null
+      },
+      dialogOption: {
+        open: false,
+        type: 0,
       },
       // 遮罩层
       loading: true,
@@ -440,7 +458,7 @@ export default {
   methods: {
     init() {
       const params = this.$route.params;
-      const warehouseId = params && params.warehouseId;
+      const warehouseId = params.warehouseId;
       this.checkPageParams(params);
       this.getDicts("wms_warehouse_item_status").then(response => {
         this.itemStatusOptions = response.data;
@@ -461,10 +479,28 @@ export default {
       });
     },
     checkPageParams(params) {
-      const {warehouseId} = params;
+      console.log(params)
+      const {warehouseId, action, waybillId} = params;
       if (warehouseId && warehouseId <= 0) {
         this.$router.back();
         return;
+      }
+      if (action) {
+        this.action = +action;
+        console.log(this.action)
+        switch (action ? +action : 0) {
+          case 0:
+            break;
+          case 1:
+            if (!waybillId || waybillId <= 0) {
+              this.$router.back();
+              return;
+            }
+            this.waybillId = waybillId;
+            break;
+          case 2:
+            break;
+        }
       }
     },
     /** 查询仓库拓展-仓库方格信息列表 */
@@ -573,6 +609,9 @@ export default {
         }
       });
     },
+    loadWaybill() {
+
+    },
     /** 删除按钮操作 */
     handleDelete(row) {
       const itemIds = row.itemId || this.ids;
@@ -626,10 +665,12 @@ export default {
         this.form = res.data;
       });
     },
-    handleClickLookBindingWaybillCargo(){
-      getWmsWaybillByItemId(this.form.itemId).then(res=>{
-        console.log(res)
-      })
+    handleClickLookBindingWaybillCargo() {
+      getWmsWaybillByItemId(this.form.itemId).then(({data}) => {
+        this.row = data;
+        this.dialogOption.type = 2;
+        this.dialogOption.open = true;
+      });
     },
   }
 };

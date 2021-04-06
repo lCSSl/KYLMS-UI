@@ -4,7 +4,7 @@
         <span>
             {{dialog.title}}
         </span>
-        <el-input v-show="readOnly" v-model="form.waybillCode" class="dialog_title_plus" readonly>
+        <el-input v-show="dialog.type!=0" v-model="form.waybillCode" class="dialog_title_plus" readonly>
           <template slot="prepend">运单号</template>
         </el-input>
       </span>
@@ -67,12 +67,12 @@
             <el-row>
               <ICol border type="half">
                 <el-form-item label="中转地" prop="transitPlace">
-                  <el-input v-model="form.transitPlace" placeholder="请输入中转地"/>
+                  <el-input :readonly="readOnly" v-model="form.transitPlace" placeholder="请输入中转地"/>
                 </el-form-item>
               </ICol>
               <ICol border type="half">
                 <el-form-item label="客户单号" prop="csrOrderNumber">
-                  <el-input v-model="form.csrOrderNumber" placeholder="请输入客户单号"/>
+                  <el-input :readonly="readOnly" v-model="form.csrOrderNumber" placeholder="请输入客户单号"/>
                 </el-form-item>
               </ICol>
             </el-row>
@@ -83,7 +83,7 @@
             <template v-if="!form.deliverEntity.visible">
               <ICol border type="full">
                 <el-form-item label="发货方" prop="receivingEntity">
-                  <el-button style="width: 100%" @click="()=>openUserDialog(0)">添 加</el-button>
+                  <el-button :disabled="readOnly" style="width: 100%" @click="()=>openUserDialog(0)">添 加</el-button>
                 </el-form-item>
               </ICol>
             </template>
@@ -94,34 +94,34 @@
                 :grid="{xs: {span: 24, offset: 0},sm: {span: 6, offset: 0},md: {span: 6, offset: 0},lg: {span: 6, offset: 0},xl: {span: 6, offset: 0}}"
                 border>
                 <el-form-item label="发货公司名称" prop="deliverCoName">
-                  <el-input v-model="form.deliverEntity.deliverCoName" placeholder="请输入发货公司名称"/>
+                  <el-input :readonly="readOnly" v-model="form.deliverEntity.deliverCoName" placeholder="请输入发货公司名称"/>
                 </el-form-item>
               </ICol>
               <ICol
                 :grid="{xs: {span: 24, offset: 0},sm: {span: 6, offset: 0},md: {span: 6, offset: 0},lg: {span: 6, offset: 0},xl: {span: 6, offset: 0}}"
                 border>
                 <el-form-item label="发货联系人" prop="consignorName">
-                  <el-input v-model="form.deliverEntity.consignorName" placeholder="请输入发货联系人"/>
+                  <el-input :readonly="readOnly" v-model="form.deliverEntity.consignorName" placeholder="请输入发货联系人"/>
                 </el-form-item>
               </ICol>
               <ICol
                 :grid="{xs: {span: 24, offset: 0},sm: {span: 5, offset: 0},md: {span: 5, offset: 0},lg: {span: 5, offset: 0},xl: {span: 5, offset: 0}}"
                 border>
                 <el-form-item label="发货人手机" prop="consignorMobile">
-                  <el-input v-model="form.deliverEntity.consignorMobile" placeholder="请输入发货人手机"/>
+                  <el-input :readonly="readOnly" v-model="form.deliverEntity.consignorMobile" placeholder="请输入发货人手机"/>
                 </el-form-item>
               </ICol>
               <ICol
                 :grid="{xs: {span: 24, offset: 0},sm: {span: 5, offset: 0},md: {span: 5, offset: 0},lg: {span: 5, offset: 0},xl: {span: 5, offset: 0}}"
                 border>
                 <el-form-item label="发货人座机" prop="consignorTelephone">
-                  <el-input v-model="form.deliverEntity.consignorTelephone" placeholder="请输入发货人座机"/>
+                  <el-input :readonly="readOnly" v-model="form.deliverEntity.consignorTelephone" placeholder="请输入发货人座机"/>
                 </el-form-item>
               </ICol>
               <ICol
                 :grid="{xs: {span: 24, offset: 0},sm: {span: 2, offset: 0},md: {span: 2, offset: 0},lg: {span: 2, offset: 0},xl: {span: 2, offset: 0}}"
                 border>
-                <el-button class="select-width" @click="()=>openUserDialog(0)">修改</el-button>
+                <el-button :disabled="readOnly" class="select-width" @click="()=>openUserDialog(0)">修改</el-button>
               </ICol>
             </el-row>
           </template>
@@ -177,7 +177,7 @@
         <el-row>
           <ICol border type="half">
             <el-form-item label-width="0px" prop="provinceCityDistrictStreet">
-              <regionSelect v-model="form.regionSelectValue" :level="3"
+              <regionSelect v-model="form.regionSelectValue" :level="3" :disabled-select="readOnly"
                             @on-change="updateRegionSelectValue"/>
             </el-form-item>
           </ICol>
@@ -219,7 +219,7 @@
           <ICol border>
             <el-form-item label="付款方式" prop="payMethod">
               <el-select
-                v-model="form.payMethod" class="select-width"
+                v-model="form.payMethod" :disabled="readOnly" class="select-width"
                 clearable placeholder="请输入付款方式" size="small">
                 <el-option
                   v-for="dict in payMethodOptions"
@@ -231,7 +231,7 @@
           </ICol>
           <ICol border>
             <el-form-item label="是否开发票">
-              <el-radio-group v-model="form.writeInvoice">
+              <el-radio-group :disabled="readOnly" v-model="form.writeInvoice">
                 <el-radio
                   v-for="dict in writeInvoiceOptions"
                   :key="dict.dictValue"
@@ -249,7 +249,7 @@
             <span slot="header">
               货物清单
             </span>
-            <CargoTempList v-model="form" :commit-complete="commitComplete"
+            <CargoTempList v-model="form" :commit-complete="commitComplete" :readOnly="readOnly" @on-success="finalSuccess" :waybill-id="waybillId"
                            @on-change-total-fee="OnChangeCargoBasicFreight"/>
           </el-card>
         </ICol>
@@ -270,22 +270,22 @@
             <el-row v-if="false">
               <ICol border>
                 <el-form-item label="基本运费" prop="basicFreight">
-                  <el-input v-model="form.basicFreight" placeholder="请输入基本运费"/>
+                  <el-input :readonly="readOnly" v-model="form.basicFreight" placeholder="请输入基本运费"/>
                 </el-form-item>
               </ICol>
               <ICol border>
                 <el-form-item label="实收运费" prop="realFreight">
-                  <el-input v-model="form.realFreight" placeholder="请输入实收运费"/>
+                  <el-input :readonly="readOnly" v-model="form.realFreight" placeholder="请输入实收运费"/>
                 </el-form-item>
               </ICol>
               <ICol border>
                 <el-form-item label="总运费" prop="totalFreight">
-                  <el-input v-model="form.totalFreight" placeholder="请输入总运费"/>
+                  <el-input :readonly="readOnly" v-model="form.totalFreight" placeholder="请输入总运费"/>
                 </el-form-item>
               </ICol>
               <ICol border>
                 <el-form-item label="开单备注" prop="remark">
-                  <el-input v-model="form.remark" placeholder="请输入开单备注"/>
+                  <el-input :readonly="readOnly" v-model="form.remark" placeholder="请输入开单备注"/>
                 </el-form-item>
               </ICol>
             </el-row>
@@ -315,10 +315,6 @@
         </ICol>
       </el-row>
     </el-form>
-    <div slot="footer" class="dialog-footer">
-      <el-button type="primary" @click="submitForm">确 定</el-button>
-      <el-button @click="cancel">取 消</el-button>
-    </div>
     <el-dialog :title="'请选择'+appendEntityDialog.title+'方'" :visible.sync="appendEntityDialog.open" append-to-body>
       <el-form v-show="!loading" ref="currentAppendForm" :model="currentAppendEntity" :rules="currentAppendFormRules"
                label-position="left" label-width="80px">
@@ -366,6 +362,10 @@
       <DeptDialog v-model="deptDialogRow" :option="deptDialogOption" @on-success="initAddCoOrUser"/>
       <UserDialog v-model="userDialogRow" :option="userDialogOption" @on-success="initAddCoOrUser"/>
     </el-dialog>
+    <div slot="footer" class="dialog-footer">
+      <el-button type="primary" @click="submitForm">保 存</el-button>
+      <el-button @click="cancel">取 消</el-button>
+    </div>
   </el-dialog>
 </template>
 
@@ -423,7 +423,7 @@ export default {
   },
   computed: {
     readOnly() {
-      return this.dialog.type != 0;
+      return this.dialog.type == 2;
     },
   },
   data() {
@@ -502,6 +502,7 @@ export default {
       statusOptions: [],
       // 创建时间时间范围
       daterangeCreateTime: [],
+      waybillId: null,
       // 表单参数
       form: {
         deliverEntity: {
@@ -556,6 +557,9 @@ export default {
             break;
           case 1:
             this.handleUpdate(this.row);
+            break;
+          case 2:
+            this.handleDetail(this.row);
             break;
         }
       }
@@ -750,77 +754,67 @@ export default {
       this.getWarehouseOptions(null, 0);
       const waybillId = row.waybillId || this.ids
       getWaybill(waybillId).then(response => {
-        const data = this.form = response.data;
-        this.form.regionSelectValue = {
-          level: 0,
-          code: data.receivingProvince,
-          parentCode: 0,
-          child: {
-            level: 1,
-            code: data.receivingCity,
-            parentCode: data.receivingProvince,
-            child: {
-              level: 2,
-              code: data.receivingDistrict,
-              parentCode: data.receivingCity,
-              child: {
-                level: 3,
-                code: data.receivingStreet,
-                parentCode: data.receivingDistrict,
-              },
-            },
-          },
-        };
-        this.form.deliverEntity = {
-          visible: true,
-          deliverCoName: data.deliverCoName,
-          consignorName: data.consignorName,
-          consignorMobile: data.consignorMobile,
-          consignorTelephone: data.consignorTelephone,
-        };
-        this.form.receivingEntity = {
-          visible: true,
-          receivingCoName: data.receivingCoName,
-          consigneeName: data.consigneeName,
-          consigneeMobile: data.consigneeMobile,
-          consigneeTelephone: data.consigneeTelephone,
-        };
-        this.form.provinceCityDistrictStreet = '';
-        this.form.departure = +data.departure;
-        this.form.destination = +data.destination;
+        const data = response.data;
+        this.detailsProcessing(data);
         this.dialog.open = true;
         this.dialog.type = 1;
         this.dialog.title = "修改运单信息";
         this.loading = false;
       });
     },
+    handleDetail(row) {
+      this.reset();
+      this.loading = true;
+      this.getWarehouseOptions(null, 0);
+      const waybillId = row.waybillId || this.ids
+      getWaybill(waybillId).then(response => {
+        const data = response.data;
+        this.detailsProcessing(data);
+        this.dialog.open = true;
+        this.dialog.type = 2;
+        this.dialog.title = "查看运单信息";
+        this.loading = false;
+      });
+    },
+    checkStates() {
+      if (this.loading){
+        this.$message.error("加载中");
+        return 1;
+      }
+      return 0;
+    },
     /** 提交按钮 */
     submitForm() {
       this.$refs["form"].validate(valid => {
         if (valid) {
-          const form = this.form;
-          this.dataProcessing(form);
+          const form = this.dataProcessing();
+          if (this.checkStates() != 0) {
+            return;
+          }
           if (form.waybillId != null) {
-            console.log('update')
             updateWaybill(form).then(({data}) => {
-              this.form = data;
-              this.msgSuccess("修改成功");
-              this.dialog.open = false;
-              this.$emit('on-success');
+              this.waybillId = data.waybillId;
               this.commitComplete = true;
+              this.$nextTick(() => {
+                this.commitComplete = false;
+              })
             });
           } else {
-            console.log('add')
-            addWaybill(form).then(response => {
-              console.log(response)
-              // this.commitComplete = true;
-              // this.msgSuccess("新增成功");
-              // this.dialog.open = false;
-              // this.$emit('on-success');
+            addWaybill(form).then(({data}) => {
+              this.waybillId = data.waybillId;
+              this.commitComplete = true;
+              this.$nextTick(() => {
+                this.commitComplete = false;
+              })
             });
           }
         }
       });
+    },
+    finalSuccess(){
+      this.dialog.open = false;
+      this.$emit('on-success');
+      this.msgSuccess("保存成功");
     },
     updateRegionSelectValue(data, label, status) {
       this.form.regionSelectValue = data
@@ -830,7 +824,7 @@ export default {
         this.form.receivingDistrict = data.districtCode;
         this.form.receivingStreet = data.streetCode;
         if (this.dialog.type == 0)
-          this.form.receivingAddress = label.split('-').join('') + this.form.receivingAddress;
+          this.form.receivingAddress = label.split('-').join('') + this.form.receivingAddress?this.form.receivingAddress:'';
       } else {
         this.form.provinceCityDistrictStreet = '';
       }
@@ -890,6 +884,46 @@ export default {
     OnChangeCargoBasicFreight(fee) {
       this.form.basicFreight = fee;
     },
+    detailsProcessing(data) {
+      data.regionSelectValue = {
+        level: 0,
+        code: data.receivingProvince,
+        parentCode: 0,
+        child: {
+          level: 1,
+          code: data.receivingCity,
+          parentCode: data.receivingProvince,
+          child: {
+            level: 2,
+            code: data.receivingDistrict,
+            parentCode: data.receivingCity,
+            child: {
+              level: 3,
+              code: data.receivingStreet,
+              parentCode: data.receivingDistrict,
+            },
+          },
+        },
+      };
+      data.deliverEntity = {
+        visible: true,
+        deliverCoName: data.deliverCoName,
+        consignorName: data.consignorName,
+        consignorMobile: data.consignorMobile,
+        consignorTelephone: data.consignorTelephone,
+      };
+      data.receivingEntity = {
+        visible: true,
+        receivingCoName: data.receivingCoName,
+        consigneeName: data.consigneeName,
+        consigneeMobile: data.consigneeMobile,
+        consigneeTelephone: data.consigneeTelephone,
+      };
+      data.provinceCityDistrictStreet = '';
+      data.departure = +data.departure;
+      data.destination = +data.destination;
+      this.form = data;
+    },
     dataProcessing() {
       const form = cloneDeep(this.form);
       form.deliverCoId = form.deliverEntity.deliverCoId;
@@ -902,7 +936,7 @@ export default {
       form.consigneeName = form.receivingEntity.consigneeName;
       form.consigneeMobile = form.receivingEntity.consigneeMobile;
       form.consigneeTelephone = form.receivingEntity.consigneeTelephone;
-      this.form = form;
+      return form;
     }
   },
   created() {

@@ -266,7 +266,7 @@
             {{row.warehouseCode}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="站点名" prop="warehouseName" show-overflow-tooltip show-overflow-tooltip>
+        <el-table-column align="center" label="站点名" prop="warehouseName" show-overflow-tooltip>
           <template slot-scope="{row}">
             {{row.warehouseName}}
           </template>
@@ -341,7 +341,7 @@
               icon="el-icon-view"
               size="mini"
               type="text">
-              <router-link :to="$route.path+'/WmsWarehouseExtItem/' + row. warehouseId" class="link-type">
+              <router-link :to="$route.path+'/WmsWarehouseExtItem/' + row.warehouseId+'/0/0'" class="link-type">
                 <span>仓库预览</span>
               </router-link>
             </el-button>
@@ -358,8 +358,8 @@
               icon="el-icon-delete"
               size="mini"
               type="text"
-              @click="handleDelete(row)"
-            >删除
+              @click="handleDelete(row)">
+              删除
             </el-button>
           </template>
         </el-table-column>
