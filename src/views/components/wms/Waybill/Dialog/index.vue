@@ -345,7 +345,7 @@
                 <el-form-item label="收货人" prop="userId">
                   <el-select v-model="currentAppendEntity.userId" :disabled="!this.userOptions.length>0"
                              :placeholder="'请选择'+appendEntityDialog.title+'人'"
-                             style="width: 100%;" @change="logA">
+                             style="width: 100%;">
                     <el-option v-for="(item,index) in userOptions" :key="index"
                                :label="item.nickName"
                                :value="item.userId"/>
@@ -370,7 +370,7 @@
 </template>
 
 <script>
-import {getWaybill} from "@/api/wms/waybill";
+import {addWaybill, getWaybill, updateWaybill} from "@/api/wms/waybill";
 import 'element-ui/lib/theme-chalk/display.css';
 import ICol from "@/components/ICol";
 import RegionSelect from "@/components/regionSelect/index";
@@ -522,6 +522,7 @@ export default {
         },
         provinceCityDistrictStreet: null
       },
+      fromStr: '',
       commitComplete: false,
       // 表单校验
       rules: {
@@ -801,27 +802,28 @@ export default {
           this.dataProcessing(form);
           if (form.waybillId != null) {
             console.log('update')
-            // updateWaybill(form).then(response => {
-            this.commitComplete = true;
-            //   this.msgSuccess("修改成功");
-            //   this.dialog.open = false;
-            //   this.$emit('on-success');
-            // });
+            updateWaybill(form).then(({data}) => {
+              this.form = data;
+              this.msgSuccess("修改成功");
+              this.dialog.open = false;
+              this.$emit('on-success');
+              this.commitComplete = true;
+            });
           } else {
             console.log('add')
-            // addWaybill(form).then(response => {
-            this.commitComplete = true;
-            //   this.msgSuccess("新增成功");
-            //   this.dialog.open = false;
-            //   this.$emit('on-success');
-            // });
+            addWaybill(form).then(response => {
+              console.log(response)
+              // this.commitComplete = true;
+              // this.msgSuccess("新增成功");
+              // this.dialog.open = false;
+              // this.$emit('on-success');
+            });
           }
         }
       });
     },
     updateRegionSelectValue(data, label, status) {
       this.form.regionSelectValue = data
-      this.form.regionSelectStatus = status;
       if (status) {
         this.form.receivingProvince = data.provinceCode;
         this.form.receivingCity = data.cityCode;
@@ -863,9 +865,6 @@ export default {
       this.currentAppendEntity.type = type;
       this.appendEntityDialog.open = true;
       this.appendEntityDialog.title = +type == 0 ? '发货' : '收货';
-    },
-    logA(a) {
-      console.log(a);
     },
     openAddDialog(type) {
       switch (+type) {

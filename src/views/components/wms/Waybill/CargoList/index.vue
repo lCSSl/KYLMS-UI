@@ -18,11 +18,11 @@
       <el-table v-loading="loading" :data="WmsCargoTempList" :show-summary="true" :summary-method="getSummaries" border
                 @selection-change="handleSelectionChange">
         <el-table-column align="center" fixed type="selection" width="55"/>
-        <el-table-column align="center" fixed label="序号" type="index" width="60"/>
-        <el-table-column align="center" label="品名" prop="tCargoName" show-overflow-tooltip width="150">
+        <el-table-column align="center" fixed label="序号" type="index" prop="index" width="60"/>
+        <el-table-column align="center" label="品名" prop="tcargoName" show-overflow-tooltip width="150">
           <template slot-scope="{row}">
-            <el-input v-if="row.editable" v-model="rowData.tCargoName"/>
-            <span v-else>{{row.tCargoName}}</span>
+            <el-input v-if="row.editable" v-model="rowData.tcargoName"/>
+            <span v-else>{{row.tcargoName}}</span>
           </template>
         </el-table-column>
         <el-table-column align="center" label="包装方式" prop="packageType" width="150">
@@ -37,11 +37,11 @@
             <span v-else>{{packageTypeFormat(row)}}</span>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="件数" prop="tCargoCount" width="150">
+        <el-table-column align="center" label="件数" prop="tcargoCount" width="150">
           <template slot-scope="{row}">
-            <el-input-number v-if="row.editable" v-model="rowData.tCargoCount" :min="1" :precision="0" :step="1"
+            <el-input-number v-if="row.editable" v-model="rowData.tcargoCount" :min="1" :precision="0" :step="1"
                              controls-position="right" size="small"/>
-            <span v-else> {{row.tCargoCount}}</span>
+            <span v-else> {{row.tcargoCount}}</span>
           </template>
         </el-table-column>
         <el-table-column align="center" label="计价方式" prop="valuationType" width="150">
@@ -70,9 +70,9 @@
             <span v-else>{{row.valuationCount}}</span>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="基础运费" prop="tCargoTotalFee" width="150">
+        <el-table-column align="center" label="基础运费" prop="tcargoTotalFee" width="150">
           <template slot-scope="{row}">
-            {{row.tCargoTotalFee}}
+            {{row.tcargoTotalFee}}
           </template>
         </el-table-column>
         <el-table-column align="center" label="贵重货物" prop="valuable" width="150">
@@ -230,7 +230,7 @@ export default {
       const length = list.length;
       let totalFee = 0;
       for (let i = length - 1; i >= 0; i--) {
-        totalFee = add(totalFee, list[i].tCargoTotalFee);
+        totalFee = add(totalFee, list[i].tcargoTotalFee);
       }
       return totalFee;
     },
@@ -278,13 +278,13 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 100,
-        tCargoName: null,
+        tcargoName: null,
         packageType: null,
-        tCargoCount: null,
+        tcargoCount: null,
         valuationType: null,
         valuationValue: null,
         valuationCount: null,
-        tCargoTotalFee: null,
+        tcargoTotalFee: null,
         valuable: null,
         irregular: null,
         documents: null,
@@ -306,7 +306,7 @@ export default {
         valuationCount: [
           {required: true, message: "计量数不能为空", trigger: "blur"}
         ],
-        tCargoTotalFee: [
+        tcargoTotalFee: [
           {required: true, message: "基础运费不能为空", trigger: "blur"}
         ],
       },
@@ -349,7 +349,7 @@ export default {
     handleClickDisableOrEnable(id, status) {
     },
     handleClickSave() {
-      this.rowData.tCargoTotalFee = multiply(this.rowData.valuationValue, this.rowData.valuationCount);
+      this.rowData.tcargoTotalFee = multiply(this.rowData.valuationValue, this.rowData.valuationCount);
       const data = cloneDeep(this.rowData);
       data.editable = null;
       const editRowDataString = JSON.stringify(data);
@@ -373,8 +373,8 @@ export default {
     handleAddRow() {
       this.WmsCargoTempList.push({
         id: --this.maxAppendId,
-        tCargoName: '',
-        tCargoCount: 1,
+        tcargoName: '',
+        tcargoCount: 1,
         packageType: '',
         valuationType: '',
         valuationValue: 0,
@@ -426,13 +426,13 @@ export default {
     reset() {
       this.form = {
         id: null,
-        tCargoName: null,
+        tcargoName: null,
         packageType: null,
-        tCargoCount: null,
+        tcargoCount: null,
         valuationType: null,
         valuationValue: null,
         valuationCount: null,
-        tCargoTotalFee: null,
+        tcargoTotalFee: null,
         valuable: null,
         irregular: null,
         documents: null,
@@ -472,11 +472,11 @@ export default {
           sums[index] = '汇总';
           return;
         }
-        if (column.property == 'tCargoName' || column.property == 'valuationType' || column.property == 'status' || column.property == 'remark' || column.property == 'action') {
-          sums[index] = '';
-          return;
-        }
-        if (column.property == 'tCargoCount') {
+        // if (column.property == 'tcargoName' || column.property == 'valuationType' || column.property == 'status' || column.property == 'remark' || column.property == 'action') {
+        //   sums[index] = '';
+        //   return;
+        // }
+        if (column.property == 'tcargoCount') {
           const values = data.map(item => Number(item[column.property]));
           if (!values.every(value => isNaN(value))) {
             sums[index] = values.reduce((prev, curr) => {
@@ -549,7 +549,7 @@ export default {
           }
           return;
         }
-        if (column.property == 'tCargoTotalFee'){
+        if (column.property == 'tcargoTotalFee'){
           const values = data.map(item => Number(item[column.property]));
           if (!values.every(value => isNaN(value))) {
             sums[index] = values.reduce((prev, curr) => {
@@ -566,20 +566,11 @@ export default {
             sums[index] = 'N/A';
           }
         }
-        const values = data.map(item => Number(item[column.property]));
-        if (!values.every(value => isNaN(value))) {
-          sums[index] = values.reduce((prev, curr) => {
-            const value = Number(curr);
-            if (!isNaN(value)) {
-              return add(prev, curr);
-            } else {
-              return prev;
-            }
-          }, 0);
-          sums[index] += ' 元';
-        } else {
-          sums[index] = 'N/A';
+        if (column.property == 'index'){
+          sums[index] = data.length+' 例';
+          return;
         }
+        return;
       });
       return sums;
     },
