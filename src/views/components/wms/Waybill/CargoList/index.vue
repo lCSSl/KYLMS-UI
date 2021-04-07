@@ -341,6 +341,18 @@ export default {
   },
   methods: {
     /** 查询运单货物临时表列表 */
+    checkStates() {
+      if (this.loading) {
+        this.msgError("加载中");
+        return 1;
+      }
+      if (this.editing) {
+        this.msgError("请点击保存");
+        return 2;
+      }
+      return 0;
+    },
+
     getList() {
       this.loading = true;
       this.queryParams.waybillId = this.waybill.waybillId;
@@ -351,6 +363,7 @@ export default {
         });
         this.total = total;
         this.loading = false;
+        this.$emit('on-load');
       });
     },
     /** 提交 */
@@ -363,7 +376,6 @@ export default {
         return;
       }
       addWmsCargoTempList(list).then(res => {
-        // console.log(res)
         this.commit = false;
         this.$emit('on-success');
       }).finally(() => {
@@ -719,17 +731,7 @@ export default {
     statusFormat(row, column) {
       return this.selectDictLabel(this.statusOptions, row.status);
     },
-    checkStates() {
-      if (this.loading) {
-        this.msgError("加载中");
-        return 1;
-      }
-      if (this.editing) {
-        this.msgError("请点击保存");
-        return 2;
-      }
-      return 0;
-    },
+
   },
   created() {
     this.getDictMethods();

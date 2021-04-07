@@ -181,7 +181,8 @@
                 </el-button>
                 <el-button v-if="action==0" :disabled="!form.itemId>0" type="primary" @click="submitForm">保 存
                 </el-button>
-                <el-button v-else-if="action==1" :disabled="!form.itemId>0" type="primary" @click="loadWaybill">装 载
+                <el-button v-else-if="action==1" :disabled="!form.itemId>0||itemStatus" type="primary"
+                           @click="loadWaybill">装 载
                 </el-button>
               </ICol>
             </el-row>
@@ -336,6 +337,7 @@ import {
   getWmsWarehouseExtItemByXY,
   getWmsWaybillByItemId,
   listWmsWarehouseExtItem,
+  loadWaybill,
   updateWmsWarehouseExtItem
 } from "@/api/wms/WmsWarehouseExtItem";
 import ICol from "@/components/ICol/index";
@@ -359,10 +361,15 @@ export default {
     itemCardTitle() {
       return this.warehouse && this.warehouse.warehouseName;
     },
+    itemStatus() {
+      console.log(this.form.status);
+      return this.form.status != '1';
+    }
   },
   data() {
     return {
       action: 0,
+      waybillId: null,
       grid: {
         gutter: 24,
         xs: 24,
@@ -479,7 +486,6 @@ export default {
       });
     },
     checkPageParams(params) {
-      console.log(params)
       const {warehouseId, action, waybillId} = params;
       if (warehouseId && warehouseId <= 0) {
         this.$router.back();
@@ -487,7 +493,6 @@ export default {
       }
       if (action) {
         this.action = +action;
-        console.log(this.action)
         switch (action ? +action : 0) {
           case 0:
             break;
@@ -610,7 +615,11 @@ export default {
       });
     },
     loadWaybill() {
-
+      loadWaybill(this.waybillId, this.form).then(res => {
+        this.msgSuccess("入库成功")
+        this.$store.dispatch("tagsView/delView", this.$route);
+        this.$router.replace("/app/wms/waybill")
+      })
     },
     /** 删除按钮操作 */
     handleDelete(row) {

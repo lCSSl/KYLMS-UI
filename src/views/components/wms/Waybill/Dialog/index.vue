@@ -8,7 +8,7 @@
           <template slot="prepend">运单号</template>
         </el-input>
       </span>
-    <el-form v-show="!loading" ref="form" :model="form" :rules="rules" :show-message="false" label-position="left"
+    <el-form ref="form" :model="form" :rules="rules" :show-message="false" label-position="left"
              label-width="100px">
       <el-row>
         <el-row>
@@ -67,12 +67,12 @@
             <el-row>
               <ICol border type="half">
                 <el-form-item label="中转地" prop="transitPlace">
-                  <el-input :readonly="readOnly" v-model="form.transitPlace" placeholder="请输入中转地"/>
+                  <el-input v-model="form.transitPlace" :readonly="readOnly" placeholder="请输入中转地"/>
                 </el-form-item>
               </ICol>
               <ICol border type="half">
                 <el-form-item label="客户单号" prop="csrOrderNumber">
-                  <el-input :readonly="readOnly" v-model="form.csrOrderNumber" placeholder="请输入客户单号"/>
+                  <el-input v-model="form.csrOrderNumber" :readonly="readOnly" placeholder="请输入客户单号"/>
                 </el-form-item>
               </ICol>
             </el-row>
@@ -94,28 +94,29 @@
                 :grid="{xs: {span: 24, offset: 0},sm: {span: 6, offset: 0},md: {span: 6, offset: 0},lg: {span: 6, offset: 0},xl: {span: 6, offset: 0}}"
                 border>
                 <el-form-item label="发货公司名称" prop="deliverCoName">
-                  <el-input :readonly="readOnly" v-model="form.deliverEntity.deliverCoName" placeholder="请输入发货公司名称"/>
+                  <el-input v-model="form.deliverEntity.deliverCoName" :readonly="readOnly" placeholder="请输入发货公司名称"/>
                 </el-form-item>
               </ICol>
               <ICol
                 :grid="{xs: {span: 24, offset: 0},sm: {span: 6, offset: 0},md: {span: 6, offset: 0},lg: {span: 6, offset: 0},xl: {span: 6, offset: 0}}"
                 border>
                 <el-form-item label="发货联系人" prop="consignorName">
-                  <el-input :readonly="readOnly" v-model="form.deliverEntity.consignorName" placeholder="请输入发货联系人"/>
+                  <el-input v-model="form.deliverEntity.consignorName" :readonly="readOnly" placeholder="请输入发货联系人"/>
                 </el-form-item>
               </ICol>
               <ICol
                 :grid="{xs: {span: 24, offset: 0},sm: {span: 5, offset: 0},md: {span: 5, offset: 0},lg: {span: 5, offset: 0},xl: {span: 5, offset: 0}}"
                 border>
                 <el-form-item label="发货人手机" prop="consignorMobile">
-                  <el-input :readonly="readOnly" v-model="form.deliverEntity.consignorMobile" placeholder="请输入发货人手机"/>
+                  <el-input v-model="form.deliverEntity.consignorMobile" :readonly="readOnly" placeholder="请输入发货人手机"/>
                 </el-form-item>
               </ICol>
               <ICol
                 :grid="{xs: {span: 24, offset: 0},sm: {span: 5, offset: 0},md: {span: 5, offset: 0},lg: {span: 5, offset: 0},xl: {span: 5, offset: 0}}"
                 border>
                 <el-form-item label="发货人座机" prop="consignorTelephone">
-                  <el-input :readonly="readOnly" v-model="form.deliverEntity.consignorTelephone" placeholder="请输入发货人座机"/>
+                  <el-input v-model="form.deliverEntity.consignorTelephone" :readonly="readOnly"
+                            placeholder="请输入发货人座机"/>
                 </el-form-item>
               </ICol>
               <ICol
@@ -177,7 +178,7 @@
         <el-row>
           <ICol border type="half">
             <el-form-item label-width="0px" prop="provinceCityDistrictStreet">
-              <regionSelect v-model="form.regionSelectValue" :level="3" :disabled-select="readOnly"
+              <regionSelect v-model="form.regionSelectValue" :disabled-select="readOnly" :level="3"
                             @on-change="updateRegionSelectValue"/>
             </el-form-item>
           </ICol>
@@ -231,7 +232,7 @@
           </ICol>
           <ICol border>
             <el-form-item label="是否开发票">
-              <el-radio-group :disabled="readOnly" v-model="form.writeInvoice">
+              <el-radio-group v-model="form.writeInvoice" :disabled="readOnly">
                 <el-radio
                   v-for="dict in writeInvoiceOptions"
                   :key="dict.dictValue"
@@ -249,7 +250,11 @@
             <span slot="header">
               货物清单
             </span>
-            <CargoTempList v-model="form" :commit-complete="commitComplete" :readOnly="readOnly" @on-success="finalSuccess" :waybill-id="waybillId"
+            <CargoTempList v-if="live" ref="cargoList" v-model="form" :commit-complete="commitComplete"
+                           :readOnly="readOnly"
+                           :waybill-id="waybillId"
+                           @on-load="loadSuccess"
+                           @on-success="finalSuccess"
                            @on-change-total-fee="OnChangeCargoBasicFreight"/>
           </el-card>
         </ICol>
@@ -270,22 +275,22 @@
             <el-row v-if="false">
               <ICol border>
                 <el-form-item label="基本运费" prop="basicFreight">
-                  <el-input :readonly="readOnly" v-model="form.basicFreight" placeholder="请输入基本运费"/>
+                  <el-input v-model="form.basicFreight" :readonly="readOnly" placeholder="请输入基本运费"/>
                 </el-form-item>
               </ICol>
               <ICol border>
                 <el-form-item label="实收运费" prop="realFreight">
-                  <el-input :readonly="readOnly" v-model="form.realFreight" placeholder="请输入实收运费"/>
+                  <el-input v-model="form.realFreight" :readonly="readOnly" placeholder="请输入实收运费"/>
                 </el-form-item>
               </ICol>
               <ICol border>
                 <el-form-item label="总运费" prop="totalFreight">
-                  <el-input :readonly="readOnly" v-model="form.totalFreight" placeholder="请输入总运费"/>
+                  <el-input v-model="form.totalFreight" :readonly="readOnly" placeholder="请输入总运费"/>
                 </el-form-item>
               </ICol>
               <ICol border>
                 <el-form-item label="开单备注" prop="remark">
-                  <el-input :readonly="readOnly" v-model="form.remark" placeholder="请输入开单备注"/>
+                  <el-input v-model="form.remark" :readonly="readOnly" placeholder="请输入开单备注"/>
                 </el-form-item>
               </ICol>
             </el-row>
@@ -363,8 +368,10 @@
       <UserDialog v-model="userDialogRow" :option="userDialogOption" @on-success="initAddCoOrUser"/>
     </el-dialog>
     <div slot="footer" class="dialog-footer">
-      <el-button type="primary" @click="submitForm">保 存</el-button>
-      <el-button @click="cancel">取 消</el-button>
+      <el-button v-if="this.row.waybillStatus<2&&this.row.waybillStatus!=0" :disabled="loading" type="warning" @click="toExtItemPage">入 库
+      </el-button>
+      <el-button v-if="!readOnly" :disabled="loading" type="primary" @click="submitForm">保 存</el-button>
+      <el-button @click="cancel" :disabled="loading">关 闭</el-button>
     </div>
   </el-dialog>
 </template>
@@ -429,6 +436,7 @@ export default {
   data() {
     return {
       loading: false,
+      live: true,
       row: {},
       dialog: {
         // 弹出层标题
@@ -541,6 +549,24 @@ export default {
     };
   },
   methods: {
+    checkStates() {
+      if (this.loading) {
+        this.$message.error("加载中");
+        return 1;
+      }
+      const checkChildStates = this.$refs["cargoList"].checkStates();
+      if (checkChildStates != 0) {
+        return 2;
+      }
+      const wmsCargoTempList = this.$refs["cargoList"].WmsCargoTempList;
+      console.log(wmsCargoTempList)
+      if (!(wmsCargoTempList && wmsCargoTempList.length && wmsCargoTempList.length > 0)) {
+        this.$message.error("请填写货物列表");
+        return 3;
+      }
+      return 0;
+    },
+
     checkProps() {
       if (this.value !== this.row) {
         this.row = this.value;
@@ -551,6 +577,7 @@ export default {
       }
       if (this.option.open) {
         const type = +this.dialog.type;
+        this.live = true;
         switch (type) {
           case 0:
             this.handleAdd();
@@ -759,7 +786,7 @@ export default {
         this.dialog.open = true;
         this.dialog.type = 1;
         this.dialog.title = "修改运单信息";
-        this.loading = false;
+        // this.loading = false;
       });
     },
     handleDetail(row) {
@@ -773,26 +800,23 @@ export default {
         this.dialog.open = true;
         this.dialog.type = 2;
         this.dialog.title = "查看运单信息";
-        this.loading = false;
+        // this.loading = false;
       });
     },
-    checkStates() {
-      if (this.loading){
-        this.$message.error("加载中");
-        return 1;
-      }
-      return 0;
+    loadSuccess(){
+      this.loading=false;
     },
     /** 提交按钮 */
     submitForm() {
       this.$refs["form"].validate(valid => {
         if (valid) {
-          const form = this.dataProcessing();
           if (this.checkStates() != 0) {
             return;
           }
+          const form = this.dataProcessing();
           if (form.waybillId != null) {
             updateWaybill(form).then(({data}) => {
+              this.row = data;
               this.waybillId = data.waybillId;
               this.commitComplete = true;
               this.$nextTick(() => {
@@ -801,6 +825,7 @@ export default {
             });
           } else {
             addWaybill(form).then(({data}) => {
+              this.row = data;
               this.waybillId = data.waybillId;
               this.commitComplete = true;
               this.$nextTick(() => {
@@ -811,8 +836,13 @@ export default {
         }
       });
     },
-    finalSuccess(){
+    finalSuccess() {
+      if (this.row.waybillStatus==1){
+      }
+      this.live = false;
       this.dialog.open = false;
+      this.dialog.type = 0;
+      this.reset();
       this.$emit('on-success');
       this.msgSuccess("保存成功");
     },
@@ -824,7 +854,7 @@ export default {
         this.form.receivingDistrict = data.districtCode;
         this.form.receivingStreet = data.streetCode;
         if (this.dialog.type == 0)
-          this.form.receivingAddress = label.split('-').join('') + this.form.receivingAddress?this.form.receivingAddress:'';
+          this.form.receivingAddress = label.split('-').join('') + this.form.receivingAddress ? this.form.receivingAddress : '';
       } else {
         this.form.provinceCityDistrictStreet = '';
       }
@@ -937,14 +967,28 @@ export default {
       form.consigneeMobile = form.receivingEntity.consigneeMobile;
       form.consigneeTelephone = form.receivingEntity.consigneeTelephone;
       return form;
+    },
+    toExtItemPage() {
+      const {departure, waybillId} = this.row;
+      this.dialog.open = false;
+      this.dialog.type = 0;
+      this.reset();
+      this.$router.push({
+        path: 'warehouse/WmsWarehouseExtItem/' + departure + '/' + 1 + '/' + waybillId,
+      });
     }
   },
   created() {
+    console.log('created')
     this.getDictMethods();
     this.getWarehouseOptions(null, 0);
   },
   mounted() {
+    console.log('mounted')
     this.reset();
+  },
+  activated() {
+    console.log('activated')
   }
 };
 </script>
@@ -959,21 +1003,13 @@ export default {
   padding-right: 30px;
 }
 
-/deep/ .el-form-item {
-  margin-bottom: 0;
-  padding-right: 1px;
-  padding-left: 1px;
-}
-
 .select-width {
   width: 100%;
 }
 
-.erect {
-  width: 15px;
-  margin: 0 auto;
-  line-height: 24px;
-  font-size: 20px;
-  word-wrap: break-word;
+/deep/ .el-form-item {
+  margin-bottom: 0;
+  padding-right: 1px;
+  padding-left: 1px;
 }
 </style>

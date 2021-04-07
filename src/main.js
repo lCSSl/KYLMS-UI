@@ -33,17 +33,53 @@ Vue.prototype.selectDictLabels = selectDictLabels
 Vue.prototype.download = download
 Vue.prototype.handleTree = handleTree
 Vue.prototype.msgSuccess = function (msg) {
-  this.$message({ showClose: true, message: msg, type: "success" });
+  this.$notify({
+    title: '成功',
+    message: msg,
+    type: 'success'
+  });
+  // this.$message({ showClose: true, message: msg, type: "success" });
 }
-
 Vue.prototype.msgError = function (msg) {
-  this.$message({ showClose: true, message: msg, type: "error" });
+  this.$notify.error({
+    title: '错误',
+    message: msg
+  });
+  // this.$message({ showClose: true, message: msg, type: "error" });
 }
-
 Vue.prototype.msgInfo = function (msg) {
-  this.$message.info(msg);
+  this.$notify.info({
+    title: '消息',
+    message: msg
+  });
+  // this.$message.info(msg);
 }
-
+Vue.prototype.notifySuccess = function (msg) {
+  this.$notify({
+    title: '成功',
+    message: msg,
+    type: 'success'
+  });
+}
+Vue.prototype.notifyError = function (msg) {
+  this.$notify.error({
+    title: '错误',
+    message: msg
+  });
+}
+Vue.prototype.notifyWarn = function (msg) {
+  this.$notify({
+    title: '警告',
+    message: msg,
+    type: 'warning'
+  });
+}
+Vue.prototype.notifyInfo = function (msg) {
+  this.$notify.info({
+    title: '消息',
+    message: msg
+  });
+}
 // 全局组件挂载
 Vue.component('Pagination', Pagination)
 Vue.component('RightToolbar', RightToolbar)

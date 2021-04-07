@@ -56,3 +56,11 @@ export function delWmsWarehouseExtItem(itemId) {
     method: 'delete'
   })
 }
+// 装载方格
+export function loadWaybill(waybillId,data) {
+  return request({
+    url: '/wms/WmsWarehouseExtItem/loadWaybill/' + waybillId,
+    method: 'put',
+    data
+  })
+}

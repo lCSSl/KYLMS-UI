@@ -626,97 +626,113 @@
             {{row.transitPlace}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="客户ID" show-overflow-tooltip  prop="csrId">
+        <el-table-column align="center" label="客户ID" prop="csrId" show-overflow-tooltip>
           <template slot-scope="{row}">
             {{row.csrId}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="客户编号" show-overflow-tooltip  prop="csrCode">
+        <el-table-column align="center" label="客户编号" prop="csrCode" show-overflow-tooltip>
           <template slot-scope="{row}">
             {{row.csrCode}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="客户单号" show-overflow-tooltip  prop="csrOrderNumber">
+        <el-table-column align="center" label="客户单号" prop="csrOrderNumber" show-overflow-tooltip>
           <template slot-scope="{row}">
             {{row.csrOrderNumber}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="发货人手机" show-overflow-tooltip  prop="consignorMobile" show-overflow-tooltip width="150">
+        <el-table-column align="center" label="发货人手机" prop="consignorMobile" show-overflow-tooltip show-overflow-tooltip
+                         width="150">
           <template slot-scope="{row}">
             {{row.consignorMobile}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="发货人座机" show-overflow-tooltip  prop="consignorTelephone" show-overflow-tooltip width="150">
+        <el-table-column align="center" label="发货人座机" prop="consignorTelephone" show-overflow-tooltip
+                         show-overflow-tooltip width="150">
           <template slot-scope="{row}">
             {{row.consignorTelephone}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="发货联系人" show-overflow-tooltip  prop="consignorName" show-overflow-tooltip width="150">
+        <el-table-column align="center" label="发货联系人" prop="consignorName" show-overflow-tooltip show-overflow-tooltip
+                         width="150">
           <template slot-scope="{row}">
             {{row.consignorName}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="发货公司名称" show-overflow-tooltip  prop="deliverCoName" show-overflow-tooltip width="150">
+        <el-table-column align="center" label="发货公司名称" prop="deliverCoName" show-overflow-tooltip show-overflow-tooltip
+                         width="150">
           <template slot-scope="{row}">
             {{row.deliverCoName}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="收货人手机" show-overflow-tooltip  prop="consigneeMobile" show-overflow-tooltip width="150">
+        <el-table-column align="center" label="收货人手机" prop="consigneeMobile" show-overflow-tooltip show-overflow-tooltip
+                         width="150">
           <template slot-scope="{row}">
             {{row.consigneeMobile}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="收货人座机" show-overflow-tooltip  prop="consigneeTelephone" show-overflow-tooltip width="150">
+        <el-table-column align="center" label="收货人座机" prop="consigneeTelephone" show-overflow-tooltip
+                         show-overflow-tooltip width="150">
           <template slot-scope="{row}">
             {{row.consigneeTelephone}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="收货联系人" show-overflow-tooltip  prop="consigneeName" show-overflow-tooltip width="150">
+        <el-table-column align="center" label="收货联系人" prop="consigneeName" show-overflow-tooltip show-overflow-tooltip
+                         width="150">
           <template slot-scope="{row}">
             {{row.consigneeName}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="收货公司名称" show-overflow-tooltip  prop="receivingCoName" show-overflow-tooltip width="150">
+        <el-table-column align="center" label="收货公司名称" prop="receivingCoName" show-overflow-tooltip
+                         show-overflow-tooltip width="150">
           <template slot-scope="{row}">
             {{row.receivingCoName}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="收货省" show-overflow-tooltip  prop="receivingProvince" show-overflow-tooltip width="150">
+        <el-table-column align="center" label="收货省" prop="receivingProvince" show-overflow-tooltip show-overflow-tooltip
+                         width="150">
           <template slot-scope="{row}">
             {{row.receivingProvince}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="收货市" show-overflow-tooltip  prop="receivingCity" show-overflow-tooltip width="150">
+        <el-table-column align="center" label="收货市" prop="receivingCity" show-overflow-tooltip show-overflow-tooltip
+                         width="150">
           <template slot-scope="{row}">
             {{row.receivingCity}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="收货区" show-overflow-tooltip  prop="receivingDistrict" show-overflow-tooltip width="150">
+        <el-table-column align="center" label="收货区" prop="receivingDistrict" show-overflow-tooltip show-overflow-tooltip
+                         width="150">
           <template slot-scope="{row}">
             {{row.receivingDistrict}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="收货街道" show-overflow-tooltip  prop="receivingStreet" show-overflow-tooltip width="150">
+        <el-table-column align="center" label="收货街道" prop="receivingStreet" show-overflow-tooltip show-overflow-tooltip
+                         width="150">
           <template slot-scope="{row}">
             {{row.receivingStreet}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="收货详细地址" show-overflow-tooltip  prop="receivingAddress" show-overflow-tooltip width="150">
+        <el-table-column align="center" label="收货详细地址" prop="receivingAddress" show-overflow-tooltip
+                         show-overflow-tooltip width="150">
           <template slot-scope="{row}">
             {{row.receivingAddress}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="开单事业部" show-overflow-tooltip  prop="deptId" show-overflow-tooltip width="150">
+        <el-table-column align="center" label="开单事业部" prop="deptId" show-overflow-tooltip show-overflow-tooltip
+                         width="150">
           <template slot-scope="{row}">
             {{row.deptId}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="配载站点" show-overflow-tooltip  prop="stowageId" show-overflow-tooltip width="150">
+        <el-table-column align="center" label="配载站点" prop="stowageId" show-overflow-tooltip show-overflow-tooltip
+                         width="150">
           <template slot-scope="{row}">
             {{row.stowageId}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="目的网点" show-overflow-tooltip  prop="destinationNode" show-overflow-tooltip width="150">
+        <el-table-column align="center" label="目的网点" prop="destinationNode" show-overflow-tooltip show-overflow-tooltip
+                         width="150">
           <template slot-scope="{row}">
             {{row.destinationNode}}
           </template>
@@ -962,12 +978,12 @@ export default {
       toggleSearchFormValue: 0,
     };
   },
-  created() {
-    this.getList();
-    this.getDictMethods();
-    this.getWarehouseOptions(null, 0);
-  },
   methods: {
+    init() {
+      this.getList();
+      this.getDictMethods();
+      this.getWarehouseOptions(null, 0);
+    },
     /** 查询运单信息主列表 */
     getList() {
       this.loading = true;
@@ -1079,14 +1095,14 @@ export default {
     /** 新增按钮操作 */
     handleAdd() {
       this.row = {};
-      this.dialogOption={};
+      this.dialogOption = {};
       this.dialogOption.open = true;
       this.dialogOption.type = 0;
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.row = row;
-      this.dialogOption={};
+      this.dialogOption = {};
       this.dialogOption.open = true;
       this.dialogOption.type = 1;
     },
@@ -1125,7 +1141,13 @@ export default {
         form.provinceCityDistrictStreet = '';
       }
     },
-  }
+  },
+  created() {
+    this.init();
+  },
+  activated() {
+    this.getList();
+  },
 };
 </script>
 <style scoped>
