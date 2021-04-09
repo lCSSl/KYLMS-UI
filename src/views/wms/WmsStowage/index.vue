@@ -19,28 +19,6 @@
       <el-form :model="queryParams" ref="queryForm" v-show="showSearch" label-position="left" label-width="100px">
         <el-row :gutter="24">
           <ICol>
-            <el-form-item label="运单ID" prop="waybillId">
-              <el-input
-                v-model="queryParams.waybillId"
-                placeholder="请输入运单ID"
-                clearable
-                size="small"
-                @keyup.enter.native="handleQuery"
-              />
-            </el-form-item>
-          </ICol>
-          <ICol>
-            <el-form-item label="部门ID" prop="deptId">
-              <el-input
-                v-model="queryParams.deptId"
-                placeholder="请输入部门ID"
-                clearable
-                size="small"
-                @keyup.enter.native="handleQuery"
-              />
-            </el-form-item>
-          </ICol>
-          <ICol>
             <el-form-item label="配载编码" prop="stowageCode">
               <el-input
                 v-model="queryParams.stowageCode"
@@ -52,9 +30,9 @@
             </el-form-item>
           </ICol>
           <ICol>
-            <el-form-item label="配载站点名" prop="stowageName">
+            <el-form-item label="配载站点名" prop="stowageWarehouseName">
               <el-input
-                v-model="queryParams.stowageName"
+                v-model="queryParams.stowageWarehouseName"
                 placeholder="请输入配载站点名"
                 clearable
                 size="small"
@@ -63,10 +41,21 @@
             </el-form-item>
           </ICol>
           <ICol>
-            <el-form-item label="配载目的网点" prop="stowageDestinationNode">
+            <el-form-item label="发出站点" prop="departure">
               <el-input
-                v-model="queryParams.stowageDestinationNode"
-                placeholder="请输入配载目的网点"
+                v-model="queryParams.departure"
+                placeholder="请输入发出站点"
+                clearable
+                size="small"
+                @keyup.enter.native="handleQuery"
+              />
+            </el-form-item>
+          </ICol>
+          <ICol>
+            <el-form-item label="发出站点名" prop="departureName">
+              <el-input
+                v-model="queryParams.departureName"
+                placeholder="请输入发出站点名"
                 clearable
                 size="small"
                 @keyup.enter.native="handleQuery"
@@ -150,15 +139,36 @@
             </el-form-item>
           </ICol>
           <ICol>
-            <el-form-item label="状态" prop="status">
-              <el-select v-model="queryParams.status" placeholder="请选择状态" clearable size="small">
-                <el-option
-                  v-for="dict in statusOptions"
-                  :key="dict.dictValue"
-                  :label="dict.dictLabel"
-                  :value="dict.dictValue"
-                />
-              </el-select>
+            <el-form-item label="目的地站点" prop="destination">
+              <el-input
+                v-model="queryParams.destination"
+                placeholder="请输入目的地站点"
+                clearable
+                size="small"
+                @keyup.enter.native="handleQuery"
+              />
+            </el-form-item>
+          </ICol>
+          <ICol>
+            <el-form-item label="目的地站点名" prop="destinationName">
+              <el-input
+                v-model="queryParams.destinationName"
+                placeholder="请输入目的地站点名"
+                clearable
+                size="small"
+                @keyup.enter.native="handleQuery"
+              />
+            </el-form-item>
+          </ICol>
+          <ICol>
+            <el-form-item label="部门ID" prop="deptId">
+              <el-input
+                v-model="queryParams.deptId"
+                placeholder="请输入部门ID"
+                clearable
+                size="small"
+                @keyup.enter.native="handleQuery"
+              />
             </el-form-item>
           </ICol>
         </el-row>
@@ -181,7 +191,7 @@
             icon="el-icon-plus"
             size="mini"
             @click="handleAdd"
-            v-hasPermi="['wms:WmsStowage:add']"
+            v-hasPermi="['wms:stowage:add']"
           >新增
           </el-button>
         </el-col>
@@ -193,7 +203,7 @@
             size="mini"
             :disabled="single"
             @click="handleUpdate"
-            v-hasPermi="['wms:WmsStowage:edit']"
+            v-hasPermi="['wms:stowage:edit']"
           >修改
           </el-button>
         </el-col>
@@ -205,7 +215,7 @@
             size="mini"
             :disabled="multiple"
             @click="handleDelete"
-            v-hasPermi="['wms:WmsStowage:remove']"
+            v-hasPermi="['wms:stowage:remove']"
           >删除
           </el-button>
         </el-col>
@@ -216,7 +226,7 @@
             icon="el-icon-download"
             size="mini"
             @click="handleExport"
-            v-hasPermi="['wms:WmsStowage:export']"
+            v-hasPermi="['wms:stowage:export']"
           >导出
           </el-button>
         </el-col>
@@ -224,37 +234,27 @@
       </el-row>
     </el-card>
     <el-card :body-style="{padding:'15px'}">
-      <el-table v-loading="loading" :data="WmsStowageList" @selection-change="handleSelectionChange">
+      <el-table v-loading="loading" :data="stowageList" @selection-change="handleSelectionChange">
         <el-table-column align="center" fixed type="selection" width="55"/>
         <el-table-column align="center" fixed label="序号" type="index" width="60"/>
-        <el-table-column label="主键ID--序号" show-overflow-tooltip width="150" align="center" prop="stowageId">
-          <template slot-scope="{row}">
-            {{row.stowageId}}
-          </template>
-        </el-table-column>
-        <el-table-column label="运单ID" show-overflow-tooltip width="150" align="center" prop="waybillId">
-          <template slot-scope="{row}">
-            {{row.waybillId}}
-          </template>
-        </el-table-column>
-        <el-table-column label="部门ID" show-overflow-tooltip width="150" align="center" prop="deptId">
-          <template slot-scope="{row}">
-            {{row.deptId}}
-          </template>
-        </el-table-column>
         <el-table-column label="配载编码" show-overflow-tooltip width="150" align="center" prop="stowageCode">
           <template slot-scope="{row}">
             {{row.stowageCode}}
           </template>
         </el-table-column>
-        <el-table-column label="配载站点名" show-overflow-tooltip width="150" align="center" prop="stowageName">
+        <el-table-column label="配载站点名" show-overflow-tooltip width="150" align="center" prop="stowageWarehouseName">
           <template slot-scope="{row}">
-            {{row.stowageName}}
+            {{row.stowageWarehouseName}}
           </template>
         </el-table-column>
-        <el-table-column label="配载目的网点" show-overflow-tooltip width="150" align="center" prop="stowageDestinationNode">
+        <el-table-column label="发出站点" show-overflow-tooltip width="150" align="center" prop="departure">
           <template slot-scope="{row}">
-            {{row.stowageDestinationNode}}
+            {{row.departure}}
+          </template>
+        </el-table-column>
+        <el-table-column label="发出站点名" show-overflow-tooltip width="150" align="center" prop="departureName">
+          <template slot-scope="{row}">
+            {{row.departureName}}
           </template>
         </el-table-column>
         <el-table-column label="发车批次" show-overflow-tooltip width="150" align="center" prop="departureCode">
@@ -292,8 +292,21 @@
             <span>{{ parseTime(scope.row.departureTime, '{y}-{m}-{d}') }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="状态" show-overflow-tooltip width="150" align="center" prop="status"
-                         :formatter="statusFormat"/>
+        <el-table-column label="目的地站点" show-overflow-tooltip width="150" align="center" prop="destination">
+          <template slot-scope="{row}">
+            {{row.destination}}
+          </template>
+        </el-table-column>
+        <el-table-column label="目的地站点名" show-overflow-tooltip width="150" align="center" prop="destinationName">
+          <template slot-scope="{row}">
+            {{row.destinationName}}
+          </template>
+        </el-table-column>
+        <el-table-column label="部门ID" show-overflow-tooltip width="150" align="center" prop="deptId">
+          <template slot-scope="{row}">
+            {{row.deptId}}
+          </template>
+        </el-table-column>
         <el-table-column label="备注" show-overflow-tooltip width="150" align="center" prop="remark">
           <template slot-scope="{row}">
             {{row.remark}}
@@ -306,7 +319,7 @@
               type="text"
               icon="el-icon-edit"
               @click="handleUpdate(scope.row)"
-              v-hasPermi="['wms:WmsStowage:edit']"
+              v-hasPermi="['wms:stowage:edit']"
             >修改
             </el-button>
             <el-button
@@ -314,7 +327,7 @@
               type="text"
               icon="el-icon-delete"
               @click="handleDelete(scope.row)"
-              v-hasPermi="['wms:WmsStowage:remove']"
+              v-hasPermi="['wms:stowage:remove']"
             >删除
             </el-button>
           </template>
@@ -334,28 +347,23 @@
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-row :gutter="24">
           <ICol>
-            <el-form-item label="运单ID" prop="waybillId">
-              <el-input v-model="form.waybillId" placeholder="请输入运单ID"/>
-            </el-form-item>
-          </ICol>
-          <ICol>
-            <el-form-item label="部门ID" prop="deptId">
-              <el-input v-model="form.deptId" placeholder="请输入部门ID"/>
-            </el-form-item>
-          </ICol>
-          <ICol>
             <el-form-item label="配载编码" prop="stowageCode">
               <el-input v-model="form.stowageCode" placeholder="请输入配载编码"/>
             </el-form-item>
           </ICol>
           <ICol>
-            <el-form-item label="配载站点名" prop="stowageName">
-              <el-input v-model="form.stowageName" placeholder="请输入配载站点名"/>
+            <el-form-item label="配载站点名" prop="stowageWarehouseName">
+              <el-input v-model="form.stowageWarehouseName" placeholder="请输入配载站点名"/>
             </el-form-item>
           </ICol>
           <ICol>
-            <el-form-item label="配载目的网点" prop="stowageDestinationNode">
-              <el-input v-model="form.stowageDestinationNode" placeholder="请输入配载目的网点"/>
+            <el-form-item label="发出站点" prop="departure">
+              <el-input v-model="form.departure" placeholder="请输入发出站点"/>
+            </el-form-item>
+          </ICol>
+          <ICol>
+            <el-form-item label="发出站点名" prop="departureName">
+              <el-input v-model="form.departureName" placeholder="请输入发出站点名"/>
             </el-form-item>
           </ICol>
           <ICol>
@@ -399,22 +407,20 @@
             </el-form-item>
           </ICol>
           <ICol>
-            <el-form-item label="状态">
-              <el-radio-group v-model="form.status">
-                <el-radio
-                  v-for="dict in statusOptions"
-                  :key="dict.dictValue"
-                  :label="dict.dictValue"
-                >{{dict.dictLabel}}
-                </el-radio>
-              </el-radio-group>
+            <el-form-item label="目的地站点" prop="destination">
+              <el-input v-model="form.destination" placeholder="请输入目的地站点"/>
             </el-form-item>
           </ICol>
-          <!--          <ICol>-->
-          <!--            <el-form-item label="删除标志" prop="delFlag">-->
-          <!--              <el-input v-model="form.delFlag" placeholder="请输入删除标志"/>-->
-          <!--            </el-form-item>-->
-          <!--          </ICol>-->
+          <ICol>
+            <el-form-item label="目的地站点名" prop="destinationName">
+              <el-input v-model="form.destinationName" placeholder="请输入目的地站点名"/>
+            </el-form-item>
+          </ICol>
+          <ICol>
+            <el-form-item label="部门ID" prop="deptId">
+              <el-input v-model="form.deptId" placeholder="请输入部门ID"/>
+            </el-form-item>
+          </ICol>
           <ICol>
             <el-form-item label="备注" prop="remark">
               <el-input v-model="form.remark" placeholder="请输入备注"/>
@@ -431,11 +437,11 @@
 </template>
 
 <script>
-import {listWmsStowage, getWmsStowage, delWmsStowage, addWmsStowage, updateWmsStowage} from "@/api/wms/WmsStowage";
+import {addWmsStowage, delWmsStowage, getWmsStowage, listWmsStowage, updateWmsStowage} from "@/api/wms/WmsStowage";
 import ICol from "@/components/ICol";
 
 export default {
-  name: "WmsStowage",
+  name: "Stowage",
   components: {
     ICol,
   },
@@ -462,7 +468,7 @@ export default {
       // 总条数
       total: 0,
       // 运单配载表格数据
-      WmsStowageList: [],
+      stowageList: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -473,11 +479,10 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        waybillId: null,
-        deptId: null,
         stowageCode: null,
-        stowageName: null,
-        stowageDestinationNode: null,
+        stowageWarehouseName: null,
+        departure: null,
+        departureName: null,
         departureCode: null,
         departureDriverId: null,
         departureDriverName: null,
@@ -485,12 +490,33 @@ export default {
         departureVehicleCode: null,
         departureVehiclePlate: null,
         departureTime: null,
-        status: null,
+        destination: null,
+        destinationName: null,
+        deptId: null,
       },
       // 表单参数
       form: {},
       // 表单校验
-      rules: {},
+      rules: {
+        stowageCode: [
+          {required: true, message: "配载编码不能为空", trigger: "blur"}
+        ],
+        departure: [
+          {required: true, message: "发出站点不能为空", trigger: "blur"}
+        ],
+        departureName: [
+          {required: true, message: "发出站点名不能为空", trigger: "blur"}
+        ],
+        departureCode: [
+          {required: true, message: "发车批次不能为空", trigger: "blur"}
+        ],
+        destination: [
+          {required: true, message: "目的地站点不能为空", trigger: "blur"}
+        ],
+        destinationName: [
+          {required: true, message: "目的地站点名不能为空", trigger: "blur"}
+        ],
+      },
       toggleSearchFormValue: 0,
     };
   },
@@ -505,7 +531,7 @@ export default {
     getList() {
       this.loading = true;
       listWmsStowage(this.queryParams).then(response => {
-        this.WmsStowageList = response.rows;
+        this.stowageList = response.rows;
         this.total = response.total;
         this.loading = false;
       });
@@ -523,11 +549,10 @@ export default {
     reset() {
       this.form = {
         stowageId: null,
-        waybillId: null,
-        deptId: null,
         stowageCode: null,
-        stowageName: null,
-        stowageDestinationNode: null,
+        stowageWarehouseName: null,
+        departure: null,
+        departureName: null,
         departureCode: null,
         departureDriverId: null,
         departureDriverName: null,
@@ -535,6 +560,9 @@ export default {
         departureVehicleCode: null,
         departureVehiclePlate: null,
         departureTime: null,
+        destination: null,
+        destinationName: null,
+        deptId: null,
         status: "0",
         delFlag: null,
         createBy: null,
@@ -613,9 +641,9 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
-      this.download('wms/WmsStowage/export', {
+      this.download('wms/stowage/export', {
         ...this.queryParams
-      }, `wms_WmsStowage.xlsx`)
+      }, `wms_stowage.xlsx`)
     },
     toggleSearchForm(toggle) {
       if (toggle >= 0) {

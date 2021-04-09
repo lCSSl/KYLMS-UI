@@ -804,8 +804,12 @@
             {{row.creationSource}}
           </template>
         </el-table-column>
-        <el-table-column :formatter="waybillStatusFormat" align="center" fixed="right" label="运单状态"
-                         prop="waybillStatus"/>
+        <el-table-column align="center" fixed="right" label="运单状态" prop="waybillStatus">
+          <template slot-scope="{row}">
+            <el-tag :type="waybillStatusTagFormat(row.waybillStatus)">{{waybillStatusFormat(row)}}</el-tag>
+          </template>
+        </el-table-column>
+
         <el-table-column :formatter="statusFormat" align="center" label="状态" prop="status"/>
         <el-table-column align="center" fixed="right" label="开单备注" prop="remark">
           <template slot-scope="{row}">
@@ -1066,6 +1070,24 @@ export default {
     waybillStatusFormat(row, column) {
       return this.selectDictLabel(this.waybillStatusOptions, row.waybillStatus);
     },
+    waybillStatusTagFormat(waybillStatus) {
+      if (waybillStatus==-1){
+        return 'info';
+      }
+      if (waybillStatus>=0&&waybillStatus<=2){
+        return 'warning';
+      }
+      if (waybillStatus>=3&&waybillStatus<=5){
+        return null;
+      }
+      if (waybillStatus>=6&&waybillStatus<=8){
+        return 'success';
+      }
+      if (waybillStatus>8){
+        return 'danger';
+      }
+    },
+
     toggleSearchForm(toggle) {
       if (toggle >= 0) {
         this.toggleSearchFormValue = toggle;
