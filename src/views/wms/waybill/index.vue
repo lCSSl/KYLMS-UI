@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-card :body-style="{padding:'15px'}">
+    <el-card v-if="action.searchForm" :body-style="{padding:'15px'}">
       <div slot="header" class="clearfix hidden-sm-and-down">
         <el-button style="float: right;" type="text">
           <span v-if="toggleSearchFormValue===0" @click="()=>toggleSearchForm(1)">
@@ -550,7 +550,7 @@
         </el-row>
       </el-form>
     </el-card>
-    <el-card :body-style="{padding:'15px'}">
+    <el-card v-if="action.toolbar" :body-style="{padding:'15px'}">
       <el-row :gutter="10" class="mb8">
         <el-col :span="1.5">
           <el-button
@@ -561,6 +561,19 @@
             type="primary"
             @click="handleAdd">
             新增
+          </el-button>
+        </el-col>
+        <el-col :span="1.5">
+          <el-button
+            v-hasPermi="['wms:waybill:remove']"
+            icon="el-icon-edit"
+            :disabled="ids.length===0"
+            plain
+            size="mini"
+            type="success"
+            @click="handleStowage">
+            <svg-icon slot="default" icon-class="transport-0"/>
+            配载
           </el-button>
         </el-col>
         <el-col :span="1.5">
@@ -601,7 +614,7 @@
         <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
       </el-row>
     </el-card>
-    <el-card :body-style="{padding:'15px'}">
+    <el-card v-if="action.tableList.base" :body-style="{padding:'15px'}">
       <el-table v-loading="loading" :data="waybillList" @selection-change="handleSelectionChange">
         <el-table-column align="center" fixed type="selection" width="55"/>
         <el-table-column align="center" fixed label="序号" prop="waybillId" type="index"/>
@@ -641,8 +654,7 @@
             {{row.csrOrderNumber}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="发货人手机" prop="consignorMobile" show-overflow-tooltip show-overflow-tooltip
-                         width="150">
+        <el-table-column align="center" label="发货人手机" prop="consignorMobile" show-overflow-tooltip width="150">
           <template slot-scope="{row}">
             {{row.consignorMobile}}
           </template>
@@ -653,20 +665,17 @@
             {{row.consignorTelephone}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="发货联系人" prop="consignorName" show-overflow-tooltip show-overflow-tooltip
-                         width="150">
+        <el-table-column align="center" label="发货联系人" prop="consignorName" show-overflow-tooltip width="150">
           <template slot-scope="{row}">
             {{row.consignorName}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="发货公司名称" prop="deliverCoName" show-overflow-tooltip show-overflow-tooltip
-                         width="150">
+        <el-table-column align="center" label="发货公司名称" prop="deliverCoName" show-overflow-tooltip width="150">
           <template slot-scope="{row}">
             {{row.deliverCoName}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="收货人手机" prop="consigneeMobile" show-overflow-tooltip show-overflow-tooltip
-                         width="150">
+        <el-table-column align="center" label="收货人手机" prop="consigneeMobile" show-overflow-tooltip width="150">
           <template slot-scope="{row}">
             {{row.consigneeMobile}}
           </template>
@@ -677,62 +686,52 @@
             {{row.consigneeTelephone}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="收货联系人" prop="consigneeName" show-overflow-tooltip show-overflow-tooltip
-                         width="150">
+        <el-table-column align="center" label="收货联系人" prop="consigneeName" show-overflow-tooltip width="150">
           <template slot-scope="{row}">
             {{row.consigneeName}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="收货公司名称" prop="receivingCoName" show-overflow-tooltip
-                         show-overflow-tooltip width="150">
+        <el-table-column align="center" label="收货公司名称" prop="receivingCoName" show-overflow-tooltip width="150">
           <template slot-scope="{row}">
             {{row.receivingCoName}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="收货省" prop="receivingProvince" show-overflow-tooltip show-overflow-tooltip
-                         width="150">
+        <el-table-column align="center" label="收货省" prop="receivingProvince" show-overflow-tooltip width="150">
           <template slot-scope="{row}">
             {{row.receivingProvince}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="收货市" prop="receivingCity" show-overflow-tooltip show-overflow-tooltip
-                         width="150">
+        <el-table-column align="center" label="收货市" prop="receivingCity" show-overflow-tooltip width="150">
           <template slot-scope="{row}">
             {{row.receivingCity}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="收货区" prop="receivingDistrict" show-overflow-tooltip show-overflow-tooltip
-                         width="150">
+        <el-table-column align="center" label="收货区" prop="receivingDistrict" show-overflow-tooltip width="150">
           <template slot-scope="{row}">
             {{row.receivingDistrict}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="收货街道" prop="receivingStreet" show-overflow-tooltip show-overflow-tooltip
-                         width="150">
+        <el-table-column align="center" label="收货街道" prop="receivingStreet" show-overflow-tooltip width="150">
           <template slot-scope="{row}">
             {{row.receivingStreet}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="收货详细地址" prop="receivingAddress" show-overflow-tooltip
-                         show-overflow-tooltip width="150">
+        <el-table-column align="center" label="收货详细地址" prop="receivingAddress" show-overflow-tooltip width="150">
           <template slot-scope="{row}">
             {{row.receivingAddress}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="开单事业部" prop="deptId" show-overflow-tooltip show-overflow-tooltip
-                         width="150">
+        <el-table-column align="center" label="开单事业部" prop="deptId" show-overflow-tooltip width="150">
           <template slot-scope="{row}">
             {{row.deptId}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="配载站点" prop="stowageId" show-overflow-tooltip show-overflow-tooltip
-                         width="150">
+        <el-table-column align="center" label="配载站点" prop="stowageId" show-overflow-tooltip width="150">
           <template slot-scope="{row}">
             {{row.stowageId}}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="目的网点" prop="destinationNode" show-overflow-tooltip show-overflow-tooltip
-                         width="150">
+        <el-table-column align="center" label="目的网点" prop="destinationNode" show-overflow-tooltip width="150">
           <template slot-scope="{row}">
             {{row.destinationNode}}
           </template>
@@ -820,19 +819,30 @@
           <template slot-scope="scope">
             <el-button
               v-hasPermi="['wms:waybill:edit']"
+              icon="bad"
+              size="mini"
+              type="text"
+              @click="handleDetail(scope.row)">
+              <svg-icon slot="default" icon-class="eye-open"/>
+              详情
+            </el-button>
+            <el-button
+              v-if="action.tableList.action"
+              v-hasPermi="['wms:waybill:edit']"
               icon="el-icon-edit"
               size="mini"
               type="text"
-              @click="handleUpdate(scope.row)"
-            >修改
+              @click="handleUpdate(scope.row)">
+              修改
             </el-button>
             <el-button
+              v-if="action.tableList.action"
               v-hasPermi="['wms:waybill:remove']"
               icon="el-icon-delete"
               size="mini"
               type="text"
-              @click="handleDelete(scope.row)"
-            >删除
+              @click="handleDelete(scope.row)">
+              删除
             </el-button>
           </template>
         </el-table-column>
@@ -846,7 +856,8 @@
       />
     </el-card>
     <!-- 添加或修改运单信息主对话框 -->
-    <WaybillDialog v-model="row" :option="dialogOption" @on-success="getList"/>
+    <WaybillDialog v-if="action.dialog" v-model="row" :option="dialogOption" @on-success="getList"/>
+    <BeginStowage :option="beginStowageDialogOption" :waybill-ids="ids" @on-success="completeBeginStowage"/>
   </div>
 </template>
 
@@ -858,10 +869,12 @@ import RegionSelect from "@/components/regionSelect/index";
 import Ellipsis from "@/components/Ellipsis/index";
 import {listWarehouse} from "@/api/wms/warehouse";
 import WaybillDialog from "@/views/components/wms/Waybill/Dialog/index";
+import BeginStowage from '@/views/components/wms/Stowage/beginStowage'
 
 export default {
   name: "Waybill",
   components: {
+    BeginStowage,
     WaybillDialog,
     Ellipsis,
     RegionSelect,
@@ -871,9 +884,60 @@ export default {
     readOnly() {
       return this.dialog.type != 0;
     },
+    action() {
+      const componentOption = this.componentOption;
+      const obj = {
+        searchForm: true,
+        toolbar: true,
+        tableList: {
+          base: true,
+          action: true,
+        },
+        dialog: true
+      };
+      switch (+componentOption.action) {
+        case 0:
+          break;
+        case 1:
+          obj.searchForm = false;
+          obj.toolbar = false;
+          obj.dialog = false;
+          obj.tableList.action = false;
+          break;
+        case 2:
+          break;
+        default:
+          break;
+      }
+      return obj;
+    },
+  },
+  props: {
+    option: {
+      type: Object,
+      default() {
+        return {
+          action: 0 //0-Normal 1-Stowage
+        }
+      },
+    }
+  },
+  watch: {
+    option: {
+      handler(val) {
+        if (val !== this.componentOption) {
+          this.componentOption = val;
+          this.checkProps();
+        }
+      },
+      immediate: true
+    },
   },
   data() {
     return {
+      componentOption: {
+        action: 0,
+      },
       grid: {
         gutter: 24,
         xs: 24,
@@ -902,6 +966,10 @@ export default {
       // 是否显示弹出层
       row: {},
       dialogOption: {
+        open: false,
+        type: 0,
+      },
+      beginStowageDialogOption: {
         open: false,
         type: 0,
       },
@@ -1071,19 +1139,19 @@ export default {
       return this.selectDictLabel(this.waybillStatusOptions, row.waybillStatus);
     },
     waybillStatusTagFormat(waybillStatus) {
-      if (waybillStatus==-1){
+      if (waybillStatus == -1) {
         return 'info';
       }
-      if (waybillStatus>=0&&waybillStatus<=2){
+      if (waybillStatus >= 0 && waybillStatus <= 2) {
         return 'warning';
       }
-      if (waybillStatus>=3&&waybillStatus<=5){
+      if (waybillStatus >= 3 && waybillStatus <= 5) {
         return null;
       }
-      if (waybillStatus>=6&&waybillStatus<=8){
+      if (waybillStatus >= 6 && waybillStatus <= 8) {
         return 'success';
       }
-      if (waybillStatus>8){
+      if (waybillStatus > 8) {
         return 'danger';
       }
     },
@@ -1113,6 +1181,7 @@ export default {
       this.ids = selection.map(item => item.waybillId)
       this.single = selection.length !== 1
       this.multiple = !selection.length
+      this.$emit('on-handle-selection-change', {ids: this.ids, single: this.single});
     },
     /** 新增按钮操作 */
     handleAdd() {
@@ -1127,6 +1196,12 @@ export default {
       this.dialogOption = {};
       this.dialogOption.open = true;
       this.dialogOption.type = 1;
+    },
+    handleDetail(row) {
+      this.row = row;
+      this.dialogOption = {};
+      this.dialogOption.open = true;
+      this.dialogOption.type = 2;
     },
     /** 删除按钮操作 */
     handleDelete(row) {
@@ -1148,6 +1223,15 @@ export default {
         ...this.queryParams
       }, `wms_waybill.xlsx`)
     },
+    /** 配载按钮点击 */
+    handleStowage(){
+      this.beginStowageDialogOption = {};
+      this.beginStowageDialogOption.type = 0;
+      this.beginStowageDialogOption.open = true;
+    },
+    completeBeginStowage(){
+      this.$router.replace({name:'WmsStowage',params:{'stowageId':'10000'}});
+    },
     updateRegionSelectValue(data, label, status) {
       const form = this.form;
       this.form.regionSelectValue = data
@@ -1161,6 +1245,15 @@ export default {
           this.form.receivingAddress = label.split('-').join('') + this.form.receivingAddress;
       } else {
         form.provinceCityDistrictStreet = '';
+      }
+    },
+    checkProps() {
+      switch (+this.componentOption.action) {
+        case 0:
+          break;
+        case 1:
+          this.queryParams.csrId = 108;
+          break;
       }
     },
   },

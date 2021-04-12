@@ -132,7 +132,7 @@
             <template v-if="!form.receivingEntity.visible">
               <ICol border type="full">
                 <el-form-item label="收货方" prop="receivingEntity">
-                  <el-button class="select-width" @click="()=>openUserDialog(1)">添 加</el-button>
+                  <el-button :disabled="readOnly" class="select-width" @click="()=>openUserDialog(1)">添 加</el-button>
                 </el-form-item>
               </ICol>
             </template>
@@ -170,7 +170,7 @@
               <ICol
                 :grid="{xs: {span: 24, offset: 0},sm: {span: 2, offset: 0},md: {span: 2, offset: 0},lg: {span: 2, offset: 0},xl: {span: 2, offset: 0}}"
                 border>
-                <el-button class="select-width" @click="()=>openUserDialog(1)">修改</el-button>
+                <el-button :disabled="readOnly" class="select-width" @click="()=>openUserDialog(1)">修改</el-button>
               </ICol>
             </el-row>
           </template>

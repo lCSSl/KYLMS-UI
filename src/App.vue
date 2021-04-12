@@ -9,3 +9,8 @@ export default  {
   name:  'App'
 }
 </script>
+<style>
+.common-select-width{
+  width: 100%;
+}
+</style>
