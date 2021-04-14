@@ -193,6 +193,15 @@
                 <ICol>=</ICol>
                 <ICol>
                   <el-button
+                    v-if="!(item.routeSort===0)"
+                    v-hasPermi="['wms:WmsStowageRoute:edit']"
+                    icon="el-icon-view"
+                    size="mini"
+                    type="text"
+                    @click="handleChangeTabToWaybillList(item)">
+                    查看运单
+                  </el-button>
+                  <el-button
                     v-if="!(item.routeSort===127)"
                     v-hasPermi="['wms:WmsStowageRoute:edit']"
                     icon="el-icon-plus"
@@ -429,17 +438,20 @@ export default {
       this.single = selection.length !== 1
       this.multiple = !selection.length
     },
+    handleChangeTabToWaybillList(item){
+      this.$emit('on-change-tab','stowageWaybillInfo',item);
+    },
     /** 新增按钮操作 */
     handleAdd(row) {
       this.reset()
       this.form.params = {prevRoute:row};
+      this.form.stowageId = this.stowageId;
       this.open = true
       this.title = '添加运单配载线路'
     },
     /** 修改按钮操作 */
     handleUpdate( row ) {
       this.reset()
-
       // const routeId = row.routeId || this.ids
       this.form = row;
       // getWmsStowageRoute( routeId ).then( response => {
@@ -455,20 +467,19 @@ export default {
           const form = cloneDeep( this.form )
           const warehouseName = this.warehouseOptions.find( i => i.warehouseId === form.stowageWarehouseId )
           form.stowageWarehouseName = warehouseName.warehouseName
-          console.log(form)
-          // if ( form.routeId != null ) {
-          //   updateWmsStowageRoute( form ).then( response => {
-          //     this.msgSuccess( '修改成功' )
-          //     this.open = false
-          //     this.getList()
-          //   } )
-          // } else {
-          //   addWmsStowageRoute( form ).then( response => {
-          //     this.msgSuccess( '新增成功' )
-          //     this.open = false
-          //     this.getList()
-          //   } )
-          // }
+          if ( form.routeId != null ) {
+            updateWmsStowageRoute( form ).then( response => {
+              this.msgSuccess( '修改成功' )
+              this.open = false
+              this.getList()
+            } )
+          } else {
+            addWmsStowageRoute( form ).then( response => {
+              this.msgSuccess( '新增成功' )
+              this.open = false
+              this.getList()
+            } )
+          }
         }
       } )
     },

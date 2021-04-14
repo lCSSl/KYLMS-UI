@@ -2,122 +2,24 @@
   <el-card>
     <el-tabs v-model="activeName">
       <el-tab-pane label="基本信息" name="basicInfo">
-        <!--
-        <el-table ref="dragTable" :data="cloumns" row-key="columnId" :max-height="tableHeight">
-          <el-table-column label="序号" type="index" min-width="5%" class-name="allowDrag" />
-          <el-table-column
-            label="字段列名"
-            prop="columnName"
-            min-width="10%"
-            :show-overflow-tooltip="true"
-          />
-          <el-table-column label="字段描述" min-width="10%">
-            <template slot-scope="scope">
-              <el-input v-model="scope.row.columnComment"></el-input>
-            </template>
-          </el-table-column>
-          <el-table-column
-            label="物理类型"
-            prop="columnType"
-            min-width="10%"
-            :show-overflow-tooltip="true"
-          />
-          <el-table-column label="Java类型" min-width="11%">
-            <template slot-scope="scope">
-              <el-select v-model="scope.row.javaType">
-                <el-option label="Long" value="Long" />
-                <el-option label="String" value="String" />
-                <el-option label="Integer" value="Integer" />
-                <el-option label="Double" value="Double" />
-                <el-option label="BigDecimal" value="BigDecimal" />
-                <el-option label="Date" value="Date" />
-              </el-select>
-            </template>
-          </el-table-column>
-          <el-table-column label="java属性" min-width="10%">
-            <template slot-scope="scope">
-              <el-input v-model="scope.row.javaField"></el-input>
-            </template>
-          </el-table-column>
-
-          <el-table-column label="插入" min-width="5%">
-            <template slot-scope="scope">
-              <el-checkbox true-label="1" v-model="scope.row.isInsert"></el-checkbox>
-            </template>
-          </el-table-column>
-          <el-table-column label="编辑" min-width="5%">
-            <template slot-scope="scope">
-              <el-checkbox true-label="1" v-model="scope.row.isEdit"></el-checkbox>
-            </template>
-          </el-table-column>
-          <el-table-column label="列表" min-width="5%">
-            <template slot-scope="scope">
-              <el-checkbox true-label="1" v-model="scope.row.isList"></el-checkbox>
-            </template>
-          </el-table-column>
-          <el-table-column label="查询" min-width="5%">
-            <template slot-scope="scope">
-              <el-checkbox true-label="1" v-model="scope.row.isQuery"></el-checkbox>
-            </template>
-          </el-table-column>
-          <el-table-column label="查询方式" min-width="10%">
-            <template slot-scope="scope">
-              <el-select v-model="scope.row.queryType">
-                <el-option label="=" value="EQ" />
-                <el-option label="!=" value="NE" />
-                <el-option label=">" value="GT" />
-                <el-option label=">=" value="GTE" />
-                <el-option label="<" value="LT" />
-                <el-option label="<=" value="LTE" />
-                <el-option label="LIKE" value="LIKE" />
-                <el-option label="BETWEEN" value="BETWEEN" />
-              </el-select>
-            </template>
-          </el-table-column>
-          <el-table-column label="必填" min-width="5%">
-            <template slot-scope="scope">
-              <el-checkbox true-label="1" v-model="scope.row.isRequired"></el-checkbox>
-            </template>
-          </el-table-column>
-          <el-table-column label="显示类型" min-width="12%">
-            <template slot-scope="scope">
-              <el-select v-model="scope.row.htmlType">
-                <el-option label="文本框" value="input" />
-                <el-option label="文本域" value="textarea" />
-                <el-option label="下拉框" value="select" />
-                <el-option label="单选框" value="radio" />
-                <el-option label="复选框" value="checkbox" />
-                <el-option label="日期控件" value="datetime" />
-                <el-option label="图片上传" value="imageUpload" />
-                <el-option label="文件上传" value="fileUpload" />
-                <el-option label="富文本控件" value="editor" />
-              </el-select>
-            </template>
-          </el-table-column>
-          <el-table-column label="字典类型" min-width="12%">
-            <template slot-scope="scope">
-              <el-select v-model="scope.row.dictType" clearable filterable placeholder="请选择">
-                <el-option
-                  v-for="dict in dictOptions"
-                  :key="dict.dictType"
-                  :label="dict.dictName"
-                  :value="dict.dictType">
-                  <span style="float: left">{{ dict.dictName }}</span>
-                  <span style="float: right; color: #8492a6; font-size: 13px">{{ dict.dictType }}</span>
-                </el-option>
-              </el-select>
-            </template>
-          </el-table-column>
-        </el-table>
-        -->
         <el-form ref="stowageForm" :model="stowageForm" :rules="stowageFormRules" label-width="100px">
           <el-row :gutter="24">
-            <ICol type="half">
+            <ICol>
+              <el-form-item label="配载编码" prop="stowageCode">
+                <el-input v-model="stowageForm.stowageCode" placeholder="请输入配载编码" readonly/>
+              </el-form-item>
+            </ICol>
+            <ICol>
+              <el-form-item label="配载站点名" prop="stowageWarehouseName">
+                <el-input v-model="stowageForm.stowageWarehouseName" placeholder="请输入配载站点名" readonly/>
+              </el-form-item>
+            </ICol>
+            <ICol>
               <el-form-item label="发出站点" prop="departure">
-                <el-select
-                  v-model="stowageForm.departure" :disabled="readOnly" :loading="loading"
-                  :remote-method="(keyword)=>getWarehouseOptions(keyword,1)"
-                  class="common-select-width" filterable remote reserve-keyword>
+                <el-select v-model="stowageForm.departure"
+                           :loading="loading" :remote-method="(keyword)=>getWarehouseOptions(keyword,1)"
+                           class="common-select-width"
+                           disabled filterable remote reserve-keyword>
                   <el-option
                     v-for="warehouse in departureWarehouseOptions"
                     :key="warehouse.warehouseId"
@@ -127,12 +29,12 @@
                 </el-select>
               </el-form-item>
             </ICol>
-            <ICol type="half">
+            <ICol>
               <el-form-item label="目的地站点" prop="destination">
-                <el-select
-                  v-model="stowageForm.destination" :disabled="readOnly" :loading="loading"
-                  :remote-method="(keyword)=>getWarehouseOptions(keyword,2)"
-                  class="common-select-width" filterable remote reserve-keyword>
+                <el-select v-model="stowageForm.destination"
+                           :loading="loading" :remote-method="(keyword)=>getWarehouseOptions(keyword,2)"
+                           class="common-select-width"
+                           disabled filterable remote reserve-keyword>
                   <el-option
                     v-for="(warehouse,index) in destinationWarehouseOptions"
                     :key="index"
@@ -141,19 +43,27 @@
                 </el-select>
               </el-form-item>
             </ICol>
-            <ICol>
-              <el-form-item label="配载编码" prop="stowageCode">
-                <el-input v-model="stowageForm.stowageCode" placeholder="请输入配载编码"/>
-              </el-form-item>
-            </ICol>
-            <ICol>
-              <el-form-item label="配载站点名" prop="stowageWarehouseName">
-                <el-input v-model="stowageForm.stowageWarehouseName" placeholder="请输入配载站点名"/>
-              </el-form-item>
-            </ICol>
+            <!--
             <ICol>
               <el-form-item label="发出站点名" prop="departureName">
                 <el-input v-model="stowageForm.departureName" placeholder="请输入发出站点名"/>
+              </el-form-item>
+            </ICol>
+            <ICol>
+              <el-form-item label="目的地站点名" prop="destinationName">
+                <el-input v-model="stowageForm.destinationName" placeholder="请输入目的地站点名"/>
+              </el-form-item>
+            </ICol>
+            -->
+            <ICol>
+              <el-form-item label="发车司机" prop="userId">
+                <el-select v-model="stowageForm.departureDriverId" :disabled="this.userOptions.length==0"
+                           :loading="loading" :remote-method="(keyword)=>getDriverData(keyword)"
+                           class="common-select-width" filterable placeholder="请选择发车司机" remote reserve-keyword>
+                  <el-option v-for="(item,index) in userOptions" :key="index"
+                             :label="item.nickName"
+                             :value="item.userId"/>
+                </el-select>
               </el-form-item>
             </ICol>
             <ICol>
@@ -196,16 +106,13 @@
                 </el-date-picker>
               </el-form-item>
             </ICol>
-            <ICol>
-              <el-form-item label="目的地站点名" prop="destinationName">
-                <el-input v-model="stowageForm.destinationName" placeholder="请输入目的地站点名"/>
-              </el-form-item>
-            </ICol>
+            <!--
             <ICol>
               <el-form-item label="部门ID" prop="deptId">
                 <el-input v-model="stowageForm.deptId" placeholder="请输入部门ID"/>
               </el-form-item>
             </ICol>
+            -->
             <ICol type="full">
               <el-form-item label="备注" prop="remark">
                 <el-input v-model="stowageForm.remark" placeholder="请输入备注"/>
@@ -219,10 +126,10 @@
         </div>
       </el-tab-pane>
       <el-tab-pane label="路线信息" name="routeInfo">
-        <routeInfoForm ref="routeInfoForm" :pKey="stowageForm.stowageId"/>
+        <routeInfoForm ref="routeInfoForm" :pKey="stowageForm.stowageId" @on-change-tab="changeTabs"/>
       </el-tab-pane>
-      <el-tab-pane label="运单信息" name="stowageWaybillInfo">
-        <stowageWaybillInfoForm ref="stowageWaybillInfoForm" :pKey="stowageForm.stowageId"/>
+      <el-tab-pane disabled label="运单信息" name="stowageWaybillInfo">
+        <stowageWaybillInfoForm ref="stowageWaybillInfoForm" :pKey="routeId"/>
       </el-tab-pane>
     </el-tabs>
     <el-form label-width="100px">
@@ -231,6 +138,45 @@
         <el-button @click="close()">返回</el-button>
       </el-form-item>
     </el-form>
+    <el-dialog :title="'请选择'+appendEntityDialog.title" :visible.sync="appendEntityDialog.open" append-to-body>
+      <el-form v-show="!loading" ref="currentAppendForm" :model="currentAppendEntity" :rules="currentAppendFormRules"
+               label-position="left" label-width="80px">
+        <el-row>
+          <ICol type="half">
+            <el-row>
+              <ICol type="two_thirds">
+                <el-form-item label="部门" prop="dept">
+                  <TreeSelect v-model="currentAppendEntity.dept" :options="deptOptions"
+                              :show-count="true"
+                              placeholder="请选择部门"
+                              valueFormat="object" @select="handleFormDeptIdClick">
+                  </TreeSelect>
+                </el-form-item>
+              </ICol>
+            </el-row>
+          </ICol>
+          <ICol type="half">
+            <el-row>
+              <ICol type="two_thirds">
+                <el-form-item label="司机" prop="userId">
+                  <el-select v-model="currentAppendEntity.userId" :disabled="!this.userOptions.length>0"
+                             placeholder="请选择司机"
+                             style="width: 100%;">
+                    <el-option v-for="(item,index) in userOptions" :key="index"
+                               :label="item.nickName"
+                               :value="item.userId"/>
+                  </el-select>
+                </el-form-item>
+              </ICol>
+            </el-row>
+          </ICol>
+        </el-row>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="handleSubmitAppendEntity">确 定</el-button>
+        <el-button @click="appendEntityDialogCancel">取 消</el-button>
+      </div>
+    </el-dialog>
   </el-card>
 </template>
 <script>
@@ -240,17 +186,29 @@ import stowageWaybillInfoForm from './stowageWaybillInfoForm'
 import ICol from '@/components/ICol'
 import { listWarehouse } from '@/api/wms/warehouse'
 import { isNotEmpty } from '@/utils/utils'
+import { treeSelect } from '@/api/system/dept'
+import { getDriver, listUser } from '@/api/system/user'
+import TreeSelect from '@riophae/vue-treeselect'
+import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 
 export default {
   name: 'StowageEdit',
   components: {
     ICol,
+    TreeSelect,
     routeInfoForm,
     stowageWaybillInfoForm
   },
-  computed:{
-    readOnly(){
-      return false;
+  props:{
+
+  },
+  computed: {
+    readOnly() {
+      return false
+    },
+    stowageWarehouse() {
+      const stowageWarehouseName = this.stowageForm.stowageWarehouseName
+
     }
   },
   data() {
@@ -268,10 +226,36 @@ export default {
       // 菜单信息
       menus: [],
       // 表详细信息
-      loading:false,
+      loading: false,
+      routeId: null,
       info: {},
       stowageForm: {
-        stowageId:null,
+        stowageId: null,
+      },
+      driverEntity: {
+        visible: false,
+      },
+      currentAppendEntity: {
+        dept: null,
+        userId: null
+      },
+      deptOptions: [],
+      userOptions: [],
+      currentAppendFormRules: {
+        dept: [
+          { required: true, message: '公司不能为空', trigger: 'blur' }
+        ],
+        userId: [
+          { required: true, message: '负责人不能为空', trigger: 'blur' }
+        ],
+      },
+      appendEntityDialog: {
+        // 弹出层标题
+        title: '',
+        // 是否显示弹出层
+        open: false,
+        //0-添加 1-编辑
+        type: 0,
       },
       stowageFormRules: {
         stowageCode: [
@@ -304,18 +288,32 @@ export default {
     init() {
       const stowageId = this.$route.params && this.$route.params.stowageId
       if ( stowageId ) {
-        this.loading=true;
+        this.stowageId = stowageId
+        this.loading = true
         this.getWarehouseOptions()
-        // 获取表详细信息
-        getWmsStowage( stowageId ).then( ({data}) => {
-          this.loading=false;
-          if (isNotEmpty(data)){
-            this.stowageForm=data;
-          }else {
-            this.$router.back();
-          }
-        });
+        this.getDriverData()
+        this.getWmsStowageData()
       }
+    },
+    getWmsStowageData() {
+      // 获取表详细信息
+      getWmsStowage( this.stowageId ).then( ( { data } ) => {
+        this.loading = false
+        if ( isNotEmpty( data ) ) {
+          this.stowageForm = data
+        } else {
+          this.$router.back()
+        }
+      } )
+    },
+    getDriverData(nickName='',idle=true) {
+      getDriver( {
+        nickName,
+        idle:false
+      }).then( res => {
+        this.userOptions.length = 0
+        this.userOptions = res.rows
+      });
     },
     /** 提交按钮 */
     submitForm() {
@@ -372,7 +370,7 @@ export default {
       // this.$router.push( { path: '/tool/gen', query: { t: Date.now() } } );
     },
     cancel() {
-      this.reset();
+      this.reset()
     },
     // 表单重置
     reset() {
@@ -392,29 +390,91 @@ export default {
         destination: null,
         destinationName: null,
         deptId: null,
-        status: "0",
+        status: '0',
         delFlag: null,
         createBy: null,
         createTime: null,
         updateBy: null,
         updateTime: null,
         remark: null
-      };
-      this.resetForm("stowageForm");
+      }
+      this.resetForm( 'stowageForm' )
+    },
+    changeTabs( activeName, key ) {
+      switch ( activeName ) {
+        case 'basicInfo':
+          break
+        case 'routeInfo':
+          break
+        case 'stowageWaybillInfo':
+          this.activeName = activeName
+          this.routeId = key.routeId
+          break
+      }
+    },
+    openUserDialog( type ) {
+      this.appendEntityDialogReset()
+      this.getTreeSelect( { parentId: 100 } )
+      this.currentAppendEntity.type = type
+      this.appendEntityDialog.open = true
+      this.appendEntityDialog.title = +type == 0 ? '发货' : '收货'
+    },
+    appendEntityDialogReset() {
+      this.currentAppendEntity = {
+        dept: null,
+        userId: null,
+      }
+      this.resetForm( 'currentAppendForm' )
+    },
+    /** 查询部门下拉树结构 */
+    getTreeSelect( params ) {
+      treeSelect( params ).then( response => {
+        this.deptOptions = response.data
+      } )
+    },
+    handleFormDeptIdClick( { id, orderNum } ) {
+      this.currentAppendEntity.userId = ''
+      this.getUserInTheDepartment( id, orderNum )
+    },
+    getUserInTheDepartment( deptId, orderNum ) {
+      if ( deptId && +orderNum >= 0 )
+        listUser( { deptId } ).then( res => {
+          this.userOptions.length=0;
+          this.userOptions = res.rows
+        } )
+      else {
+        return
+      }
+    },
+    // 取消按钮
+    appendEntityDialogCancel() {
+      this.appendEntityDialog.open = false
+      this.appendEntityDialog.type = 0
+      this.appendEntityDialogReset()
+    },
+    handleSubmitAppendEntity() {
+      this.$refs['currentAppendForm'].validate( valid => {
+        if ( valid ) {
+          // const currentAppendEntity = this.currentAppendEntity
+          // const type = currentAppendEntity.type
+          // const stowageForm = cloneDeep( this.stowageForm )
+          // const user = this.userOptions.find( i => i.userId == currentAppendEntity.userId )
+          // stowageForm.deliverEntity.visible = true
+          // stowageForm.deliverEntity.deliverCoId = currentAppendEntity.dept.id
+          // stowageForm.deliverEntity.deliverCoName = currentAppendEntity.dept.label
+          // stowageForm.csrId = user.userId
+          // stowageForm.csrCode = user.userName
+          // stowageForm.deliverEntity.consignorName = user.nickName
+          // stowageForm.deliverEntity.consignorMobile = user.phonenumber
+          // this.form = stowageForm
+          // this.$message.info( '添加成功' )
+          // this.appendEntityDialog.open = false
+        }
+      } )
     },
   },
   mounted() {
-    // const el = this.$refs.dragTable.$el.querySelectorAll( '.el-table__body-wrapper > Table > tbody' )[0]
-    // const sortable = Sortable.create( el, {
-    //   handle: '.allowDrag',
-    //   onEnd: evt => {
-    //     const targetRow = this.cloumns.splice( evt.oldIndex, 1 )[0]
-    //     this.cloumns.splice( evt.newIndex, 0, targetRow )
-    //     for ( let index in this.cloumns ) {
-    //       this.cloumns[index].sort = parseInt( index ) + 1
-    //     }
-    //   }
-    // } )
+
   }
 }
 </script>

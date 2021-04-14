@@ -31,11 +31,6 @@
             </el-select>
           </el-form-item>
         </ICol>
-        <ICol type="full">
-          <el-form-item label="备注" prop="remark">
-            <el-input v-model="form.remark" placeholder="请输入备注"/>
-          </el-form-item>
-        </ICol>
       </el-row>
     </el-form>
     <div slot="footer" class="dialog-footer">
@@ -106,6 +101,7 @@ export default {
           const form = cloneDeep(this.form);
           const departureWarehouse = this.departureWarehouseOptions.find(i=>i.warehouseId === form.departure);
           const destinationWarehouse = this.destinationWarehouseOptions.find(i=>i.warehouseId === form.destination);
+          form.stowageWarehouseName = departureWarehouse.warehouseName;
           form.departureName = departureWarehouse.warehouseName;
           form.destinationName = destinationWarehouse.warehouseName;
           addWmsStowage( {

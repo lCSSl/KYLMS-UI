@@ -1,6 +1,13 @@
 import request from '@/utils/request'
 
 // 查询运单信息主列表
+export function listWaybillByRouteId(routeId) {
+  return request({
+    url: '/wms/waybill/list/vo/'+routeId,
+    method: 'get',
+  })
+}
+// 查询运单信息主列表
 export function listWaybill(query) {
   return request({
     // url: '/wms/waybill/list',
@@ -9,7 +16,6 @@ export function listWaybill(query) {
     params: query
   })
 }
-
 // 查询运单信息主详细
 export function getWaybill(waybillId) {
   return request({

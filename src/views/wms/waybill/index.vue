@@ -566,8 +566,8 @@
         <el-col :span="1.5">
           <el-button
             v-hasPermi="['wms:waybill:remove']"
-            icon="el-icon-edit"
             :disabled="ids.length===0"
+            icon="el-icon-edit"
             plain
             size="mini"
             type="success"
@@ -780,7 +780,7 @@
         </el-table-column>
         <el-table-column align="center" label="送货时间" prop="deliveryTime" show-overflow-tooltip width="180">
           <template slot-scope="scope">
-            <span>{{ parseTime(scope.row.deliveryTime, '{y}-{m}-{d}') }}</span>
+            <span>{{ parseTime( scope.row.deliveryTime, '{y}-{m}-{d}' ) }}</span>
           </template>
         </el-table-column>
         <el-table-column align="center" label="开单人ID" prop="drawerId" show-overflow-tooltip width="150">
@@ -805,7 +805,7 @@
         </el-table-column>
         <el-table-column align="center" fixed="right" label="运单状态" prop="waybillStatus">
           <template slot-scope="{row}">
-            <el-tag :type="waybillStatusTagFormat(row.waybillStatus)">{{waybillStatusFormat(row)}}</el-tag>
+            <el-tag :type="waybillStatusTagFormat(row.waybillStatus)">{{waybillStatusFormat( row )}}</el-tag>
           </template>
         </el-table-column>
 
@@ -862,17 +862,17 @@
 </template>
 
 <script>
-import {delWaybill, listWaybill} from "@/api/wms/waybill";
-import 'element-ui/lib/theme-chalk/display.css';
-import ICol from "@/components/ICol";
-import RegionSelect from "@/components/regionSelect/index";
-import Ellipsis from "@/components/Ellipsis/index";
-import {listWarehouse} from "@/api/wms/warehouse";
-import WaybillDialog from "@/views/components/wms/Waybill/Dialog/index";
+import { delWaybill, listWaybill } from '@/api/wms/waybill'
+import 'element-ui/lib/theme-chalk/display.css'
+import ICol from '@/components/ICol'
+import RegionSelect from '@/components/regionSelect/index'
+import Ellipsis from '@/components/Ellipsis/index'
+import { listWarehouse } from '@/api/wms/warehouse'
+import WaybillDialog from '@/views/components/wms/Waybill/Dialog/index'
 import BeginStowage from '@/views/components/wms/Stowage/beginStowage'
 
 export default {
-  name: "Waybill",
+  name: 'Waybill',
   components: {
     BeginStowage,
     WaybillDialog,
@@ -882,10 +882,10 @@ export default {
   },
   computed: {
     readOnly() {
-      return this.dialog.type != 0;
+      return this.dialog.type != 0
     },
     action() {
-      const componentOption = this.componentOption;
+      const componentOption = this.componentOption
       const obj = {
         searchForm: true,
         toolbar: true,
@@ -894,22 +894,22 @@ export default {
           action: true,
         },
         dialog: true
-      };
-      switch (+componentOption.action) {
-        case 0:
-          break;
-        case 1:
-          obj.searchForm = false;
-          obj.toolbar = false;
-          obj.dialog = false;
-          obj.tableList.action = false;
-          break;
-        case 2:
-          break;
-        default:
-          break;
       }
-      return obj;
+      switch ( +componentOption.action ) {
+        case 0:
+          break
+        case 1:
+          obj.searchForm = false
+          obj.toolbar = false
+          obj.dialog = false
+          obj.tableList.action = false
+          break
+        case 2:
+          break
+        default:
+          break
+      }
+      return obj
     },
   },
   props: {
@@ -920,17 +920,79 @@ export default {
           action: 0 //0-Normal 1-Stowage
         }
       },
-    }
+    },
+    query: {
+      type: Object,
+      default() {
+        return {
+          pageNum: 1,
+          pageSize: 10,
+          waybillCode: null,
+          departure: null,
+          destination: null,
+          transitPlace: null,
+          csrId: null,
+          csrCode: null,
+          csrOrderNumber: null,
+          consignorMobile: null,
+          consignorTelephone: null,
+          consignorName: null,
+          deliverCoName: null,
+          consigneeMobile: null,
+          consigneeTelephone: null,
+          consigneeName: null,
+          receivingCoName: null,
+          receivingProvince: null,
+          receivingCity: null,
+          receivingDistrict: null,
+          receivingStreet: null,
+          receivingAddress: null,
+          deptId: null,
+          stowageId: null,
+          destinationNode: null,
+          handoverMode: null,
+          transportMode: null,
+          payMethod: null,
+          receiptStatus: null,
+          rebateReturned: null,
+          writeInvoice: null,
+          basicFreight: null,
+          realFreight: null,
+          totalFreight: null,
+          deliveryVehicleId: null,
+          deliveryVehicleCode: null,
+          deliveryDriverId: null,
+          deliveryDriverName: null,
+          deliveryTime: null,
+          drawerId: null,
+          drawerName: null,
+          equipmentSource: null,
+          creationSource: null,
+          waybillStatus: null,
+          status: null,
+          createTime: null,
+        }
+      }
+    },
   },
   watch: {
     option: {
-      handler(val) {
-        if (val !== this.componentOption) {
-          this.componentOption = val;
-          this.checkProps();
+      handler( val ) {
+        if ( val !== this.componentOption ) {
+          this.componentOption = val
+          this.checkProps()
         }
       },
       immediate: true
+    },
+    query: {
+      handler( val ) {
+        if ( val !== this.queryParams ) {
+          console.log('query')
+          this.queryParams = val
+          this.init();
+        }
+      }
     },
   },
   data() {
@@ -1048,222 +1110,222 @@ export default {
       },
       // 表单校验
       toggleSearchFormValue: 0,
-    };
+    }
   },
   methods: {
     init() {
-      this.getList();
-      this.getDictMethods();
-      this.getWarehouseOptions(null, 0);
+      this.getList()
+      this.getDictMethods()
+      this.getWarehouseOptions( null, 0 )
     },
     /** 查询运单信息主列表 */
     getList() {
-      this.loading = true;
-      this.queryParams.params = {};
-      if (null != this.daterangeCreateTime && '' != this.daterangeCreateTime) {
-        this.queryParams.params["beginCreateTime"] = this.daterangeCreateTime[0];
-        this.queryParams.params["endCreateTime"] = this.daterangeCreateTime[1];
+      this.loading = true
+      this.queryParams.params = {}
+      if ( null != this.daterangeCreateTime && '' != this.daterangeCreateTime ) {
+        this.queryParams.params['beginCreateTime'] = this.daterangeCreateTime[0]
+        this.queryParams.params['endCreateTime'] = this.daterangeCreateTime[1]
       }
-      listWaybill(this.queryParams).then(response => {
-        this.waybillList = response.rows;
-        this.total = response.total;
-        this.loading = false;
-      });
+      listWaybill( this.queryParams ).then( response => {
+        this.waybillList = response.rows
+        this.total = response.total
+        this.loading = false
+      } )
     },
     getDictMethods() {
-      this.getDicts("wms_waybill_handover_mode").then(response => {
-        this.handoverModeOptions = response.data;
-      });
-      this.getDicts("wms_waybill_transport_mode").then(response => {
-        this.transportModeOptions = response.data;
-      });
-      this.getDicts("wms_waybill_pay_method").then(response => {
-        this.payMethodOptions = response.data;
-      });
-      this.getDicts("wms_waybill_receipt_status").then(response => {
-        this.receiptStatusOptions = response.data;
-      });
-      this.getDicts("public_common_yes_no").then(response => {
-        this.rebateReturnedOptions = response.data;
-        this.writeInvoiceOptions = response.data;
-      });
-      this.getDicts("wms_waybill_status").then(response => {
-        this.waybillStatusOptions = response.data;
-      });
-      this.getDicts("sys_common_status").then(response => {
-        this.statusOptions = response.data;
-      });
+      this.getDicts( 'wms_waybill_handover_mode' ).then( response => {
+        this.handoverModeOptions = response.data
+      } )
+      this.getDicts( 'wms_waybill_transport_mode' ).then( response => {
+        this.transportModeOptions = response.data
+      } )
+      this.getDicts( 'wms_waybill_pay_method' ).then( response => {
+        this.payMethodOptions = response.data
+      } )
+      this.getDicts( 'wms_waybill_receipt_status' ).then( response => {
+        this.receiptStatusOptions = response.data
+      } )
+      this.getDicts( 'public_common_yes_no' ).then( response => {
+        this.rebateReturnedOptions = response.data
+        this.writeInvoiceOptions = response.data
+      } )
+      this.getDicts( 'wms_waybill_status' ).then( response => {
+        this.waybillStatusOptions = response.data
+      } )
+      this.getDicts( 'sys_common_status' ).then( response => {
+        this.statusOptions = response.data
+      } )
     },
-    getWarehouseOptions(warehouseName, type) {
-      listWarehouse({
+    getWarehouseOptions( warehouseName, type ) {
+      listWarehouse( {
         warehouseName,
         pageNum: 1,
         pageSize: 10
-      }).then(res => {
-        if (type === 0) {
-          this.departureWarehouseOptions = res.rows;
-          this.destinationWarehouseOptions = res.rows;
-        } else if (type === 1) {
-          this.departureWarehouseOptions = res.rows;
-        } else if (type === 2) {
-          this.destinationWarehouseOptions = res.rows;
+      } ).then( res => {
+        if ( type === 0 ) {
+          this.departureWarehouseOptions = res.rows
+          this.destinationWarehouseOptions = res.rows
+        } else if ( type === 1 ) {
+          this.departureWarehouseOptions = res.rows
+        } else if ( type === 2 ) {
+          this.destinationWarehouseOptions = res.rows
         }
-      });
+      } )
     },
     // 交接方式字典翻译
-    handoverModeFormat(row, column) {
-      return this.selectDictLabel(this.handoverModeOptions, row.handoverMode);
+    handoverModeFormat( row, column ) {
+      return this.selectDictLabel( this.handoverModeOptions, row.handoverMode )
     },
     // 运输方式字典翻译
-    transportModeFormat(row, column) {
-      return this.selectDictLabel(this.transportModeOptions, row.transportMode);
+    transportModeFormat( row, column ) {
+      return this.selectDictLabel( this.transportModeOptions, row.transportMode )
     },
     // 付款方式字典翻译
-    payMethodFormat(row, column) {
-      return this.selectDictLabel(this.payMethodOptions, row.payMethod);
+    payMethodFormat( row, column ) {
+      return this.selectDictLabel( this.payMethodOptions, row.payMethod )
     },
     // 回单状态字典翻译
-    receiptStatusFormat(row, column) {
-      return this.selectDictLabel(this.receiptStatusOptions, row.receiptStatus);
+    receiptStatusFormat( row, column ) {
+      return this.selectDictLabel( this.receiptStatusOptions, row.receiptStatus )
     },
     // 回扣已返字典翻译
-    rebateReturnedFormat(row, column) {
-      return this.selectDictLabel(this.rebateReturnedOptions, row.rebateReturned);
+    rebateReturnedFormat( row, column ) {
+      return this.selectDictLabel( this.rebateReturnedOptions, row.rebateReturned )
     },
     // 是否开发票字典翻译
-    writeInvoiceFormat(row, column) {
-      return this.selectDictLabel(this.writeInvoiceOptions, row.writeInvoice);
+    writeInvoiceFormat( row, column ) {
+      return this.selectDictLabel( this.writeInvoiceOptions, row.writeInvoice )
     },
     // 运单状态字典翻译
-    waybillStatusFormat(row, column) {
-      return this.selectDictLabel(this.waybillStatusOptions, row.waybillStatus);
+    waybillStatusFormat( row, column ) {
+      return this.selectDictLabel( this.waybillStatusOptions, row.waybillStatus )
     },
-    waybillStatusTagFormat(waybillStatus) {
-      if (waybillStatus == -1) {
-        return 'info';
+    waybillStatusTagFormat( waybillStatus ) {
+      if ( waybillStatus == -1 ) {
+        return 'info'
       }
-      if (waybillStatus >= 0 && waybillStatus <= 2) {
-        return 'warning';
+      else if ( waybillStatus >= 0 && waybillStatus <= 2 ) {
+        return 'warning'
       }
-      if (waybillStatus >= 3 && waybillStatus <= 5) {
-        return null;
+      else if ( waybillStatus >= 3 && waybillStatus <= 5 ) {
+        return null
       }
-      if (waybillStatus >= 6 && waybillStatus <= 8) {
-        return 'success';
+      else if ( waybillStatus >= 6 && waybillStatus <= 8 ) {
+        return 'success'
       }
-      if (waybillStatus > 8) {
-        return 'danger';
+      else if ( waybillStatus > 8 ) {
+        return 'danger'
       }
     },
 
-    toggleSearchForm(toggle) {
-      if (toggle >= 0) {
-        this.toggleSearchFormValue = toggle;
+    toggleSearchForm( toggle ) {
+      if ( toggle >= 0 ) {
+        this.toggleSearchFormValue = toggle
       }
     },
     // 状态字典翻译
-    statusFormat(row, column) {
-      return this.selectDictLabel(this.statusOptions, row.status);
+    statusFormat( row, column ) {
+      return this.selectDictLabel( this.statusOptions, row.status )
     },
     /** 搜索按钮操作 */
     handleQuery() {
-      this.queryParams.pageNum = 1;
-      this.getList();
+      this.queryParams.pageNum = 1
+      this.getList()
     },
     /** 重置按钮操作 */
     resetQuery() {
-      this.daterangeCreateTime = [];
-      this.resetForm("queryForm");
-      this.handleQuery();
+      this.daterangeCreateTime = []
+      this.resetForm( 'queryForm' )
+      this.handleQuery()
     },
     // 多选框选中数据
-    handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.waybillId)
+    handleSelectionChange( selection ) {
+      this.ids = selection.map( item => item.waybillId )
       this.single = selection.length !== 1
       this.multiple = !selection.length
-      this.$emit('on-handle-selection-change', {ids: this.ids, single: this.single});
+      this.$emit( 'on-handle-selection-change', { ids: this.ids, single: this.single } )
     },
     /** 新增按钮操作 */
     handleAdd() {
-      this.row = {};
-      this.dialogOption = {};
-      this.dialogOption.open = true;
-      this.dialogOption.type = 0;
+      this.row = {}
+      this.dialogOption = {}
+      this.dialogOption.open = true
+      this.dialogOption.type = 0
     },
     /** 修改按钮操作 */
-    handleUpdate(row) {
-      this.row = row;
-      this.dialogOption = {};
-      this.dialogOption.open = true;
-      this.dialogOption.type = 1;
+    handleUpdate( row ) {
+      this.row = row
+      this.dialogOption = {}
+      this.dialogOption.open = true
+      this.dialogOption.type = 1
     },
-    handleDetail(row) {
-      this.row = row;
-      this.dialogOption = {};
-      this.dialogOption.open = true;
-      this.dialogOption.type = 2;
+    handleDetail( row ) {
+      this.row = row
+      this.dialogOption = {}
+      this.dialogOption.open = true
+      this.dialogOption.type = 2
     },
     /** 删除按钮操作 */
-    handleDelete(row) {
-      const waybillIds = row.waybillId || this.ids;
-      this.$confirm('是否确认删除运单信息主编号为"' + waybillIds + '"的数据项?', "警告", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      }).then(function () {
-        return delWaybill(waybillIds);
-      }).then(() => {
-        this.getList();
-        this.msgSuccess("删除成功");
-      })
+    handleDelete( row ) {
+      const waybillIds = row.waybillId || this.ids
+      this.$confirm( '是否确认删除运单信息主编号为"' + waybillIds + '"的数据项?', '警告', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      } ).then( function () {
+        return delWaybill( waybillIds )
+      } ).then( () => {
+        this.getList()
+        this.msgSuccess( '删除成功' )
+      } )
     },
     /** 导出按钮操作 */
     handleExport() {
-      this.download('wms/waybill/export', {
+      this.download( 'wms/waybill/export', {
         ...this.queryParams
-      }, `wms_waybill.xlsx`)
+      }, `wms_waybill.xlsx` )
     },
     /** 配载按钮点击 */
-    handleStowage(){
-      this.beginStowageDialogOption = {};
-      this.beginStowageDialogOption.type = 0;
-      this.beginStowageDialogOption.open = true;
+    handleStowage() {
+      this.beginStowageDialogOption = {}
+      this.beginStowageDialogOption.type = 0
+      this.beginStowageDialogOption.open = true
     },
-    completeBeginStowage(){
-      this.$router.replace({name:'WmsStowage',params:{'stowageId':'10000'}});
+    completeBeginStowage() {
+      this.$router.replace( { name: 'WmsStowage', params: { 'stowageId': '10000' } } )
     },
-    updateRegionSelectValue(data, label, status) {
-      const form = this.form;
+    updateRegionSelectValue( data, label, status ) {
+      const form = this.form
       this.form.regionSelectValue = data
-      this.form.regionSelectStatus = status;
-      if (status) {
-        this.form.receivingProvince = data.provinceCode;
-        this.form.receivingCity = data.cityCode;
-        this.form.receivingDistrict = data.districtCode;
-        this.form.receivingStreet = data.streetCode;
-        if (this.dialog.type == 0)
-          this.form.receivingAddress = label.split('-').join('') + this.form.receivingAddress;
+      this.form.regionSelectStatus = status
+      if ( status ) {
+        this.form.receivingProvince = data.provinceCode
+        this.form.receivingCity = data.cityCode
+        this.form.receivingDistrict = data.districtCode
+        this.form.receivingStreet = data.streetCode
+        if ( this.dialog.type == 0 )
+          this.form.receivingAddress = label.split( '-' ).join( '' ) + this.form.receivingAddress
       } else {
-        form.provinceCityDistrictStreet = '';
+        form.provinceCityDistrictStreet = ''
       }
     },
     checkProps() {
-      switch (+this.componentOption.action) {
+      switch ( +this.componentOption.action ) {
         case 0:
-          break;
+          break
         case 1:
-          this.queryParams.csrId = 108;
-          break;
+          this.queryParams.waybillStatus='2';
+          break
       }
     },
   },
   created() {
-    this.init();
+    this.init()
   },
   activated() {
-    this.getList();
+    this.getList()
   },
-};
+}
 </script>
 <style scoped>
 .dialog_title {

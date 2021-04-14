@@ -343,7 +343,7 @@
           <ICol type="half">
             <el-row>
               <ICol type="two_thirds">
-                <el-form-item label="收货人" prop="userId">
+                <el-form-item :label="appendEntityDialog.title+'人'" prop="userId">
                   <el-select v-model="currentAppendEntity.userId" :disabled="!this.userOptions.length>0"
                              :placeholder="'请选择'+appendEntityDialog.title+'人'"
                              style="width: 100%;">

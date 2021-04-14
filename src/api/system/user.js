@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-import { parseStrEmpty } from "@/utils/utils";
+import { isNotEmpty, parseStrEmpty } from '@/utils/utils'
 
 // 查询用户列表
 export function listUser(query) {
@@ -106,5 +106,13 @@ export function uploadAvatar(data) {
     url: '/system/user/profile/avatar',
     method: 'post',
     data: data
+  })
+}
+// 获取司机
+export function getDriver(data) {
+  return request({
+    url: '/system/user/getDriver',
+    method: 'post',
+    data
   })
 }

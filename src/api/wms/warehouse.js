@@ -9,6 +9,15 @@ export function listWarehouse(query) {
     params: query
   })
 }
+// 查询站点(仓库)信息列表
+export function listNotExistsWarehouse(query) {
+  return request({
+    // url: '/wms/warehouse/list',
+    url: '/wms/warehouse/listNotExists/vo',
+    method: 'get',
+    params: query
+  })
+}
 
 // 查询仓库主管列表
 export function getWarehouseInChargeList() {

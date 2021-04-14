@@ -289,7 +289,7 @@
         </el-table-column>
         <el-table-column align="center" label="发车时间" prop="departureTime" show-overflow-tooltip width="180">
           <template slot-scope="scope">
-            <span>{{ parseTime(scope.row.departureTime, '{y}-{m}-{d}') }}</span>
+            <span>{{ parseTime( scope.row.departureTime, '{y}-{m}-{d}' ) }}</span>
           </template>
         </el-table-column>
         <el-table-column align="center" label="目的地站点" prop="destination" show-overflow-tooltip width="150">
@@ -312,6 +312,11 @@
             {{row.remark}}
           </template>
         </el-table-column>
+        <el-table-column align="center" fixed="right" label="运单状态" prop="stowageStatus">
+          <template slot-scope="{row}">
+            <el-tag :type="stowageStatusTagFormat(row.stowageStatus)">{{stowageStatusFormat( row )}}</el-tag>
+          </template>
+        </el-table-column>
         <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" width="200">
           <template slot-scope="scope">
             <el-button
@@ -320,16 +325,17 @@
               size="mini"
               type="text">
               <router-link :to="$route.path+'/edit/' + scope.row.stowageId" class="link-type">
-                <span>修改</span>
+                <span>详情</span>
               </router-link>
             </el-button>
             <el-button
               v-hasPermi="['wms:stowage:edit']"
-              icon="el-icon-edit"
+              icon="el-icon-view"
               size="mini"
-              type="text"
-              @click="handleUpdate(scope.row)">
-              修改
+              type="text">
+              <router-link :to="$route.path+'/edit/' + scope.row.stowageId" class="link-type">
+                <span>修改</span>
+              </router-link>
             </el-button>
             <el-button
               v-hasPermi="['wms:stowage:remove']"
@@ -472,20 +478,20 @@
 </template>
 
 <script>
-import {addWmsStowage, delWmsStowage, getWmsStowage, listWmsStowage, updateWmsStowage} from "@/api/wms/WmsStowage";
-import ICol from "@/components/ICol";
-import {listWarehouse} from "@/api/wms/warehouse";
-import BeginStowage from "@/views/components/wms/Stowage/beginStowage";
+import { addWmsStowage, delWmsStowage, getWmsStowage, listWmsStowage, updateWmsStowage } from '@/api/wms/WmsStowage'
+import ICol from '@/components/ICol'
+import { listWarehouse } from '@/api/wms/warehouse'
+import BeginStowage from '@/views/components/wms/Stowage/beginStowage'
 
 export default {
-  name: "Stowage",
+  name: 'Stowage',
   components: {
     BeginStowage,
     ICol,
   },
   computed: {
     readOnly() {
-      return this.dialog.type !== 0;
+      return this.dialog.type !== 0
     },
   },
   data() {
@@ -507,17 +513,18 @@ export default {
       // 弹出层标题
       dialog: {
         type: 0,
-        title: "",
+        title: '',
         open: false,
       },
       beginStowageDialogOption: {
         type: 0,
-        title: "",
+        title: '',
         open: false,
       },
       // 是否显示弹出层
       // 状态字典
       statusOptions: [],
+      stowageStatusOptions: [],
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -542,70 +549,93 @@ export default {
       // 表单校验
       rules: {
         stowageCode: [
-          {required: true, message: "配载编码不能为空", trigger: "blur"}
+          { required: true, message: '配载编码不能为空', trigger: 'blur' }
         ],
         departure: [
-          {required: true, message: "发出站点不能为空", trigger: "blur"}
+          { required: true, message: '发出站点不能为空', trigger: 'blur' }
         ],
         departureName: [
-          {required: true, message: "发出站点名不能为空", trigger: "blur"}
+          { required: true, message: '发出站点名不能为空', trigger: 'blur' }
         ],
         departureCode: [
-          {required: true, message: "发车批次不能为空", trigger: "blur"}
+          { required: true, message: '发车批次不能为空', trigger: 'blur' }
         ],
         destination: [
-          {required: true, message: "目的地站点不能为空", trigger: "blur"}
+          { required: true, message: '目的地站点不能为空', trigger: 'blur' }
         ],
         destinationName: [
-          {required: true, message: "目的地站点名不能为空", trigger: "blur"}
+          { required: true, message: '目的地站点名不能为空', trigger: 'blur' }
         ],
       },
       toggleSearchFormValue: 0,
       departureWarehouseOptions: [],
       destinationWarehouseOptions: [],
-    };
+    }
   },
   methods: {
-    init(){
-      this.getList();
-      this.getWarehouseOptions();
-      this.getDicts("sys_common_status").then(response => {
-        this.statusOptions = response.data;
-      });
+    init() {
+      this.getDictMethods()
+      this.getList()
+      this.getWarehouseOptions()
+
+    },
+    getDictMethods() {
+      this.getDicts( 'sys_common_status' ).then( response => {
+        this.statusOptions = response.data
+      } )
+      this.getDicts( 'wms_stowage_status' ).then( response => {
+        this.stowageStatusOptions = response.data
+      } )
     },
     /** 查询运单配载列表 */
     getList() {
-      this.loading = true;
-      listWmsStowage(this.queryParams).then(response => {
-        this.stowageList = response.rows;
-        this.total = response.total;
-        this.loading = false;
-      });
+      this.loading = true
+      listWmsStowage( this.queryParams ).then( response => {
+        this.stowageList = response.rows
+        this.total = response.total
+        this.loading = false
+      } )
     },
-    getWarehouseOptions(warehouseName = null, type = 0) {
-      listWarehouse({
+    getWarehouseOptions( warehouseName = null, type = 0 ) {
+      listWarehouse( {
         warehouseName,
         pageNum: 1,
         pageSize: 10
-      }).then(res => {
-        if (type === 0) {
-          this.departureWarehouseOptions = res.rows;
-          this.destinationWarehouseOptions = res.rows;
-        } else if (type === 1) {
-          this.departureWarehouseOptions = res.rows;
-        } else if (type === 2) {
-          this.destinationWarehouseOptions = res.rows;
+      } ).then( res => {
+        if ( type === 0 ) {
+          this.departureWarehouseOptions = res.rows
+          this.destinationWarehouseOptions = res.rows
+        } else if ( type === 1 ) {
+          this.departureWarehouseOptions = res.rows
+        } else if ( type === 2 ) {
+          this.destinationWarehouseOptions = res.rows
         }
-      });
+      } )
     },
     // 状态字典翻译
-    statusFormat(row, column) {
-      return this.selectDictLabel(this.statusOptions, row.status);
+    statusFormat( row, column ) {
+      return this.selectDictLabel( this.statusOptions, row.status )
+    },
+    stowageStatusFormat( row, column ) {
+      return this.selectDictLabel( this.stowageStatusOptions, row.stowageStatus )
+    },
+    stowageStatusTagFormat( stowageStatus ) {
+      if ( stowageStatus == '0' ) {
+        return 'info'
+      } else if ( stowageStatus == '1' ) {
+        return 'warning'
+      } else if ( stowageStatus == '2' ) {
+        return 'success'
+      } else if ( stowageStatus == '3' ) {
+        return null
+      } else if ( stowageStatus == '-1' ) {
+        return 'danger'
+      }
     },
     // 取消按钮
     cancel() {
-      this.dialog.open = false;
-      this.reset();
+      this.dialog.open = false
+      this.reset()
     },
     // 表单重置
     reset() {
@@ -625,103 +655,103 @@ export default {
         destination: null,
         destinationName: null,
         deptId: null,
-        status: "0",
+        status: '0',
         delFlag: null,
         createBy: null,
         createTime: null,
         updateBy: null,
         updateTime: null,
         remark: null
-      };
-      this.resetForm("form");
+      }
+      this.resetForm( 'form' )
     },
     /** 搜索按钮操作 */
     handleQuery() {
-      this.queryParams.pageNum = 1;
-      this.getList();
+      this.queryParams.pageNum = 1
+      this.getList()
     },
     /** 重置按钮操作 */
     resetQuery() {
-      this.resetForm("queryForm");
-      this.handleQuery();
+      this.resetForm( 'queryForm' )
+      this.handleQuery()
     },
     // 多选框选中数据
-    handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.stowageId)
+    handleSelectionChange( selection ) {
+      this.ids = selection.map( item => item.stowageId )
       this.single = selection.length !== 1
       this.multiple = !selection.length
     },
     /** 新增按钮操作 */
     handleAdd() {
       // this.reset();
-      this.beginStowageDialogOption = {};
-      this.beginStowageDialogOption.type = 0;
-      this.beginStowageDialogOption.open = true;
+      this.beginStowageDialogOption = {}
+      this.beginStowageDialogOption.type = 0
+      this.beginStowageDialogOption.open = true
       // this.dialog.type = 0;
       // this.dialog.open = true;
       // this.dialog.title = "开始配载";
     },
     /** 修改按钮操作 */
-    handleUpdate(row) {
-      this.reset();
+    handleUpdate( row ) {
+      this.reset()
       const stowageId = row.stowageId || this.ids
-      getWmsStowage(stowageId).then(response => {
-        this.form = response.data;
-        this.dialog.type = 1;
-        this.dialog.open = true;
-        this.dialog.title = "修改运单配载";
-      });
+      getWmsStowage( stowageId ).then( response => {
+        this.form = response.data
+        this.dialog.type = 1
+        this.dialog.open = true
+        this.dialog.title = '修改运单配载'
+      } )
     },
     /** 提交按钮 */
     submitForm() {
-      this.$refs["form"].validate(valid => {
-        if (valid) {
-          if (this.form.stowageId != null) {
-            updateWmsStowage(this.form).then(response => {
-              this.msgSuccess("修改成功");
-              this.dialog.open = false;
-              this.getList();
-            });
+      this.$refs['form'].validate( valid => {
+        if ( valid ) {
+          if ( this.form.stowageId != null ) {
+            updateWmsStowage( this.form ).then( response => {
+              this.msgSuccess( '修改成功' )
+              this.dialog.open = false
+              this.getList()
+            } )
           } else {
-            addWmsStowage(this.form).then(response => {
-              this.msgSuccess("新增成功");
-              this.dialog.open = false;
-              this.getList();
-            });
+            addWmsStowage( this.form ).then( response => {
+              this.msgSuccess( '新增成功' )
+              this.dialog.open = false
+              this.getList()
+            } )
           }
         }
-      });
+      } )
     },
     /** 删除按钮操作 */
-    handleDelete(row) {
-      const stowageIds = row.stowageId || this.ids;
-      this.$confirm('是否确认删除运单配载编号为"' + stowageIds + '"的数据项?', "警告", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      }).then(function () {
-        return delWmsStowage(stowageIds);
-      }).then(() => {
-        this.getList();
-        this.msgSuccess("删除成功");
-      })
+    handleDelete( row ) {
+      const stowageIds = row.stowageId || this.ids
+      this.$confirm( '是否确认删除运单配载编号为"' + stowageIds + '"的数据项?', '警告', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      } ).then( function () {
+        return delWmsStowage( stowageIds )
+      } ).then( () => {
+        this.getList()
+        this.msgSuccess( '删除成功' )
+      } )
     },
     /** 导出按钮操作 */
     handleExport() {
-      this.download('wms/stowage/export', {
+      this.download( 'wms/stowage/export', {
         ...this.queryParams
-      }, `wms_stowage.xlsx`)
+      }, `wms_stowage.xlsx` )
     },
-    toggleSearchForm(toggle) {
-      if (toggle >= 0) {
-        this.toggleSearchFormValue = toggle;
+    toggleSearchForm( toggle ) {
+      if ( toggle >= 0 ) {
+        this.toggleSearchFormValue = toggle
       }
     },
   },
   created() {
-    this.init();
+    this.init()
   }
-};
+}
 </script>
 <style scoped>
 .select-width {
