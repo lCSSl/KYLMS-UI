@@ -13,4 +13,6 @@ export default  {
 .common-select-width{
   width: 100%;
 }
+.common-select-item{
+}
 </style>

@@ -342,20 +342,18 @@
               icon="el-icon-delete"
               size="mini"
               type="text"
-              @click="handleDelete(scope.row)"
-            >删除
+              @click="handleDelete(scope.row)">
+              删除
             </el-button>
           </template>
         </el-table-column>
       </el-table>
 
       <pagination
-        v-show="total>0"
+        v-show="total>0" :total="total"
         :limit.sync="queryParams.pageSize"
         :page.sync="queryParams.pageNum"
-        :total="total"
-        @pagination="getList"
-      />
+        @pagination="getList"/>
     </el-card>
     <!-- 添加或修改运单配载对话框 -->
     <el-dialog :title="dialog.title" :visible.sync="dialog.open" append-to-body>
