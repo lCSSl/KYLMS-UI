@@ -8,6 +8,7 @@
             icon="el-icon-plus"
             plain
             size="mini"
+            v-if="!readOnly"
             type="primary"
             @click="handleAdd">
             新增
@@ -18,6 +19,7 @@
             v-hasPermi="['wms:waybill:remove']"
             :disabled="multiple"
             icon="el-icon-delete"
+            v-if="!readOnly"
             plain
             size="mini"
             type="danger"
@@ -289,9 +291,31 @@ export default {
     RegionSelect,
     ICol,
   },
+  props: {
+    pKey: {
+      type: String,
+    },
+    viewType:{
+      type:Number
+    }
+  },
+  watch: {
+    pKey: {
+      handler( val ) {
+        if ( val !== this.routeId ) {
+          this.routeId = val
+          if ( isNotEmpty( this.routeId ) ) {
+            this.init()
+          }
+        }
+      },
+      immediate: true
+    },
+  },
   computed: {
     readOnly() {
-      return false
+      console.log(this.viewType)
+      return this.viewType >=1
     },
     action() {
       const componentOption = this.componentOption
@@ -319,24 +343,6 @@ export default {
           break
       }
       return obj
-    },
-  },
-  props: {
-    pKey: {
-      type: String,
-    },
-  },
-  watch: {
-    pKey: {
-      handler( val ) {
-        if ( val !== this.routeId ) {
-          this.routeId = val
-          if ( isNotEmpty( this.routeId ) ) {
-            this.init()
-          }
-        }
-      },
-      immediate: true
     },
   },
   data() {

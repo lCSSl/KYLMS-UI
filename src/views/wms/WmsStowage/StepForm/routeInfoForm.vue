@@ -1,176 +1,15 @@
 <template>
   <div class="app-container">
-    <!--
+    <template>
+      <baidu-map center="广东" class="map">
+        <bm-scale anchor="BMAP_ANCHOR_TOP_RIGHT"></bm-scale>
+        <bm-navigation anchor="BMAP_ANCHOR_TOP_RIGHT"></bm-navigation>
+        <bm-city-list anchor="BMAP_ANCHOR_TOP_LEFT"></bm-city-list>
+        <bm-geolocation anchor="BMAP_ANCHOR_BOTTOM_RIGHT" :showAddressBar="true" :autoLocation="true"></bm-geolocation>
+        <bml-curve-line :points="points" :editing="true" @lineupdate="update"></bml-curve-line>
+      </baidu-map>
+    </template>
     <el-card :body-style="{padding:'15px'}">
-      <div slot="header" class="clearfix hidden-sm-and-down">
-        <el-button style="float: right;" type="text">
-          <span v-if="toggleSearchFormValue===0" @click="()=>toggleSearchForm(1)">
-            展开
-          </span>
-          <span v-else-if="toggleSearchFormValue===1" @click="()=>toggleSearchForm(2)">
-            更多
-          </span>
-          <span v-if="toggleSearchFormValue!==0" @click="()=>toggleSearchForm(0)">
-            收起
-          </span>
-        </el-button>
-      </div>
-      <template v-if="toggleSearchFormValue>=1"></template>
-      <template v-if="toggleSearchFormValue>=2"></template>
-      <el-form v-show="showSearch" ref="queryForm" :model="queryParams" label-position="left" label-width="100px">
-        <el-row :gutter="24">
-          <ICol>
-            <el-form-item label="配载ID" prop="stowageId">
-              <el-input
-                v-model="queryParams.stowageId"
-                clearable
-                placeholder="请输入配载ID"
-                size="small"
-                @keyup.enter.native="handleQuery"
-              />
-            </el-form-item>
-          </ICol>
-          <ICol>
-            <el-form-item label="配载站点ID" prop="stowageWarehouseId">
-              <el-input
-                v-model="queryParams.stowageWarehouseId"
-                clearable
-                placeholder="请输入配载站点ID"
-                size="small"
-                @keyup.enter.native="handleQuery"
-              />
-            </el-form-item>
-          </ICol>
-          <ICol>
-            <el-form-item label="配载站点名" prop="stowageWarehouseName">
-              <el-input
-                v-model="queryParams.stowageWarehouseName"
-                clearable
-                placeholder="请输入配载站点名"
-                size="small"
-                @keyup.enter.native="handleQuery"
-              />
-            </el-form-item>
-          </ICol>
-        </el-row>
-        <el-row>
-          <ICol type="search">
-            <el-form-item>
-              <el-button icon="el-icon-search" size="mini" type="primary" @click="handleQuery">搜索</el-button>
-              <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
-            </el-form-item>
-          </ICol>
-        </el-row>
-      </el-form>
-    </el-card>
-    -->
-    <!--
-    <el-card :body-style="{padding:'15px'}">
-      <el-row :gutter="10" class="mb8">
-        <el-col :span="1.5">
-          <el-button
-            v-hasPermi="['wms:WmsStowageRoute:add']"
-            icon="el-icon-plus"
-            plain
-            size="mini"
-            type="primary"
-            @click="handleAdd"
-          >新增
-          </el-button>
-        </el-col>
-        <el-col :span="1.5">
-          <el-button
-            v-hasPermi="['wms:WmsStowageRoute:edit']"
-            :disabled="single"
-            icon="el-icon-edit"
-            plain
-            size="mini"
-            type="success"
-            @click="handleUpdate"
-          >修改
-          </el-button>
-        </el-col>
-        <el-col :span="1.5">
-          <el-button
-            v-hasPermi="['wms:WmsStowageRoute:remove']"
-            :disabled="multiple"
-            icon="el-icon-delete"
-            plain
-            size="mini"
-            type="danger"
-            @click="handleDelete"
-          >删除
-          </el-button>
-        </el-col>
-        <el-col :span="1.5">
-          <el-button
-            v-hasPermi="['wms:WmsStowageRoute:export']"
-            icon="el-icon-download"
-            plain
-            size="mini"
-            type="warning"
-            @click="handleExport"
-          >导出
-          </el-button>
-        </el-col>
-        <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
-      </el-row>
-    </el-card>
-    -->
-    <el-card :body-style="{padding:'15px'}">
-      <!--
-      <el-table v-loading="loading" :data="WmsStowageRouteList" @selection-change="handleSelectionChange">
-        <el-table-column align="center" fixed type="selection" width="55"/>
-        <el-table-column align="center" fixed label="序号" type="index" width="60"/>
-        <el-table-column align="center" label="ID" prop="routeId" show-overflow-tooltip width="150">
-          <template slot-scope="{row}">
-            {{row.routeId}}
-          </template>
-        </el-table-column>
-        <el-table-column align="center" label="配载ID" prop="stowageId" show-overflow-tooltip width="150">
-          <template slot-scope="{row}">
-            {{row.stowageId}}
-          </template>
-        </el-table-column>
-        <el-table-column align="center" label="配载站点ID" prop="stowageWarehouseId" show-overflow-tooltip width="150">
-          <template slot-scope="{row}">
-            {{row.stowageWarehouseId}}
-          </template>
-        </el-table-column>
-        <el-table-column align="center" label="配载站点名" prop="stowageWarehouseName" show-overflow-tooltip width="150">
-          <template slot-scope="{row}">
-            {{row.stowageWarehouseName}}
-          </template>
-        </el-table-column>
-        <el-table-column :formatter="statusFormat" align="center" label="状态" prop="status" show-overflow-tooltip
-                         width="150"/>
-        <el-table-column align="center" label="备注" prop="remark" show-overflow-tooltip width="150">
-          <template slot-scope="{row}">
-            {{row.remark}}
-          </template>
-        </el-table-column>
-        <el-table-column align="center" class-name="small-padding fixed-width" fixed="right" label="操作" width="200">
-          <template slot-scope="scope">
-            <el-button
-              v-hasPermi="['wms:WmsStowageRoute:edit']"
-              icon="el-icon-edit"
-              size="mini"
-              type="text"
-              @click="handleUpdate(scope.row)"
-            >修改
-            </el-button>
-            <el-button
-              v-hasPermi="['wms:WmsStowageRoute:remove']"
-              icon="el-icon-delete"
-              size="mini"
-              type="text"
-              @click="handleDelete(scope.row)"
-            >删除
-            </el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-      -->
       <template>
         <div slot="header" class="radio">
           排序：
@@ -202,7 +41,7 @@
                     查看运单
                   </el-button>
                   <el-button
-                    v-if="!(item.routeSort===127)"
+                    v-if="!(item.routeSort===127)&&!readOnly"
                     v-hasPermi="['wms:WmsStowageRoute:edit']"
                     icon="el-icon-plus"
                     size="mini"
@@ -211,7 +50,7 @@
                     添加
                   </el-button>
                   <el-button
-                    v-if="!(item.routeSort===0||item.routeSort===127)"
+                    v-if="!(item.routeSort===0||item.routeSort===127)&&!readOnly"
                     v-hasPermi="['wms:WmsStowageRoute:edit']"
                     icon="el-icon-edit"
                     size="mini"
@@ -220,7 +59,7 @@
                     修改
                   </el-button>
                   <el-button
-                    v-if="!(item.routeSort===0||item.routeSort===127)"
+                    v-if="!(item.routeSort===0||item.routeSort===127)&&!readOnly"
                     v-hasPermi="['wms:WmsStowageRoute:remove']"
                     icon="el-icon-delete"
                     size="mini"
@@ -234,31 +73,11 @@
           </el-timeline-item>
         </el-timeline>
       </template>
-      <!--
-      <pagination
-        v-show="total>0"
-        :limit.sync="queryParams.pageSize"
-        :page.sync="queryParams.pageNum"
-        :total="total"
-        @pagination="getList"/>
-       -->
     </el-card>
     <!-- 添加或修改运单配载线路对话框 -->
-    <el-dialog :title="title" :visible.sync="open" append-to-body >
+    <el-dialog :title="title" :visible.sync="open" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-row :gutter="24">
-          <!--
-          <ICol>
-            <el-form-item label="配载ID" prop="stowageId">
-              <el-input v-model="form.stowageId" placeholder="请输入配载ID"/>
-            </el-form-item>
-          </ICol>
-          <ICol>
-            <el-form-item label="配载站点名" prop="stowageWarehouseName">
-              <el-input v-model="form.stowageWarehouseName" placeholder="请输入配载站点名"/>
-            </el-form-item>
-          </ICol>
-          -->
           <ICol type="half">
             <el-form-item label="配载站点" prop="stowageWarehouseId">
               <el-select
@@ -297,19 +116,24 @@ import {
   updateWmsStowageRoute
 } from '@/api/wms/WmsStowageRoute'
 import ICol from '@/components/ICol'
-import { isNotEmpty } from '@/utils/utils'
 import { listWarehouse } from '@/api/wms/warehouse'
 import { cloneDeep } from 'lodash'
+import { BmlCurveLine } from 'vue-baidu-map'
+import { isNotEmpty } from '@/utils/utils'
 
 export default {
   name: 'WmsStowageRoute',
   components: {
+    BmlCurveLine,
     ICol,
   },
   props: {
     pKey: {
       type: String,
-    }
+    },
+    viewType: {
+      type: Number
+    },
   },
   watch: {
     pKey: {
@@ -324,9 +148,14 @@ export default {
       immediate: true
     },
   },
-  computed: {},
+  computed: {
+    readOnly() {
+      return this.viewType >= 1
+    },
+  },
   data() {
     return {
+      action: false,
       stowageId: null,
       grid: {
         gutter: 24,
@@ -381,9 +210,17 @@ export default {
         ],
       },
       toggleSearchFormValue: 0,
+      points: [
+        {lng: 113.360702, lat: 23.291494},
+        {lng: 117.674233, lat: 24.489312},
+        {lng: 118.105896, lat: 24.538735}
+      ],
     }
   },
   methods: {
+    update (e) {
+      this.points = e.target.cornerPoints
+    },
     /** 查询运单配载线路列表 */
     getList() {
       this.loading = true
@@ -438,14 +275,14 @@ export default {
       this.single = selection.length !== 1
       this.multiple = !selection.length
     },
-    handleChangeTabToWaybillList(item){
-      this.$emit('on-change-tab','stowageWaybillInfo',item);
+    handleChangeTabToWaybillList( item ) {
+      this.$emit( 'on-change-tab', 'stowageWaybillInfo', item )
     },
     /** 新增按钮操作 */
-    handleAdd(row) {
+    handleAdd( row ) {
       this.reset()
-      this.form.params = {prevRoute:row};
-      this.form.stowageId = this.stowageId;
+      this.form.params = { prevRoute: row }
+      this.form.stowageId = this.stowageId
       this.open = true
       this.title = '添加运单配载线路'
     },
@@ -453,7 +290,7 @@ export default {
     handleUpdate( row ) {
       this.reset()
       // const routeId = row.routeId || this.ids
-      this.form = row;
+      this.form = row
       // getWmsStowageRoute( routeId ).then( response => {
       //   this.form = response.data
       this.open = true
@@ -508,7 +345,7 @@ export default {
         this.toggleSearchFormValue = toggle
       }
     },
-    getWarehouseOptions( warehouseName = null) {
+    getWarehouseOptions( warehouseName = null ) {
       this.loading = true
       listWarehouse( {
         warehouseName,
@@ -521,7 +358,7 @@ export default {
     },
     init() {
       this.getList()
-      this.getWarehouseOptions();
+      this.getWarehouseOptions()
       this.getDicts( 'sys_common_status' ).then( response => {
         this.statusOptions = response.data
       } )
@@ -529,3 +366,10 @@ export default {
   },
 }
 </script>
+
+<style scoped>
+.map {
+  width: 100%;
+  height: 400px;
+}
+</style>

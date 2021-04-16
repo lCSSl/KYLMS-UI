@@ -1,5 +1,12 @@
 <template>
   <el-card>
+    <el-steps :active="viewType+1" finish-status="success">
+      <el-step v-for="(item,index) in stowageStatusOptions"
+               v-if="!(item.dictValue==='-1')" :key="index"
+               :title="item.dictLabel">
+        <svg-icon slot="icon" icon-class=""/>
+      </el-step>
+    </el-steps>
     <el-tabs v-model="activeName">
       <el-tab-pane label="基本信息" name="basicInfo">
         <el-form ref="stowageForm" :model="stowageForm" :rules="stowageFormRules" label-width="100px">
@@ -139,12 +146,12 @@
                 </el-date-picker>
               </el-form-item>
             </ICol>
+            <!--
             <ICol>
               <el-form-item label="配载状态" prop="stowageStatus">
-                <el-tag :type="stowageStatusTagFormat(stowageForm.stowageStatus)">{{stowageStatusFormat(stowageForm.stowageStatus)}}</el-tag>
+                <el-tag :type="stowageStatusTagFormat(stowageForm.stowageStatus)">{{stowageStatusFormat( stowageForm.stowageStatus )}}</el-tag>
               </el-form-item>
             </ICol>
-            <!--
             <ICol>
               <el-form-item label="部门ID" prop="deptId">
                 <el-input v-model="stowageForm.deptId" placeholder="请输入部门ID"/>
@@ -162,24 +169,25 @@
         </el-form>
       </el-tab-pane>
       <el-tab-pane label="路线信息" name="routeInfo">
-        <routeInfoForm ref="routeInfoForm" :pKey="stowageForm.stowageId" @on-change-tab="changeTabs"/>
+        <routeInfoForm ref="routeInfoForm" :pKey="stowageForm.stowageId" :view-type="viewType"
+                       @on-change-tab="changeTabs"/>
       </el-tab-pane>
       <el-tab-pane disabled label="运单信息" name="stowageWaybillInfo">
-        <stowageWaybillInfoForm ref="stowageWaybillInfoForm" :pKey="routeId"/>
+        <stowageWaybillInfoForm ref="stowageWaybillInfoForm" :pKey="routeId" :view-type="viewType"/>
       </el-tab-pane>
     </el-tabs>
     <el-form label-width="100px">
       <el-button-group>
         <el-button @click="close()">返回</el-button>
-        <el-button type="primary" v-if="endingStowage" @click="submitForm()">保存</el-button>
-        <el-button type="warning" v-if="endingStowage" @click="endingStowageMethod()">结束配载</el-button>
-        <el-button type="danger" v-if="departure" @click="departureMethod()">发车</el-button>
+        <el-button v-if="endingStowage" type="primary" @click="submitForm()">保存</el-button>
+        <el-button v-if="endingStowage" type="warning" @click="endingStowageMethod()">结束配载</el-button>
+        <el-button v-if="departure" type="danger" @click="departureMethod()">发车</el-button>
       </el-button-group>
     </el-form>
   </el-card>
 </template>
 <script>
-import { getWmsStowage, updateWmsStowage } from '@/api/wms/WmsStowage'
+import { departure, endStowage, getWmsStowage, updateWmsStowage } from '@/api/wms/WmsStowage'
 import routeInfoForm from './routeInfoForm'
 import stowageWaybillInfoForm from './stowageWaybillInfoForm'
 import ICol from '@/components/ICol'
@@ -203,16 +211,16 @@ export default {
   props: {},
   computed: {
     readOnly() {
-      return this.viewType === 1
+      return this.viewType >= 1
     },
     readOnlyAll() {
       return this.viewType === -1 || this.viewType === 3
     },
-    departure(){
-      return this.viewType === 1;
+    departure() {
+      return this.viewType === 1
     },
-    endingStowage(){
-      return this.viewType === 0;
+    endingStowage() {
+      return this.viewType === 0
     },
     finalUserOptions() {
       if ( this.viewType === -1 || this.viewType === 3 ) {
@@ -252,7 +260,7 @@ export default {
       stowageForm: {
         stowageId: null,
       },
-      sourceStowageForm:{},
+      sourceStowageForm: {},
       driverEntity: {
         visible: false,
       },
@@ -327,7 +335,7 @@ export default {
       getWmsStowage( this.stowageId ).then( ( { data } ) => {
         this.loading = false
         if ( isNotEmpty( data ) ) {
-          this.sourceStowageForm = deepClone(data);
+          this.sourceStowageForm = deepClone( data )
           this.stowageForm = data
           const stowageStatus = this.stowageForm.stowageStatus
           const viewType = +stowageStatus
@@ -365,11 +373,11 @@ export default {
       } )
     },
     /** 提交按钮 */
-    submitForm() {
+    submitForm( type = 0 ) {
       this.$refs['stowageForm'].validate( valid => {
         if ( valid ) {
           const stowageForm = deepClone( this.stowageForm )
-          stowageForm.params = { prev:this.sourceStowageForm };
+          stowageForm.params = { prev: this.sourceStowageForm }
           if ( stowageForm.stowageId != null ) {
             const user = this.userOptions.find( i => i.userId === stowageForm.departureDriverId )
             stowageForm.departureDriverName = user ? user.nickName : stowageForm.departureDriverId = null
@@ -378,17 +386,29 @@ export default {
             stowageForm.departureVehiclePlate = vehicle ? vehicle.vehiclePlate : stowageForm.departureVehicleId = null
             updateWmsStowage( stowageForm ).then( response => {
               this.msgSuccess( '保存成功' )
-              this.init();
-            })
+              if ( type == 1 ) {
+                endStowage( this.stowageId ).then( res => {
+                  this.msgSuccess( '配载成功' )
+                  this.init()
+                } )
+              } else if ( type == 2 ) {
+                departure( this.stowageId ).then( res => {
+                  this.msgSuccess( '发车成功' )
+                  this.init()
+                } )
+              } else {
+                this.init()
+              }
+            } )
           }
         }
       } )
     },
-    endingStowageMethod(){
-
+    endingStowageMethod() {
+      this.submitForm( 1 )
     },
-    departureMethod(){
-
+    departureMethod() {
+      this.submitForm( 2 )
     },
     getFormPromise( form ) {
       return new Promise( resolve => {
