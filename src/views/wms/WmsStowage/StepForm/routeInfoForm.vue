@@ -6,7 +6,8 @@
         <bm-navigation anchor="BMAP_ANCHOR_TOP_RIGHT"></bm-navigation>
         <bm-city-list anchor="BMAP_ANCHOR_TOP_LEFT"></bm-city-list>
         <bm-geolocation anchor="BMAP_ANCHOR_BOTTOM_RIGHT" :showAddressBar="true" :autoLocation="true"></bm-geolocation>
-        <bml-curve-line :points="points" :editing="true" @lineupdate="update"></bml-curve-line>
+<!--        <bml-curve-line :points="points" :editing="true" @lineupdate="update"></bml-curve-line>-->
+        <bm-driving :start="{lng: 113.360702, lat: 23.291494}" :end="{lng: 118.105896, lat: 24.538735}" @searchcomplete="handleSearchComplete" :panel="false"></bm-driving>
       </baidu-map>
     </template>
     <el-card :body-style="{padding:'15px'}">
@@ -118,13 +119,14 @@ import {
 import ICol from '@/components/ICol'
 import { listWarehouse } from '@/api/wms/warehouse'
 import { cloneDeep } from 'lodash'
-import { BmlCurveLine } from 'vue-baidu-map'
+import { BmlCurveLine ,BmlLushu} from 'vue-baidu-map'
 import { isNotEmpty } from '@/utils/utils'
 
 export default {
   name: 'WmsStowageRoute',
   components: {
     BmlCurveLine,
+    BmlLushu,
     ICol,
   },
   props: {
@@ -155,6 +157,13 @@ export default {
   },
   data() {
     return {
+      play: false,
+      path: [],
+      icon: {
+        url: 'http://api.map.baidu.com/library/LuShu/1.2/examples/car.png',
+        size: {width: 52, height: 26},
+        opts: {anchor: {width: 27, height:13}}
+      },
       action: false,
       stowageId: null,
       grid: {
@@ -218,6 +227,12 @@ export default {
     }
   },
   methods: {
+    resets () {
+      this.play = false
+    },
+    handleSearchComplete (res) {
+      this.path = res.getPlan(0).getRoute(0).getPath()
+    },
     update (e) {
       this.points = e.target.cornerPoints
     },
