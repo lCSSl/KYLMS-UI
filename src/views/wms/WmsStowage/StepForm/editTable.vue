@@ -483,7 +483,7 @@ export default {
           this.routeId = key.routeId
           this.stowageWaybillInfoFormParams.departure = this.stowageForm.departure
           this.stowageWaybillInfoFormParams.destination = key.stowageWarehouseId
-          this.stowageWaybillInfoFormParams.waybillStatus = '2'
+          this.stowageWaybillInfoFormParams.waybillStatus = '3'
           break
       }
     },
