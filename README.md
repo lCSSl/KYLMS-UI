@@ -1,23 +1,22 @@
+#2021.4.19目标
+-[ ] 到货确认
+-[ ] 短信通知
+#2021.4.20目标
+-[ ] 司机端简单unit-app应用
+#待优化内容
+-[ ] 分单配载做到分单
+-[ ] 运单数据更新填充
+-[ ] 所有实体类的公共字段更新
+
 ## 开发
 
-```bash
-# 克隆项目
-git clone https://gitee.com/y_project/RuoYi-Vue
-
-# 进入项目目录
-cd ruoyi-ui
-
+```shell
 # 安装依赖
-npm install
-
-# 建议不要直接使用 cnpm 安装依赖，会有各种诡异的 bug。可以通过如下操作解决 npm 下载速度慢的问题
-npm install --registry=https://registry.npm.taobao.org
+yarn
 
 # 启动服务
-npm run dev
+yarn dev
 ```
-
-浏览器访问 http://localhost:80
 
 ## 发布
 
