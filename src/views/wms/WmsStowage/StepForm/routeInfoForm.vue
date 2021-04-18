@@ -1,31 +1,44 @@
 <template>
   <div class="app-container">
-    <template>
-      <baidu-map center="广东" class="map">
-        <bm-scale anchor="BMAP_ANCHOR_TOP_RIGHT"></bm-scale>
-        <bm-navigation anchor="BMAP_ANCHOR_TOP_RIGHT"></bm-navigation>
-        <bm-city-list anchor="BMAP_ANCHOR_TOP_LEFT"></bm-city-list>
-        <bm-geolocation anchor="BMAP_ANCHOR_BOTTOM_RIGHT" :showAddressBar="true" :autoLocation="true"></bm-geolocation>
-<!--        <bml-curve-line :points="points" :editing="true" @lineupdate="update"></bml-curve-line>-->
-        <bm-driving :start="{lng: 113.360702, lat: 23.291494}" :end="{lng: 118.105896, lat: 24.538735}" @searchcomplete="handleSearchComplete" :panel="false"></bm-driving>
-      </baidu-map>
-    </template>
+    <el-dialog :title="mapDialog.title" :visible.sync="mapDialog.open" append-to-body fullscreen>
+      <template v-if="mapDialog.open">
+        <baidu-map ak="CYeLaLREUskkc2yIbX0cFUXWuMtnek5u" :center="centerPoint" class="map" :zoom="9">
+          <bm-scale anchor="BMAP_ANCHOR_TOP_RIGHT"></bm-scale>
+          <bm-navigation anchor="BMAP_ANCHOR_TOP_RIGHT"></bm-navigation>
+          <bm-geolocation anchor="BMAP_ANCHOR_BOTTOM_RIGHT" :showAddressBar="true"
+                          :autoLocation="true"></bm-geolocation>
+          <bm-marker v-if="locationPoint" :position="locationPoint" animation="BMAP_ANIMATION_BOUNCE"
+                     :icon="{url: 'http://server.kaiyu.work:9000/test/truck.png', size: {width: 37, height: 16}}">
+          </bm-marker>
+          <bm-driving :start="startPoint" :waypoints="waypoints" :end="endPoint"
+                      :panel="false"></bm-driving>
+        </baidu-map>
+      </template>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="()=>{this.mapDialog.open=false}">关 闭</el-button>
+      </div>
+    </el-dialog>
     <el-card :body-style="{padding:'15px'}">
       <template>
         <div slot="header" class="radio">
-          排序：
-          <el-radio-group v-model="reverse">
-            <el-radio :label="false">正序</el-radio>
-            <el-radio :label="true">倒序</el-radio>
-          </el-radio-group>
+          <el-row>
+            <el-col :span="16">
+              排序：
+              <el-radio-group v-model="reverse">
+                <el-radio :label="false">正序</el-radio>
+                <el-radio :label="true">倒序</el-radio>
+              </el-radio-group>
+            </el-col>
+            <el-col :style="{display: 'flex', justifyContent: 'flex-end',}" :span="8">
+              <el-button :loading="loading" @click="()=>{this.mapDialog.open=true}">查看线路</el-button>
+            </el-col>
+          </el-row>
         </div>
         <el-timeline :reverse="reverse">
           <el-timeline-item v-for="(item,index) in WmsStowageRouteList"
-                            :key="index"
-                            :timestamp="''+item.routeSort"
+                            :key="index" :timestamp="''+item.routeSort"
                             :type="item.routeStatus==='-1'?'danger':(item.routeStatus==='0'?'info':(item.routeStatus==='1'?'success':'warn'))"
-                            hide-timestamp
-                            placement="top">
+                            hide-timestamp placement="top">
             <el-card>
               <el-row>
                 <ICol>{{item.stowageWarehouseName}}</ICol>
@@ -119,19 +132,34 @@ import {
 import ICol from '@/components/ICol'
 import { listWarehouse } from '@/api/wms/warehouse'
 import { cloneDeep } from 'lodash'
-import { BmlCurveLine ,BmlLushu} from 'vue-baidu-map'
+import { BmlCurveLine } from 'vue-baidu-map'
 import { isNotEmpty } from '@/utils/utils'
+import BaiduMap from 'vue-baidu-map/components/map/Map.vue'
+import BmScale from 'vue-baidu-map/components/controls/Scale'
+import BmNavigation from 'vue-baidu-map/components/controls/Navigation'
+import BmGeolocation from 'vue-baidu-map/components/controls/Geolocation'
+import BmMarker from 'vue-baidu-map/components/overlays/Marker'
+import BmDriving from 'vue-baidu-map/components/search/Driving'
+import { getLocationById } from '@/api/wms/WmsVehicle'
 
 export default {
   name: 'WmsStowageRoute',
   components: {
     BmlCurveLine,
-    BmlLushu,
+    BmScale,
+    BaiduMap,
+    BmNavigation,
+    BmGeolocation,
+    BmMarker,
+    BmDriving,
     ICol,
   },
   props: {
     pKey: {
       type: String,
+    },
+    vehicleId: {
+      type: [ Number, String ],
     },
     viewType: {
       type: Number
@@ -157,13 +185,6 @@ export default {
   },
   data() {
     return {
-      play: false,
-      path: [],
-      icon: {
-        url: 'http://api.map.baidu.com/library/LuShu/1.2/examples/car.png',
-        size: {width: 52, height: 26},
-        opts: {anchor: {width: 27, height:13}}
-      },
       action: false,
       stowageId: null,
       grid: {
@@ -219,23 +240,20 @@ export default {
         ],
       },
       toggleSearchFormValue: 0,
-      points: [
-        {lng: 113.360702, lat: 23.291494},
-        {lng: 117.674233, lat: 24.489312},
-        {lng: 118.105896, lat: 24.538735}
-      ],
+      centerPoint: {
+        lng: 113.360702, lat: 23.291494
+      },
+      mapDialog: {
+        title: '',
+        open: false,
+      },
+      locationPoint: null,
+      startPoint: null,
+      endPoint: null,
+      waypoints: [],
     }
   },
   methods: {
-    resets () {
-      this.play = false
-    },
-    handleSearchComplete (res) {
-      this.path = res.getPlan(0).getRoute(0).getPath()
-    },
-    update (e) {
-      this.points = e.target.cornerPoints
-    },
     /** 查询运单配载线路列表 */
     getList() {
       this.loading = true
@@ -244,9 +262,45 @@ export default {
       } ).then( response => {
         this.reset()
         this.WmsStowageRouteList = response.rows
+        this.initMapData()
         this.total = response.total
         this.loading = false
       } )
+    },
+    initMapData() {
+      this.loading = true
+      if ( isNotEmpty( this.vehicleId ) ) {
+        console.log( 'no empty' )
+        getLocationById( this.vehicleId ).then( ( { data } ) => {
+          this.locationPoint = data
+          this.initMapPointData()
+          this.loading = false
+        } )
+      } else {
+        console.log( 'empty' )
+        this.initMapPointData()
+      }
+    },
+    initMapPointData() {
+      const sourceList = this.WmsStowageRouteList
+      const waypoints = []
+      sourceList.forEach( ( item, index ) => {
+        if ( !(index === 0 || index === (sourceList.length - 1)) ) {
+          waypoints.push( item.ll )
+        }
+      } )
+      const start = sourceList[0]
+      const end = sourceList[sourceList.length - 1]
+      if ( isNotEmpty( start ) && isNotEmpty( end ) ) {
+        this.startPoint = start.ll
+        this.centerPoint = start.ll
+        this.endPoint = end.ll
+      } else {
+        this.msgError( '数据错误' )
+      }
+      if ( waypoints.length > 0 ) {
+        this.waypoints = waypoints
+      }
     },
     // 状态字典翻译
     statusFormat( row, column ) {
@@ -379,6 +433,8 @@ export default {
       } )
     },
   },
+  mounted() {
+  }
 }
 </script>
 

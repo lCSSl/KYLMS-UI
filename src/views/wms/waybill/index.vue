@@ -1310,11 +1310,12 @@ export default {
       }
     },
     checkProps() {
-      switch ( +this.componentOption.action ) {
+      const componentOption = this.componentOption
+      switch ( +componentOption.action ) {
         case 0:
           break
         case 1:
-          this.queryParams.waybillStatus='2';
+          this.queryParams=componentOption.params;
           break
       }
     },

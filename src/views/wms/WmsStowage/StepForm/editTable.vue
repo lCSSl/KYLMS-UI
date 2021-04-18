@@ -169,11 +169,13 @@
         </el-form>
       </el-tab-pane>
       <el-tab-pane label="路线信息" name="routeInfo">
-        <routeInfoForm ref="routeInfoForm" :pKey="stowageForm.stowageId" :view-type="viewType"
+        <routeInfoForm ref="routeInfoForm" :pKey="stowageForm.stowageId" :vehicleId="stowageForm.departureVehicleId"
+                       :view-type="viewType"
                        @on-change-tab="changeTabs"/>
       </el-tab-pane>
       <el-tab-pane disabled label="运单信息" name="stowageWaybillInfo">
-        <stowageWaybillInfoForm ref="stowageWaybillInfoForm" :pKey="routeId" :view-type="viewType"/>
+        <stowageWaybillInfoForm ref="stowageWaybillInfoForm" :pKey="routeId" :params="stowageWaybillInfoFormParams"
+                                :view-type="viewType"/>
       </el-tab-pane>
     </el-tabs>
     <el-form label-width="100px">
@@ -255,6 +257,7 @@ export default {
       // 表详细信息
       loading: false,
       routeId: null,
+      stowageWaybillInfoFormParams: {},
       info: {},
       viewType: null,
       stowageForm: {
@@ -478,6 +481,9 @@ export default {
         case 'stowageWaybillInfo':
           this.activeName = activeName
           this.routeId = key.routeId
+          this.stowageWaybillInfoFormParams.departure = this.stowageForm.departure
+          this.stowageWaybillInfoFormParams.destination = key.stowageWarehouseId
+          this.stowageWaybillInfoFormParams.waybillStatus = '2'
           break
       }
     },

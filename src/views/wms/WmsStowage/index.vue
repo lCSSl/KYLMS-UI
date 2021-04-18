@@ -191,8 +191,8 @@
             plain
             size="mini"
             type="primary"
-            @click="handleAdd"
-          >新增
+            @click="handleAdd">
+            新增
           </el-button>
         </el-col>
         <el-col :span="1.5">

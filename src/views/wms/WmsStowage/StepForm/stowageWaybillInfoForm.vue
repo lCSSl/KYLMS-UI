@@ -6,8 +6,8 @@
           <el-button
             v-hasPermi="['wms:waybill:add']"
             icon="el-icon-plus"
-            plain
-            size="mini"
+            plain size="mini"
+            :disabled="loading"
             v-if="!readOnly"
             type="primary"
             @click="handleAdd">
@@ -17,10 +17,9 @@
         <el-col :span="1.5">
           <el-button
             v-hasPermi="['wms:waybill:remove']"
-            :disabled="multiple"
+            :disabled="multiple||loading"
             icon="el-icon-delete"
-            v-if="!readOnly"
-            plain
+            v-if="!readOnly" plain
             size="mini"
             type="danger"
             @click="handleDelete">
@@ -256,7 +255,9 @@
     <!-- 添加或修改运单信息主对话框 -->
     <WaybillDialog v-if="action.dialog" v-model="row" :option="dialogOption" @on-success="getList"/>
     <el-dialog :visible.sync="waybillDialog.open" append-to-body fullscreen>
-      <Waybill :option="waybillOption" @on-handle-selection-change="handleSelectionChange"/>
+      <template v-if="waybillDialog.open">
+        <Waybill :option="waybillOption" @on-handle-selection-change="handleSelectionChange"/>
+      </template>
       <template slot="footer">
         <el-button v-if="!readOnly" :disabled="loading" type="primary" @click="submit">
           <svg-icon slot="default" icon-class="transport-0"/>
@@ -294,6 +295,12 @@ export default {
   props: {
     pKey: {
       type: String,
+    },
+    params: {
+      type: Object,
+      default:()=>{
+        return{};
+      }
     },
     viewType:{
       type:Number
@@ -466,7 +473,9 @@ export default {
       },
       waybillOption: {
         pKey: null,
-        action: 1
+        action: 1,
+        params:{
+        },
       },
       waybillIds: [],
     }
@@ -482,9 +491,15 @@ export default {
     /** 查询运单信息主列表 */
     getList() {
       this.loading = true
-      listWaybillByRouteId( this.routeId ).then( response => {
-        this.waybillList = response.rows
-        this.total = response.total
+      listWaybillByRouteId( this.routeId ).then( ({rows,total}) => {
+        this.waybillList = rows
+        const notInKeys = [];
+        this.waybillList.forEach(i=>{
+          notInKeys.push(i.waybillId);
+        });
+        this.waybillOption.params = this.params;
+        this.waybillOption.params.notInKeys = notInKeys;
+        this.total = total;
         this.loading = false
       } )
     },
