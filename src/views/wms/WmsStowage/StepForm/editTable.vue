@@ -189,7 +189,7 @@
   </el-card>
 </template>
 <script>
-import { departure, endStowage, getWmsStowage, updateWmsStowage } from '@/api/wms/WmsStowage'
+import { preDeparture, endStowage, getWmsStowage, updateWmsStowage } from '@/api/wms/WmsStowage'
 import routeInfoForm from './routeInfoForm'
 import stowageWaybillInfoForm from './stowageWaybillInfoForm'
 import ICol from '@/components/ICol'
@@ -395,7 +395,7 @@ export default {
                   this.init()
                 } )
               } else if ( type == 2 ) {
-                departure( this.stowageId ).then( res => {
+                preDeparture( this.stowageId ).then( res => {
                   this.msgSuccess( '发车成功' )
                   this.init()
                 } )

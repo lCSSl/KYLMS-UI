@@ -123,6 +123,7 @@ export default {
     uploadImg() {
       this.$refs.cropper.getCropBlob(data => {
         let formData = new FormData();
+        console.log(data);
         formData.append("avatarfile", data);
         uploadAvatar(formData).then(response => {
           this.open = false;

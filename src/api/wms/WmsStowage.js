@@ -52,9 +52,9 @@ export function endStowage( stowageId ) {
 }
 
 // 发车
-export function departure( stowageId ) {
+export function preDeparture( stowageId ) {
   return request( {
-    url: '/wms/WmsStowage/departure/' + stowageId,
+    url: '/wms/WmsStowage/preDeparture/' + stowageId,
     method: 'post'
   } )
 }
