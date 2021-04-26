@@ -4,7 +4,6 @@ import Cookies from 'js-cookie'
 
 import Element from 'element-ui'
 import './assets/styles/element-variables.scss'
-import { setRem } from '@/utils/setRem'
 import '@/assets/styles/index.scss' // global css
 import '@/assets/styles/ruoyi.scss' // ruoyi css
 import App from './App'
@@ -15,12 +14,12 @@ import { download } from '@/utils/request'
 
 import './assets/icons' // icon
 import './permission' // permission control
-import { getDicts } from "@/api/system/dict/data";
-import { getConfigKey } from "@/api/system/config";
-import { parseTime, resetForm, addDateRange, selectDictLabel, selectDictLabels, handleTree } from "@/utils/utils";
-import Pagination from "@/components/Pagination";
+import { getDicts } from '@/api/system/dict/data'
+import { getConfigKey } from '@/api/system/config'
+import { addDateRange, handleTree, parseTime, resetForm, selectDictLabel, selectDictLabels } from '@/utils/utils'
+import Pagination from '@/components/Pagination'
 // 自定义表格工具扩展
-import RightToolbar from "@/components/RightToolbar"
+import RightToolbar from '@/components/RightToolbar'
 
 // 全局方法挂载
 Vue.prototype.getDicts = getDicts
