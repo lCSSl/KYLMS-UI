@@ -96,7 +96,7 @@
                 <el-select v-model="stowageForm.departureVehicleId"
                            :disabled="this.readOnlyAll"
                            :loading="loading" :remote-method="(keyword)=>getVehicleData(keyword)"
-                           class="common-select-width" filterable placeholder="请选择发车司机" remote reserve-keyword>
+                           class="common-select-width" filterable placeholder="请选择发车车辆" remote reserve-keyword>
                   <el-option v-for="(item,index) in vehicleOptions" :key="index"
                              :disabled="!(item.vehicleStatus==='0')"
                              :label="item.vehiclePlate"

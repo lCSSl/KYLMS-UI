@@ -35,7 +35,7 @@ module.exports = {
       // detail: https://cli.vuejs.org/config/#devserver-proxy
       [process.env.VUE_APP_BASE_API]: {
         // target: `http://kaiyu.wicp.vip:39592`,
-        target: `http://tunnel.kaiyu.work:55938`,
+        target: `http://server.kaiyu.work:8888`,
         // target: `http://localhost:8080`,
         changeOrigin: true,
         pathRewrite: {
