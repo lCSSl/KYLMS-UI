@@ -20,7 +20,6 @@ import { addDateRange, handleTree, parseTime, resetForm, selectDictLabel, select
 import Pagination from '@/components/Pagination'
 // 自定义表格工具扩展
 import RightToolbar from '@/components/RightToolbar'
-
 // 全局方法挂载
 Vue.prototype.getDicts = getDicts
 Vue.prototype.getConfigKey = getConfigKey
@@ -83,6 +82,7 @@ Vue.prototype.notifyInfo = function (msg) {
 Vue.component('Pagination', Pagination)
 Vue.component('RightToolbar', RightToolbar)
 Vue.use(permission)
+
 
 /**
  * If you don't want to use mock-server

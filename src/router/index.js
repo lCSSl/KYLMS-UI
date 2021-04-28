@@ -39,9 +39,9 @@ export const constantRoutes = [
     ]
   },
   {
-    path: '/login',
-    component: (resolve) => require(['@/views/login'], resolve),
-    hidden: true
+    path: '/print',
+    component: (resolve) => require(['@/views/components/wms/Waybill/Print'], resolve),
+    hidden: true,
   },
   {
     path: '/404',

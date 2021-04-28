@@ -3,6 +3,7 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
+
           v-hasPermi="['wms:WmsCargoTemp:add']"
           :disabled="disable||readOnly"
           icon="el-icon-plus"

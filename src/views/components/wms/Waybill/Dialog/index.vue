@@ -1,9 +1,12 @@
 <template>
-  <el-dialog :visible.sync="dialog.open" append-to-body fullscreen>
+  <el-dialog ref="waybillDialog" id="waybillDialog" :visible.sync="dialog.open" append-to-body fullscreen>
       <span slot="title" class="dialog_title">
-        <span>
+        <span >
             {{dialog.title}}
         </span>
+        <el-button-group >
+          <el-button  @click="printDialog">打印</el-button>
+        </el-button-group>
         <el-input v-show="dialog.type!=0" v-model="form.waybillCode" class="dialog_title_plus" readonly>
           <template slot="prepend">运单号</template>
         </el-input>
@@ -122,7 +125,7 @@
               <ICol
                 :grid="{xs: {span: 24, offset: 0},sm: {span: 2, offset: 0},md: {span: 2, offset: 0},lg: {span: 2, offset: 0},xl: {span: 2, offset: 0}}"
                 border>
-                <el-button :disabled="readOnly" class="select-width" @click="()=>openUserDialog(0)">修改</el-button>
+                <el-button  :disabled="readOnly" class="select-width" @click="()=>openUserDialog(0)">修改</el-button>
               </ICol>
             </el-row>
           </template>
@@ -170,7 +173,7 @@
               <ICol
                 :grid="{xs: {span: 24, offset: 0},sm: {span: 2, offset: 0},md: {span: 2, offset: 0},lg: {span: 2, offset: 0},xl: {span: 2, offset: 0}}"
                 border>
-                <el-button :disabled="readOnly" class="select-width" @click="()=>openUserDialog(1)">修改</el-button>
+                <el-button  :disabled="readOnly" class="select-width" @click="()=>openUserDialog(1)">修改</el-button>
               </ICol>
             </el-row>
           </template>
@@ -390,7 +393,6 @@ import {listUser} from "@/api/system/user";
 import CargoTempList from "@/views/components/wms/Waybill/CargoList"
 import UserDialog from "@/views/components/system/user/Dialog/index";
 import DeptDialog from "@/views/components/system/dept/Dialog/index";
-
 export default {
   name: "WaybillDialog",
   components: {
@@ -950,8 +952,6 @@ export default {
         consigneeTelephone: data.consigneeTelephone,
       };
       data.provinceCityDistrictStreet = '';
-      data.departure = +data.departure;
-      data.destination = +data.destination;
       this.form = data;
     },
     dataProcessing() {
@@ -976,7 +976,9 @@ export default {
       this.$router.push({
         path: 'warehouse/WmsWarehouseExtItem/' + departure + '/' + 1 + '/' + waybillId,
       });
-    }
+    },
+    printDialog(){
+    },
   },
   created() {
     console.log('created')
