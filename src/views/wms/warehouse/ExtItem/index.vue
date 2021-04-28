@@ -129,13 +129,11 @@
     </el-card>
 -->
     <el-card :body-style="{padding:'15px'}">
-      <ICol
-        :grid="{xs: {span: 24, offset: 0},sm: {span: 24, offset: 0},md: {span: 12, offset: 0},lg: {span: 12, offset: 0},xl: {span: 12, offset: 0}}">
+      <ICol type="half">
         <WarehouseEcharts v-model="warehouse" :loading="loading" :x="xList"
                           :y="yList" @on-click-item="handleEchartsClickItem"/>
       </ICol>
-      <ICol
-        :grid="{xs: {span: 24, offset: 0},sm: {span: 24, offset: 0},md: {span: 12, offset: 0},lg: {span: 12, offset: 0},xl: {span: 12, offset: 0}}">
+      <ICol type="half">
         <el-card>
           <div slot="header" class="clearfix">
             <span>{{itemCardTitle}}</span>

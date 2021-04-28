@@ -1,5 +1,5 @@
 <template>
-  <el-card v-loading="isLoading">
+  <el-card class="echarts-card" v-loading="isLoading">
     <div id="warehouseExtItemCanvas"></div>
   </el-card>
 </template>
@@ -64,7 +64,11 @@ export default {
     };
   },
   mounted() {
-    this.checkData();
+    this.$nextTick(()=>{
+      setTimeout(()=>{
+        this.checkData();
+      },200)
+    })
   },
   methods: {
     checkData(){
@@ -190,9 +194,9 @@ export default {
   }
 };
 </script>
-<style>
+<style scoped>
 #warehouseExtItemCanvas {
-  /*width: 1800px;*/
+  width: 100%;
   height: 500px;
 }
 </style>

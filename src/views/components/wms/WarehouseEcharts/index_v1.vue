@@ -128,7 +128,7 @@ export default {
   }
 };
 </script>
-<style>
+<style scoped>
 #warehouseExtItemCanvas {
   width: 1800px;
   height: 1000px;
