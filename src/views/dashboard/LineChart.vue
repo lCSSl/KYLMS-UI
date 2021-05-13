@@ -61,7 +61,7 @@ export default {
       this.chart = echarts.init(this.$el, 'macarons')
       this.setOptions(this.chartData)
     },
-    setOptions({ expectedData, actualData } = {}) {
+    setOptions({ beforeData, nowData} = {}) {
       this.chart.setOption({
         xAxis: {
           data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
@@ -90,10 +90,11 @@ export default {
           }
         },
         legend: {
-          data: ['expected', 'actual']
+          data: ['上周', '这周']
         },
         series: [{
-          name: 'expected', itemStyle: {
+          name: '上周',
+          itemStyle: {
             normal: {
               color: '#FF005A',
               lineStyle: {
@@ -104,12 +105,12 @@ export default {
           },
           smooth: true,
           type: 'line',
-          data: expectedData,
+          data: beforeData,
           animationDuration: 2800,
           animationEasing: 'cubicInOut'
         },
         {
-          name: 'actual',
+          name: '这周',
           smooth: true,
           type: 'line',
           itemStyle: {
@@ -124,7 +125,7 @@ export default {
               }
             }
           },
-          data: actualData,
+          data: nowData,
           animationDuration: 2800,
           animationEasing: 'quadraticOut'
         }]

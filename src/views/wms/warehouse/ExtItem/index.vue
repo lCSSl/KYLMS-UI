@@ -154,18 +154,20 @@
                 <el-form-item>
                   <div slot="label">
                     状态
-                    <el-tooltip v-show="showItemStatusTooltip" content="为装载状态时,不可改变状态">
+                    <el-tooltip v-show="showItemStatusTooltip" content="占用时,不可改变状态">
                       <i class="el-icon-question"></i>
                     </el-tooltip>
                   </div>
-                  <el-switch
-                    v-model="form.status"
+                  <el-select
                     :disabled="showItemStatusTooltip"
-                    active-color="#13ce66"
-                    active-value="1"
-                    inactive-color="#ff4949"
-                    inactive-value="0">
-                  </el-switch>
+                    v-model="form.status" placeholder="请选择状态">
+                    <el-option
+                      v-for="dict in itemStatusOptions"
+                      :key="dict.dictValue"
+                      :label="dict.dictLabel"
+                      :value="dict.dictValue"
+                    />
+                  </el-select>
                 </el-form-item>
               </ICol>
               <ICol type="full">
@@ -354,7 +356,7 @@ export default {
       return this.itemStatusOptions.filter(i => i.dictValue != '2');
     },
     showItemStatusTooltip() {
-      return this.form.status === '2';
+      return this.form.status === '2' || this.form.status==='3';
     },
     itemCardTitle() {
       return this.warehouse && this.warehouse.warehouseName;

@@ -1,31 +1,31 @@
 <template>
   <div class="dashboard-editor-container">
 
-    <panel-group @handleSetLineChartData="handleSetLineChartData" />
+    <panel-group :online-user-number="onlineUserNumber" :visit-user-week-number="visitUserWeekNumber" :oper-week-number="operWeekNumber" @handleSetLineChartData="handleSetLineChartData"/>
 
     <el-row style="background:#fff;padding:16px 16px 0;margin-bottom:32px;">
-      <line-chart :chart-data="lineChartData" />
+      <line-chart :chart-data="lineChartData"/>
     </el-row>
-
-    <el-row :gutter="32">
-      <el-col :xs="24" :sm="24" :lg="8">
+<!--
+    <el-row disabled :gutter="32">
+      <el-col disabled :xs="24" :sm="24" :lg="8">
         <div class="chart-wrapper">
-          <raddar-chart />
+          <raddar-chart disabled/>
         </div>
       </el-col>
       <el-col :xs="24" :sm="24" :lg="8">
         <div class="chart-wrapper">
-          <pie-chart />
+          <pie-chart disabled/>
         </div>
       </el-col>
       <el-col :xs="24" :sm="24" :lg="8">
         <div class="chart-wrapper">
-          <bar-chart />
+          <bar-chart disabled/>
         </div>
       </el-col>
     </el-row>
+    -->
 
-    
   </div>
 </template>
 
@@ -35,24 +35,17 @@ import LineChart from './dashboard/LineChart'
 import RaddarChart from './dashboard/RaddarChart'
 import PieChart from './dashboard/PieChart'
 import BarChart from './dashboard/BarChart'
+import {count} from '@/api/system/index'
 
 const lineChartData = {
-  newVisitis: {
-    expectedData: [100, 120, 161, 134, 105, 160, 165],
-    actualData: [120, 82, 91, 154, 162, 140, 145]
+  visitUsers: {
+    beforeData: [100, 120, 161, 134, 105, 160, 165],
+    nowData: [120, 82, 91, 154, 162, 140, 145]
   },
-  messages: {
-    expectedData: [200, 192, 120, 144, 160, 130, 140],
-    actualData: [180, 160, 151, 106, 145, 150, 130]
+  opers: {
+    beforeData: [200, 192, 120, 144, 160, 130, 140],
+    nowData: [180, 160, 151, 106, 145, 150, 130]
   },
-  purchases: {
-    expectedData: [80, 100, 121, 104, 105, 90, 100],
-    actualData: [120, 90, 100, 138, 142, 130, 130]
-  },
-  shoppings: {
-    expectedData: [130, 140, 141, 142, 145, 150, 160],
-    actualData: [120, 82, 91, 154, 162, 140, 130]
-  }
 }
 
 export default {
@@ -66,13 +59,41 @@ export default {
   },
   data() {
     return {
-      lineChartData: lineChartData.newVisitis
+      lineChartData: lineChartData.newVisitis,
+      visitUserWeekNumber: 0,
+      operWeekNumber: 0,
+      onlineUserNumber: 0
     }
   },
   methods: {
     handleSetLineChartData(type) {
       this.lineChartData = lineChartData[type]
     }
+  },
+  mounted() {
+    count().then(res => {
+      const {
+        onlineUserNumber,
+        operWeekNumberBefore,
+        operWeekNumberNow,
+        visitUserWeekNumberBefore,
+        visitUserWeekNumberNow
+      } = res.data;
+      lineChartData.visitUsers.beforeData = visitUserWeekNumberBefore;
+      lineChartData.visitUsers.nowData = visitUserWeekNumberNow;
+      visitUserWeekNumberNow.forEach(i => {
+        this.visitUserWeekNumber += i;
+      })
+      lineChartData.opers.beforeData = operWeekNumberBefore;
+      lineChartData.opers.nowData = operWeekNumberNow
+      operWeekNumberNow.forEach(i => {
+        this.operWeekNumber += i;
+      })
+      this.onlineUserNumber = onlineUserNumber
+
+    })
+    this.lineChartData = lineChartData['visitUsers']
+
   }
 }
 </script>
@@ -90,7 +111,7 @@ export default {
   }
 }
 
-@media (max-width:1024px) {
+@media (max-width: 1024px) {
   .chart-wrapper {
     padding: 8px;
   }
