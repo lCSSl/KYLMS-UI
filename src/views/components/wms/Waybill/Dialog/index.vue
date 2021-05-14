@@ -1,11 +1,11 @@
 <template>
   <el-dialog ref="waybillDialog" id="waybillDialog" :visible.sync="dialog.open" append-to-body fullscreen>
       <span slot="title" class="dialog_title">
-        <span >
-            {{dialog.title}}
+        <span>
+            {{ dialog.title }}
         </span>
-        <el-button-group >
-          <el-button  @click="printDialog">打印</el-button>
+        <el-button-group>
+          <el-button @click="printDialog">打印</el-button>
         </el-button-group>
         <el-input v-show="dialog.type!=0" v-model="form.waybillCode" class="dialog_title_plus" readonly>
           <template slot="prepend">运单号</template>
@@ -125,7 +125,7 @@
               <ICol
                 :grid="{xs: {span: 24, offset: 0},sm: {span: 2, offset: 0},md: {span: 2, offset: 0},lg: {span: 2, offset: 0},xl: {span: 2, offset: 0}}"
                 border>
-                <el-button  :disabled="readOnly" class="select-width" @click="()=>openUserDialog(0)">修改</el-button>
+                <el-button :disabled="readOnly" class="select-width" @click="()=>openUserDialog(0)">修改</el-button>
               </ICol>
             </el-row>
           </template>
@@ -173,7 +173,7 @@
               <ICol
                 :grid="{xs: {span: 24, offset: 0},sm: {span: 2, offset: 0},md: {span: 2, offset: 0},lg: {span: 2, offset: 0},xl: {span: 2, offset: 0}}"
                 border>
-                <el-button  :disabled="readOnly" class="select-width" @click="()=>openUserDialog(1)">修改</el-button>
+                <el-button :disabled="readOnly" class="select-width" @click="()=>openUserDialog(1)">修改</el-button>
               </ICol>
             </el-row>
           </template>
@@ -240,7 +240,7 @@
                   v-for="dict in writeInvoiceOptions"
                   :key="dict.dictValue"
                   :label="dict.dictValue">
-                  {{dict.dictLabel}}
+                  {{ dict.dictLabel }}
                 </el-radio>
               </el-radio-group>
             </el-form-item>
@@ -371,7 +371,11 @@
       <UserDialog v-model="userDialogRow" :option="userDialogOption" @on-success="initAddCoOrUser"/>
     </el-dialog>
     <div slot="footer" class="dialog-footer">
-      <el-button v-if="this.row.waybillStatus<2&&this.row.waybillStatus!=0" :disabled="loading" type="warning" @click="toExtItemPage">入 库
+      <el-button v-if="this.row.waybillStatus==='1'||this.row.waybillStatus==='13'" :disabled="loading" type="warning"
+                 @click="toExtItemPage">入 库
+      </el-button>
+      <el-button v-else-if="this.row.waybillStatus==='14'" :disabled="loading" type="primary"
+                 @click="signFor">签收
       </el-button>
       <el-button v-if="!readOnly" :disabled="loading" type="primary" @click="submitForm">保 存</el-button>
       <el-button @click="cancel" :disabled="loading">关 闭</el-button>
@@ -380,7 +384,7 @@
 </template>
 
 <script>
-import {addWaybill, getWaybill, updateWaybill} from "@/api/wms/waybill";
+import {addWaybill,signFor, getWaybill, updateWaybill} from "@/api/wms/waybill";
 import 'element-ui/lib/theme-chalk/display.css';
 import ICol from "@/components/ICol";
 import RegionSelect from "@/components/regionSelect/index";
@@ -393,6 +397,7 @@ import {listUser} from "@/api/system/user";
 import CargoTempList from "@/views/components/wms/Waybill/CargoList"
 import UserDialog from "@/views/components/system/user/Dialog/index";
 import DeptDialog from "@/views/components/system/dept/Dialog/index";
+
 export default {
   name: "WaybillDialog",
   components: {
@@ -805,8 +810,8 @@ export default {
         // this.loading = false;
       });
     },
-    loadSuccess(){
-      this.loading=false;
+    loadSuccess() {
+      this.loading = false;
     },
     /** 提交按钮 */
     submitForm() {
@@ -839,7 +844,7 @@ export default {
       });
     },
     finalSuccess() {
-      if (this.row.waybillStatus==1){
+      if (this.row.waybillStatus == 1) {
       }
       this.live = false;
       this.dialog.open = false;
@@ -969,15 +974,32 @@ export default {
       return form;
     },
     toExtItemPage() {
-      const {departure, waybillId} = this.row;
+      const {departure, destination, waybillStatus, waybillId} = this.row;
       this.dialog.open = false;
       this.dialog.type = 0;
       this.reset();
+      let warehouseId = '';
+      if (waybillStatus === '1') {
+        warehouseId = departure;
+      } else if (waybillStatus === '13') {
+        warehouseId = destination
+      } else {
+        return
+      }
       this.$router.push({
-        path: 'warehouse/WmsWarehouseExtItem/' + departure + '/' + 1 + '/' + waybillId,
+        path: 'warehouse/WmsWarehouseExtItem/' + warehouseId + '/' + waybillStatus + '/' + waybillId
       });
     },
-    printDialog(){
+    signFor() {
+      const { waybillId} = this.row;
+      this.dialog.open = false;
+      this.dialog.type = 0;
+      this.reset();
+      signFor(waybillId).then(res=>{
+        this.msgSuccess("签收成功")
+      });
+    },
+    printDialog() {
     },
   },
   created() {

@@ -1,6 +1,14 @@
 <template>
   <div class="app-container">
-    <el-dialog :title="mapDialog.title" :visible.sync="mapDialog.open" append-to-body fullscreen>
+    <el-dialog :visible.sync="mapDialog.open" append-to-body fullscreen>
+      <span slot="title" class="dialog_title">
+        <span >
+            {{mapDialog.title}}
+        </span>
+        <el-button-group >
+          <el-button  @click="getVehicleLocation()">更新</el-button>
+        </el-button-group>
+      </span>
       <template v-if="mapDialog.open">
         <baidu-map ak="CYeLaLREUskkc2yIbX0cFUXWuMtnek5u" :center="centerPoint" class="map" :zoom="9">
           <bm-scale anchor="BMAP_ANCHOR_TOP_RIGHT"></bm-scale>
@@ -271,15 +279,18 @@ export default {
       this.loading = true
       if ( isNotEmpty( this.vehicleId ) ) {
         console.log( 'no empty' )
-        getLocationById( this.vehicleId ).then( ( { data } ) => {
-          this.locationPoint = data
-          this.initMapPointData()
-          this.loading = false
-        } )
+        this.getVehicleLocation();
+        this.initMapPointData()
       } else {
         console.log( 'empty' )
         this.initMapPointData()
       }
+    },
+    getVehicleLocation(){
+      getLocationById( this.vehicleId ).then( ( { data } ) => {
+        this.locationPoint = data
+        this.loading = false
+      } )
     },
     initMapPointData() {
       const sourceList = this.WmsStowageRouteList

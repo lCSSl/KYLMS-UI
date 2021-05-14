@@ -182,7 +182,12 @@
                 <el-button v-if="action==0" :disabled="!form.itemId>0" type="primary" @click="submitForm">保 存
                 </el-button>
                 <el-button v-else-if="action==1" :disabled="!form.itemId>0||itemStatus" type="primary"
-                           @click="loadWaybill">装 载
+                           @click="loadWaybill">
+                  入 库
+                </el-button>
+                <el-button v-else-if="action==13" :disabled="!form.itemId>0||itemStatus" type="primary"
+                           @click="loadWaybill">
+                  到货入库
                 </el-button>
               </ICol>
             </el-row>
@@ -503,7 +508,12 @@ export default {
             }
             this.waybillId = waybillId;
             break;
-          case 2:
+          case 13:
+            if (!waybillId || waybillId <= 0) {
+              this.$router.back();
+              return;
+            }
+            this.waybillId = waybillId;
             break;
         }
       }

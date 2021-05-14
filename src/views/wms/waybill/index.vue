@@ -1204,7 +1204,10 @@ export default {
       if ( waybillStatus == -1 ) {
         return 'info'
       }
-      else if ( waybillStatus >= 0 && waybillStatus <= 5 ) {
+      else if ( waybillStatus ==0 ) {
+        return 'info'
+      }
+      else if ( waybillStatus > 0 && waybillStatus <= 5 ) {
         return 'warning'
       }
       else if ( waybillStatus >= 6 && waybillStatus <= 10 ) {

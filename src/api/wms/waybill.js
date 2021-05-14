@@ -49,3 +49,11 @@ export function delWaybill(waybillId) {
     method: 'delete'
   })
 }
+// 删除运单信息主
+export function signFor(waybillId) {
+  return request({
+    url: '/wms/waybill/signFor/' + waybillId,
+    method: 'put'
+  })
+}
+
